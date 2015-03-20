@@ -16,6 +16,7 @@ if(WIN32)
 	set(GLEW_LIBS glew32.lib)
 	set(ENET_INCLUDEDIR ${CMAKE_SOURCE_DIR}/ThirdParty/ENet/include)
 	set(ENET_LIBS ENet ws2_32.lib winmm.lib)
+	set(GLM_INCLUDEDIR ${CMAKE_SOURCE_DIR}/ThirdParty/GLM/include)
 else()
 	# TODO: Use find library stuff
 endif()

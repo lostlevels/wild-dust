@@ -1,17 +1,21 @@
 #pragma once
 
-#include <SDL.h>
+class Renderer;
 
 class CLIENT_API Client {
 public:
+	Client();
+	~Client();
+
 	bool init();
 	void shutdown();
 	void tick();
 
-	bool isQuitSignaled() const;
+	SDL_Window *getGameWindow() const { return mGameWindow; }
+	bool isQuitSignaled() const { return mQuitSignaled; }
 
 private:
 	SDL_Window *mGameWindow;
-	SDL_GLContext mGraphicsContext;
 	bool mQuitSignaled;
+	Renderer *mRenderer;
 };

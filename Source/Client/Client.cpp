@@ -1,5 +1,16 @@
 #include "Precompiled.h"
 #include "Client.h"
+#include "Renderer.h"
+
+Client::Client() {
+	mQuitSignaled = false;
+
+	mRenderer = new Renderer(this);
+}
+
+Client::~Client() {
+	delete mRenderer;
+}
 
 bool Client::init() {
 	SDL_Init(SDL_INIT_VIDEO);
@@ -15,13 +26,15 @@ bool Client::init() {
 	if (mGameWindow == NULL)
 		return false;
 
-	mGraphicsContext = SDL_GL_CreateContext(mGameWindow);
-	SDL_GL_MakeCurrent(mGameWindow, mGraphicsContext);
+	if (!mRenderer->init())
+		return false;
 
 	return true;
 }
 
 void Client::shutdown() {
+	mRenderer->shutdown();
+
 	SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
@@ -35,8 +48,4 @@ void Client::tick() {
 	}
 
 	SDL_GL_SwapWindow(mGameWindow);
-}
-
-bool Client::isQuitSignaled() const {
-	return mQuitSignaled;
 }
