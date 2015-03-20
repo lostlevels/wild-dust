@@ -3,11 +3,10 @@
 uniform sampler2D gColorTexture;
 
 in vec2 vTexCoord;
+in vec4 vColor;
 
 out vec4 oFragColor;
 
 void main() {
-	oFragColor = texture(gColorTexture, vTexCoord);
-	if (oFragColor.a < 0.8)
-		discard;
+	oFragColor = texture(gColorTexture, vTexCoord) * vColor;
 }

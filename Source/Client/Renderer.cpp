@@ -3,6 +3,7 @@
 #include "Client.h"
 #include "Texture.h"
 #include "Shader.h"
+#include "SpriteBatcher.h"
 
 static void PumpOpenGLErrors(bool report = true) {
 	while (GLenum error = glGetError()) {
@@ -60,28 +61,8 @@ bool Renderer::init() {
 	m2DShader = new Shader();
 	m2DShader->addInput("iPosition", 0);
 	m2DShader->addInput("iTexCoord", 1);
+	m2DShader->addInput("iColor", 2);
 	m2DShader->loadFromFile("../Content/Shaders/2D.vert", "../Content/Shaders/2D.frag");
-
-	glGenBuffers(1, &mVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-
-	uint16_t inds[] = {
-		0, 1, 2,
-		3, 0, 2
-	};
-
-	glGenBuffers(1, &mIBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(inds), inds, GL_STATIC_DRAW);
-
-	glGenVertexArrays(1, &mVAO);
-	glBindVertexArray(mVAO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 20, (char*)NULL + 0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 20, (char*)NULL + 12);
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glBindVertexArray(0);
 
 	return true;
 }
@@ -92,26 +73,35 @@ void Renderer::shutdown() {
 	}
 	mTextureMap.clear();
 
-	delete m2DShader;
+	for (SpriteBatcher *batcher : mSpriteBatchers) {
+		delete batcher;
+	}
+	mSpriteBatchers.clear();
 
-	glDeleteVertexArrays(1, &mVAO);
-	glDeleteBuffers(1, &mIBO);
-	glDeleteBuffers(1, &mVBO);
+	delete m2DShader;
 }
 
 void Renderer::beginFrame() {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 
 	glm::mat4 projMatrix = glm::ortho(0.0f, (float)mContext->getWindowWidth(), (float)mContext->getWindowHeight(), 0.0f, 0.0f, 1.0f);
 
 	m2DShader->use();
 	m2DShader->setUniformMat4("gTransform", projMatrix);
 
-	PumpOpenGLErrors();
+	for (SpriteBatcher *batcher : mSpriteBatchers) {
+		batcher->prepare();
+	}
 }
 
 void Renderer::endFrame() {
+	for (SpriteBatcher *batcher : mSpriteBatchers) {
+		batcher->submit();
+	}
+
 	SDL_GL_SwapWindow(mContext->getGameWindow());
+
+	PumpOpenGLErrors();
 }
 
 Texture *Renderer::getTexture(const std::string &filename) {
@@ -133,8 +123,20 @@ Texture *Renderer::getTexture(const std::string &filename) {
 void Renderer::freeUnreferencedTextures() {
 	for (auto it = mTextureMap.begin(); it != mTextureMap.end();) {
 		if (it->second->getRefCount() == 0) {
+			Texture *texture = it->second;
+
 			delete it->second;
 			it = mTextureMap.erase(it);
+
+			for (auto it2 = mSpriteBatchers.begin(); it2 != mSpriteBatchers.end();) {
+				if (texture == (*it2)->getTexture()) {
+					delete *it2;
+					mSpriteBatchers.erase(it2);
+				}
+				else {
+					++it2;
+				}
+			}
 		}
 		else {
 			++it;
@@ -142,57 +144,20 @@ void Renderer::freeUnreferencedTextures() {
 	}
 }
 
-void Renderer::drawQuad(Texture *texture, const Vec2 &position, float scale, float z) {
-	float verts[] = {
-		position.x * scale, position.y * scale, z,
-		0.0f, 0.0f,
+SpriteBatcher *Renderer::getSpriteBatcher(Texture *texture, SpriteBlendMode blendMode) {
+	assert(texture != NULL);
 
-		(position.x + texture->getWidth()) * scale, position.y * scale, z,
-		1.0f, 0.0f,
+	for (SpriteBatcher *batcher : mSpriteBatchers) {
+		if (batcher->getTexture() == texture && batcher->getBlendMode() == blendMode) {
+			return batcher;
+		}
+	}
 
-		(position.x + texture->getWidth()) * scale, (position.y + texture->getHeight()) * scale, z,
-		1.0f, 1.0f,
+	SpriteBatcher *batcher = new SpriteBatcher(texture, blendMode);
+	batcher->prepare();
 
-		position.x * scale, (position.y + texture->getHeight()) * scale, z,
-		0.0f, 1.0f
-	};
+	mSpriteBatchers.push_back(batcher);
 
-	glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_DYNAMIC_DRAW);
-
-	texture->use(0);
-
-	glBindVertexArray(mVAO);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
-	glBindVertexArray(0);
+	return batcher;
 }
 
-void Renderer::drawQuad(Texture *texture, const Vec2 &position, const Recti &source, float scale, float z) {
-	float uvLeft = (float)source.x / (float)texture->getWidth();
-	float uvTop = (float)source.y / (float)texture->getHeight();
-	float uvRight = uvLeft + (float)source.w / (float)texture->getWidth();
-	float uvBottom = uvTop + (float)source.h / (float)texture->getHeight();
-
-	float verts[] = {
-		(position.x  * scale) * scale, position.y  * scale, z,
-		uvLeft, uvTop,
-
-		(position.x + source.w) * scale, position.y * scale, z,
-		uvRight, uvTop,
-
-		(position.x + source.w) * scale, (position.y + source.h) * scale, z,
-		uvRight, uvBottom,
-
-		position.x * scale, (position.y + source.h) * scale, z,
-		uvLeft, uvBottom
-	};
-
-	glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_DYNAMIC_DRAW);
-
-	texture->use(0);
-
-	glBindVertexArray(mVAO);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
-	glBindVertexArray(0);
-}

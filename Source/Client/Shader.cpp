@@ -108,6 +108,14 @@ void Shader::setUniformInt(const std::string &name, int value) {
 	}
 }
 
+void Shader::setUniformVec4(const std::string &name, const glm::vec4 &value) {
+	GLint location = glGetUniformLocation(mName, name.c_str());
+	if (location != -1) {
+		use();
+		glUniform4fv(location, 1, glm::value_ptr(value));
+	}
+}
+
 void Shader::setUniformMat4(const std::string &name, const glm::mat4 &value) {
 	GLint location = glGetUniformLocation(mName, name.c_str());
 	if (location != -1) {

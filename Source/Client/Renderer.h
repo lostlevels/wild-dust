@@ -1,8 +1,11 @@
 #pragma once
 
+#include "BlendMode.h"
+
 class Client;
 class Shader;
 class Texture;
+class SpriteBatcher;
 
 class Renderer {
 public:
@@ -17,15 +20,12 @@ public:
 	Texture *getTexture(const std::string &filename);
 	void freeUnreferencedTextures();
 
-	void drawQuad(Texture *texture, const Vec2 &position, float scale, float z);
-	void drawQuad(Texture *texture, const Vec2 &position, const Recti &source, float scale, float z);
+	SpriteBatcher *getSpriteBatcher(Texture *texture, SpriteBlendMode blendMode);
 
 private:
 	Client *mContext;
 	SDL_GLContext mGLContext;
 	Shader *m2DShader;
-	GLuint mVAO;
-	GLuint mVBO;
-	GLuint mIBO;
 	std::map<std::string, Texture*> mTextureMap;
+	std::vector<SpriteBatcher*> mSpriteBatchers;
 };

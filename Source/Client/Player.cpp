@@ -3,6 +3,7 @@
 #include "Client.h"
 #include "Renderer.h"
 #include "Texture.h"
+#include "SpriteBatcher.h"
 
 CL_Player::CL_Player(Client *client) : CL_Entity(client) {
 	mGrass = client->getRenderer()->getTexture("../Content/Textures/Grass.jpg");
@@ -26,5 +27,6 @@ void CL_Player::update(float dt) {
 
 void CL_Player::draw() {
 	Renderer *renderer = mClient->getRenderer();
-	renderer->drawQuad(mGrass, mPosition, 0.5f, 0.0f);
+	SpriteBatcher *batcher = renderer->getSpriteBatcher(mGrass, BLEND_ALPHA);
+	batcher->addSprite(mPosition, Color(1.0f));
 }

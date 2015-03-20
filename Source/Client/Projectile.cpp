@@ -3,6 +3,7 @@
 #include "Texture.h"
 #include "Client.h"
 #include "Renderer.h"
+#include "SpriteBatcher.h"
 
 CL_Projectile::CL_Projectile(Client *client) : CL_Entity(client) {
 	mBoomerang = client->getRenderer()->getTexture("../Content/Textures/Boomerang.png");
@@ -23,6 +24,7 @@ void CL_Projectile::draw() {
 	source.y = 0;
 	source.w = mBoomerang->getWidth() / 5;
 	source.h = mBoomerang->getHeight();
-
-	mClient->getRenderer()->drawQuad(mBoomerang, mPosition, source, 1.0f, 0.0f);
+	Renderer *renderer = mClient->getRenderer();
+	SpriteBatcher *batcher = renderer->getSpriteBatcher(mBoomerang, BLEND_ALPHA);
+	batcher->addSprite(mPosition, source, Color(1.0f));
 }
