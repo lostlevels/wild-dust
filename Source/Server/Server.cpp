@@ -105,6 +105,7 @@ void Server::handleConnectEvent(ENetPeer *peer) {
 void Server::handleDisconnectEvent(ENetPeer *peer) {
 	for (auto it = mConnections.begin(); it != mConnections.end(); ++it) {
 		if (*it == peer->data) {
+			delete *it;
 			mConnections.erase(it);
 			break;
 		}
