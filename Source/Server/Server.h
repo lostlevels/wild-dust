@@ -13,6 +13,11 @@ private:
 	void tick();
 	void sendWorldUpdates();
 
+	void processNetworkEvents();
+	void handleConnectEvent();
+	void handleDisconnectEvent();
+	void handleReceiveEvent();
+
 private:
 	int mTickRate;
 	int mSendRate;
@@ -22,4 +27,7 @@ private:
 	float mTimeLeftToSimulate;
 
 	Clock mSendClock;
+
+private:
+	ENetHost *mHost;
 };

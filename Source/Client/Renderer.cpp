@@ -4,6 +4,42 @@
 #include "Texture.h"
 #include "Shader.h"
 
+static void PumpOpenGLErrors(bool report = true) {
+	while (GLenum error = glGetError()) {
+		if (report) {
+			switch (error) {
+			case GL_INVALID_ENUM:
+				gLogger.error("OpenGL error: GL_INVALID_ENUM\n");
+				break;
+
+			case GL_INVALID_VALUE:
+				gLogger.error("OpenGL error: GL_INVALID_VALUE\n");
+				break;
+
+			case GL_INVALID_OPERATION:
+				gLogger.error("OpenGL error: GL_INVALID_OPERATION\n");
+				break;
+
+			case GL_INVALID_FRAMEBUFFER_OPERATION:
+				gLogger.error("OpenGL error: GL_INVALID_FRAMEBUFFER_OPERATION\n");
+				break;
+
+			case GL_OUT_OF_MEMORY:
+				gLogger.error("OpenGL error: GL_OUT_OF_MEMORY\n");
+				break;
+
+			case GL_STACK_UNDERFLOW:
+				gLogger.error("OpenGL error: GL_STACK_UNDERFLOW\n");
+				break;
+
+			case GL_STACK_OVERFLOW:
+				gLogger.error("OpenGL error: GL_STACK_OVERFLOW\n");
+				break;
+			}
+		}
+	}
+}
+
 Renderer::Renderer(Client *context) {
 	mContext = context;
 }
@@ -11,7 +47,6 @@ Renderer::Renderer(Client *context) {
 bool Renderer::init() {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
 
 	mGLContext = SDL_GL_CreateContext(mContext->getGameWindow());
 	SDL_GL_MakeCurrent(mContext->getGameWindow(), mGLContext);
@@ -19,6 +54,8 @@ bool Renderer::init() {
 	glewExperimental = 1;
 	if (glewInit() != GLEW_OK)
 		return false;
+
+	PumpOpenGLErrors(false);
 
 	m2DShader = new Shader();
 	m2DShader->addInput("iPosition", 0);
@@ -68,6 +105,8 @@ void Renderer::beginFrame() {
 	mGrass->use(0);
 
 	drawQuad(mGrass, Vec2(0.0f, 0.0f), 0.0f, 1.0f, 0.0f);
+
+	PumpOpenGLErrors();
 }
 
 void Renderer::endFrame() {

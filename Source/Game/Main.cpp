@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
 	
 	Client *client = new Client();
 	client->init();
+	client->connectToServer("127.0.0.1", 5000);
 	
 	while (!client->isQuitSignaled())
 	{

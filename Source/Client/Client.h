@@ -4,6 +4,12 @@
 
 class Renderer;
 
+enum ClientNetworkState {
+	CLIENT_IDLE,
+	CLIENT_CONNECTING,
+	CLIENT_CONNECTED,
+};
+
 class CLIENT_API Client {
 public:
 	Client();
@@ -11,6 +17,10 @@ public:
 
 	bool init();
 	void shutdown();
+
+	void connectToServer(const char *hostName, int serverPort);
+	void disconnectFromServer();
+
 	void tick();
 
 	SDL_Window *getGameWindow() const { return mGameWindow; }
@@ -19,10 +29,24 @@ public:
 	bool isQuitSignaled() const { return mQuitSignaled; }
 
 private:
+	void processNetworkEvents();
+	void handleConnectEvent();
+	void handleDisconnectEvent();
+	void handleReceiveEvent();
+
+	void renderFrame();
+
+private:
 	SDL_Window *mGameWindow;
 	int mWindowWidth;
 	int mWindowHeight;
 	bool mQuitSignaled;
 	Renderer *mRenderer;
 	Clock mTickTock;
+
+private:
+	ENetHost *mHost;
+	ENetPeer *mPeer;
+	ClientNetworkState mNetworkState;
+	Clock mConnectionClock;
 };
