@@ -1,6 +1,16 @@
 cmake_minimum_required(VERSION 2.8)
 project(CodeAGame2015)
 
+macro (add_pch PCH_HEADER PCH_SRC SRCS)
+	if (MSVC)
+		get_filename_component(PCH_BASENAME ${PCH_HEADER} NAME_WE)
+		set(PCH_BIN "${CMAKE_CURRENT_BINARY_DIR}/${PCH_BASENAME}.pch")
+		set_source_files_properties(${SRCS} PROPERTIES COMPILE_FLAGS "/Yu\"${PCH_HEADER}\"" OBJECT_DEPENDS "${PCH_BIN}")
+		set_source_files_properties(${PCH_SRC} PROPERTIES COMPILE_FLAGS "/Yc\"${PCH_HEADER}\"" OBJECT_OUTPUTS "${PCH_BIN}")
+	endif()
+endmacro()
+
+
 if (WIN32)
 	set(WIN32_NOCONSOLE WIN32)
 else()
@@ -31,6 +41,11 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${OUTPUT_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${OUTPUT_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${OUTPUT_DIR})
+
+if (WIN32)
+	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+	add_definitions("/wd4251")
+endif()
 
 add_subdirectory(ThirdParty)
 add_subdirectory(Source)

@@ -1,5 +1,6 @@
 file(GLOB SOURCES *.cpp)
 file(GLOB HEADERS *.h)
+add_pch(Precompiled.h Precompiled.cpp ${SOURCES})
 add_library(Client SHARED ${SOURCES} ${HEADERS})
 add_definitions(-DBUILDING_CLIENT)
 include_directories(${STB_INCLUDEDIR})

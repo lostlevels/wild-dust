@@ -1,5 +1,6 @@
 file(GLOB SOURCES *.cpp)
 file(GLOB HEADERS *.h)
+add_pch(Precompiled.h Precompiled.cpp ${SOURCES})
 add_definitions(-DBUILDING_SERVER)
 add_library(Server SHARED ${SOURCES} ${HEADERS})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
