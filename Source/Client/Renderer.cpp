@@ -4,6 +4,8 @@
 #include "Texture.h"
 #include "Shader.h"
 #include "SpriteBatcher.h"
+#include "Font.h"
+#include "GUI.h"
 
 static void PumpOpenGLErrors(bool report = true) {
 	while (GLenum error = glGetError()) {
@@ -64,6 +66,11 @@ bool Renderer::init() {
 	m2DShader->addInput("iColor", 2);
 	m2DShader->loadFromFile("../Content/Shaders/2D.vert", "../Content/Shaders/2D.frag");
 
+	mFontShader = new Shader();
+	mFontShader->addInput("iPosition", 0);
+	mFontShader->addInput("iTexCoord", 1);
+	mFontShader->loadFromFile("../Content/Shaders/Font.vert", "../Content/Shaders/Font.frag");
+
 	return true;
 }
 
@@ -78,6 +85,7 @@ void Renderer::shutdown() {
 	}
 	mSpriteBatchers.clear();
 
+	delete mFontShader;
 	delete m2DShader;
 }
 
@@ -85,6 +93,9 @@ void Renderer::beginFrame() {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glm::mat4 projMatrix = glm::ortho(0.0f, (float)mContext->getWindowWidth(), (float)mContext->getWindowHeight(), 0.0f, 0.0f, 1.0f);
+
+	mFontShader->use();
+	mFontShader->setUniformMat4("gTransform", projMatrix);
 
 	m2DShader->use();
 	m2DShader->setUniformMat4("gTransform", projMatrix);
@@ -98,6 +109,8 @@ void Renderer::endFrame() {
 	for (SpriteBatcher *batcher : mSpriteBatchers) {
 		batcher->submit();
 	}
+
+	mContext->getGUI()->render();
 
 	SDL_GL_SwapWindow(mContext->getGameWindow());
 

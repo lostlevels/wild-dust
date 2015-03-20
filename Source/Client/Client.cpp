@@ -6,6 +6,8 @@
 #include "EntityRegistration.h"
 #include "Input.h"
 #include "Audio.h"
+#include "GUI.h"
+#include <SDL_ttf.h>
 
 Client::Client() {
 	mQuitSignaled = false;
@@ -19,6 +21,8 @@ Client::Client() {
 
 	mAudio = new AudioSystem();
 
+	mGUI = new GUI(this);
+
 	mHost = enet_host_create(NULL, 1, 2, 0, 0);
 	if (mHost == NULL) {
 		gLogger.error("Could not create client host!\n");
@@ -29,6 +33,7 @@ Client::Client() {
 
 Client::~Client() {
 	enet_host_destroy(mHost);
+	delete mGUI;
 	delete mAudio;
 	delete mInput;
 	delete mWorld;
@@ -37,6 +42,7 @@ Client::~Client() {
 
 bool Client::init() {
 	SDL_Init(SDL_INIT_VIDEO);
+	TTF_Init();
 
 	mSettings.loadFromFile("Game.cfg");
 
@@ -62,6 +68,9 @@ bool Client::init() {
 	if (!mRenderer->init())
 		return false;
 
+	if (!mGUI->init())
+		return false;
+
 	mTickTock.reset();
 
 	mNetworkState = CLIENT_IDLE;
@@ -72,10 +81,13 @@ bool Client::init() {
 void Client::shutdown() {
 	mWorld->deleteAllEntities();
 
+	mGUI->shutdown();
+
 	mRenderer->shutdown();
 
 	disconnectFromServer();
 
+	TTF_Quit();
 	SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
@@ -195,8 +207,6 @@ void Client::handleReceiveEvent(const BitStream &stream) {
 
 void Client::renderFrame() {
 	mRenderer->beginFrame();
-
 	mWorld->draw();
-
 	mRenderer->endFrame();
 }

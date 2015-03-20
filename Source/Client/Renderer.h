@@ -20,12 +20,15 @@ public:
 	Texture *getTexture(const std::string &filename);
 	void freeUnreferencedTextures();
 
+	Shader *getFontShader() { return mFontShader; }
+
 	SpriteBatcher *getSpriteBatcher(Texture *texture, SpriteBlendMode blendMode);
 
 private:
 	Client *mContext;
 	SDL_GLContext mGLContext;
 	Shader *m2DShader;
+	Shader *mFontShader;
 	std::map<std::string, Texture*> mTextureMap;
 	std::vector<SpriteBatcher*> mSpriteBatchers;
 };

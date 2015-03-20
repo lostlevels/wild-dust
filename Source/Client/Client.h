@@ -8,6 +8,7 @@ class Renderer;
 class ClientWorld;
 class InputSystem;
 class AudioSystem;
+class GUI;
 
 enum ClientNetworkState {
 	CLIENT_IDLE,
@@ -34,6 +35,9 @@ public:
 	bool isQuitSignaled() const { return mQuitSignaled; }
 
 	Renderer *getRenderer() const { return mRenderer; }
+	GUI *getGUI() const { return mGUI; }
+
+	ClientNetworkState getNetworkState() { return mNetworkState; }
 
 private:
 	void sendPlayerInput();
@@ -55,6 +59,7 @@ private:
 	ClientWorld *mWorld;
 	InputSystem *mInput;
 	AudioSystem *mAudio;
+	GUI *mGUI;
 
 private:
 	ENetHost *mHost;
