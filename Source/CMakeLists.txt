@@ -4,12 +4,14 @@ include_directories(
 	${GLEW_INCLUDEDIR}
 	${ENET_INCLUDEDIR}
 	${GLM_INCLUDEDIR}
-	${BOX2D_INCLUDEDIR})
+	${BOX2D_INCLUDEDIR}
+	${OPENAL_INCLUDEDIR})
 	
 link_directories(
 	${SDL2_LIBDIR}
 	${GLEW_LIBDIR}
-	${ENET_LIBDIR})
+	${ENET_LIBDIR}
+	${OPENAL_LIBDIR})
 
 add_subdirectory(Core)
 add_subdirectory(Client)

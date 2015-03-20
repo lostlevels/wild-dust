@@ -68,6 +68,8 @@ bool Client::init() {
 	if (!mRenderer->init())
 		return false;
 
+	mAudio->init();
+
 	if (!mGUI->init())
 		return false;
 
@@ -82,6 +84,8 @@ void Client::shutdown() {
 	mWorld->deleteAllEntities();
 
 	mGUI->shutdown();
+
+	mAudio->shutdown();
 
 	mRenderer->shutdown();
 
@@ -141,6 +145,8 @@ void Client::tick() {
 	mWorld->update(dt);
 
 	renderFrame();
+
+	mAudio->update();
 }
 
 void Client::sendPlayerInput() {
