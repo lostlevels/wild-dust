@@ -9,7 +9,6 @@ public:
 	CL_Player(Client *client);
 	virtual ~CL_Player();
 
-	virtual void writeToStream(BitStream &stream);
 	virtual void readFromStream(const BitStream &stream);
 
 	virtual void update(float dt);

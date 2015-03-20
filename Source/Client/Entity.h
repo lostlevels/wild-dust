@@ -11,7 +11,6 @@ protected:
 public:
 	virtual ~CL_Entity();
 
-	virtual void writeToStream(BitStream &stream);
 	virtual void readFromStream(const BitStream &stream);
 
 	virtual void update(float dt);

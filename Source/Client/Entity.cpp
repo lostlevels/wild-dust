@@ -9,10 +9,6 @@ CL_Entity::~CL_Entity() {
 
 }
 
-void CL_Entity::writeToStream(BitStream &stream) {
-
-}
-
 void CL_Entity::readFromStream(const BitStream &stream) {
 
 }

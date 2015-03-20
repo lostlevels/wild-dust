@@ -13,10 +13,6 @@ CL_Player::~CL_Player() {
 	mGrass->decrementRefs();
 }
 
-void CL_Player::writeToStream(BitStream &stream) {
-	
-}
-
 void CL_Player::readFromStream(const BitStream &stream) {
 	mPosition = stream.readAny<Vec2>();
 }
