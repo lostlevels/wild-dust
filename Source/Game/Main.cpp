@@ -11,6 +11,17 @@
 #include "Server/Server.h"
 #include <enet/enet.h>
 
+#ifndef _WIN32
+bool ArgvContains(char *argv[], int argc, const char *what) {
+	for (int i = 1; i < argc; ++i) {
+		if (strcmp(argv[i], what) == 0) {
+			return true;
+		}
+	}
+	return false;
+}
+#endif
+
 #ifdef _WIN32
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 #else
@@ -28,7 +39,11 @@ int main(int argc, char *argv[])
 
 	gCore.init();
 
+#ifdef _WIN32
 	if (strstr(lpCmdLine, "-server")) {
+#else
+	if (ArgvContains(argv, argc, "-server")) {
+#endif
 		listenServer = new Server();
 		listenServer->init(100, 100);
 	}
