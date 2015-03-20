@@ -16,12 +16,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 int main(int argc, char *argv[])
 #endif
 {
+	Server *listenServer = NULL;
+
 	enet_initialize();
 
 	gCore.init();
 
-	Server *server = new Server();
-	server->init(100, 100);
+	if (strstr(lpCmdLine, "-server")) {
+		listenServer = new Server();
+		listenServer->init(100, 100);
+	}
 	
 	Client *client = new Client();
 	client->init();
@@ -29,13 +33,17 @@ int main(int argc, char *argv[])
 	
 	while (!client->isQuitSignaled())
 	{
-		server->update();
+		if (listenServer) {
+			listenServer->update();
+		}
 		client->tick();
 	}
 
-	server->shutdown();
-	delete server;
-
+	if (listenServer) {
+		listenServer->shutdown();
+		delete listenServer;
+	}
+	
 	client->shutdown();
 	delete client;
 

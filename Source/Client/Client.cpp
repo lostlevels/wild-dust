@@ -120,6 +120,10 @@ void Client::tick() {
 }
 
 void Client::sendPlayerInput() {
+	if (mNetworkState != CLIENT_CONNECTED) {
+		return;
+	}
+
 	PlayerInput input = mInput->makeInputState();
 
 	uint8_t messageBuffer[128000];
