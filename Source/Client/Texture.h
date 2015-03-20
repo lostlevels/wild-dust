@@ -11,8 +11,12 @@ public:
 
 	GLuint getName() const { return mName; }
 
+	int getWidth() const { return mWidth; }
+	int getHeight() const { return mHeight; }
+
 private:
 	GLuint mName;
+
 	int mWidth;
 	int mHeight;
 };

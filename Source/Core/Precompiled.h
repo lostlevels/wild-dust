@@ -11,6 +11,10 @@
 #include <cstdarg>
 #include <map>
 
+#include <glm/glm.hpp>
+
+typedef glm::vec2 Vec2;
+
 #ifdef _WIN32
 #define DLLEXPORT __declspec(dllexport)
 #define DLLIMPORT __declspec(dllimport)
@@ -26,3 +30,4 @@
 #endif
 
 #include "Logger.h"
+#include "Rect.h"

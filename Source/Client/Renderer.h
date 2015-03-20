@@ -14,6 +14,9 @@ public:
 	void beginFrame();
 	void endFrame();
 
+	void drawQuad(Texture *texture, const Vec2 &position, float rotation, float scale, float z);
+	void drawQuad(Texture *texture, const Vec2 &position, const Recti &source, float rotation, float scale, float z);
+
 private:
 	Client *mContext;
 	SDL_GLContext mGLContext;

@@ -28,28 +28,13 @@ bool Renderer::init() {
 	mGrass = new Texture();
 	mGrass->loadFromFile("../Content/Textures/Grass.jpg");
 
-	glm::vec2 verts[] = {
-		glm::vec2(100.0f, 100.0f),
-		glm::vec2(0, 0),
-
-		glm::vec2(200.0f, 100.0f),
-		glm::vec2(1, 0),
-
-		glm::vec2(200.0f, 200.0f),
-		glm::vec2(1, 1),
-
-		glm::vec2(100.0f, 200.0f),
-		glm::vec2(0, 1),
-	};
+	glGenBuffers(1, &mVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, mVBO);
 
 	uint16_t inds[] = {
 		0, 1, 2,
 		3, 0, 2
 	};
-
-	glGenBuffers(1, &mVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
 
 	glGenBuffers(1, &mIBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
@@ -58,8 +43,8 @@ bool Renderer::init() {
 	glGenVertexArrays(1, &mVAO);
 	glBindVertexArray(mVAO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 16, (char*)NULL + 0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 16, (char*)NULL + 8);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 20, (char*)NULL + 0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 20, (char*)NULL + 12);
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glBindVertexArray(0);
@@ -73,7 +58,7 @@ void Renderer::shutdown() {
 }
 
 void Renderer::beginFrame() {
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	mProjMatrix = glm::ortho(0.0f, (float)mContext->getWindowWidth(), (float)mContext->getWindowHeight(), 0.0f, 0.0f, 1.0f);
 
@@ -82,11 +67,60 @@ void Renderer::beginFrame() {
 
 	mGrass->use(0);
 
+	drawQuad(mGrass, Vec2(0.0f, 0.0f), 0.0f, 1.0f, 0.0f);
+}
+
+void Renderer::endFrame() {
+	SDL_GL_SwapWindow(mContext->getGameWindow());
+}
+
+void Renderer::drawQuad(Texture *texture, const Vec2 &position, float rotation, float scale, float z) {
+	float verts[] = {
+		position.x, position.y, z,
+		0.0f, 0.0f,
+
+		position.x + texture->getWidth(), position.y, z,
+		1.0f, 0.0f,
+
+		position.x + texture->getWidth(), position.y + texture->getHeight(), z,
+		1.0f, 1.0f,
+
+		position.x, position.y + texture->getHeight(), z,
+		0.0f, 1.0f
+	};
+
+	glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_DYNAMIC_DRAW);
+
 	glBindVertexArray(mVAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
 	glBindVertexArray(0);
 }
 
-void Renderer::endFrame() {
-	SDL_GL_SwapWindow(mContext->getGameWindow());
+void Renderer::drawQuad(Texture *texture, const Vec2 &position, const Recti &source, float rotation, float scale, float z) {
+	float uvLeft = (float)source.x / (float)texture->getWidth();
+	float uvTop = (float)source.y / (float)texture->getHeight();
+	float uvRight = uvLeft + (float)source.w / (float)texture->getWidth();
+	float uvBottom = uvTop + (float)source.h / (float)texture->getHeight();
+
+	float verts[] = {
+		position.x, position.y, z,
+		uvLeft, uvTop,
+
+		position.x + source.w, position.y, z,
+		uvRight, uvTop,
+
+		position.x + source.w, position.y + source.h, z,
+		uvRight, uvBottom,
+
+		position.x, position.y + source.h, z,
+		uvLeft, uvBottom
+	};
+
+	glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_DYNAMIC_DRAW);
+
+	glBindVertexArray(mVAO);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
+	glBindVertexArray(0);
 }
