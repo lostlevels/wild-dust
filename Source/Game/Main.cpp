@@ -4,6 +4,7 @@
 #endif
 #include "Core/Precompiled.h"
 #include "Core/Core.h"
+#include "Core/Config.h"
 #include "Client/Precompiled.h"
 #include "Client/Client.h"
 #include "Server/Precompiled.h"

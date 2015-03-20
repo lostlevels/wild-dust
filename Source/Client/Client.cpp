@@ -38,8 +38,15 @@ Client::~Client() {
 bool Client::init() {
 	SDL_Init(SDL_INIT_VIDEO);
 
-	mWindowWidth = 1280;
-	mWindowHeight = 720;
+	mSettings.loadFromFile("Game.cfg");
+
+	mWindowWidth = mSettings.getInt("ResolutionWidth", 640);
+	mWindowHeight = mSettings.getInt("ResolutionHeight", 480);
+
+	Uint32 windowFlags = SDL_WINDOW_OPENGL;
+	if (mSettings.getBool("Fullscreen", false)) {
+		windowFlags |= SDL_WINDOW_FULLSCREEN;
+	}
 
 	mGameWindow = SDL_CreateWindow(
 		"Code a Game 2015",
@@ -47,7 +54,7 @@ bool Client::init() {
 		SDL_WINDOWPOS_CENTERED,
 		mWindowWidth,
 		mWindowHeight,
-		SDL_WINDOW_OPENGL);
+		windowFlags);
 
 	if (mGameWindow == NULL)
 		return false;

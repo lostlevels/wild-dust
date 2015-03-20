@@ -2,6 +2,7 @@
 
 #include "Core/Clock.h"
 #include "Core/BitStream.h"
+#include "Core/Config.h"
 
 class Renderer;
 class ClientWorld;
@@ -49,6 +50,7 @@ private:
 	int mWindowHeight;
 	bool mQuitSignaled;
 	Clock mTickTock;
+	Config mSettings;
 	Renderer *mRenderer;
 	ClientWorld *mWorld;
 	InputSystem *mInput;
