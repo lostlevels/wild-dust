@@ -30,6 +30,8 @@ if(WIN32)
 	set(ENET_LIBS ENet ws2_32.lib winmm.lib)
 	set(GLM_INCLUDEDIR ${CMAKE_SOURCE_DIR}/ThirdParty/GLM/include)
 	set(STB_INCLUDEDIR ${CMAKE_SOURCE_DIR}/ThirdParty/stb/include)
+	set(BOX2D_INCLUDEDIR ${CMAKE_SOURCE_DIR}/ThirdParty/Box2D)
+	set(BOX2D_LIBS Box2D)
 else()
 	# TODO: Use find library stuff
 endif()

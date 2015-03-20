@@ -34,6 +34,7 @@ private:
 	Clock mSendClock;
 
 	ServerWorld *mWorld;
+	b2World *mPhysicsWorld;
 
 private:
 	ENetHost *mHost;

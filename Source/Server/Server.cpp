@@ -8,9 +8,13 @@
 Server::Server() {
 	mWorld = new ServerWorld(this);
 	RegisterServerEntityTypes(mWorld);
+
+	b2Vec2 gravity(0.0f, 100.0f);
+	mPhysicsWorld = new b2World(gravity);
 }
 
 Server::~Server() {
+	delete mPhysicsWorld;
 	delete mWorld;
 }
 
@@ -115,6 +119,7 @@ void Server::handleReceiveEvent(ENetPeer *peer, const BitStream &stream) {
 }
 
 void Server::tick(float dt) {
+	mPhysicsWorld->Step(dt, 10, 10);
 	mWorld->update(dt);
 }
 
