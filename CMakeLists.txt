@@ -7,6 +7,8 @@ else()
 	set(WIN32_NOCONSOLE "")
 endif()
 
+find_package(OpenGL REQUIRED)
+
 if(WIN32)
 	set(SDL2_INCLUDEDIR ${CMAKE_SOURCE_DIR}/ThirdParty/SDL2/include)
 	set(SDL2_LIBDIR ${CMAKE_SOURCE_DIR}/ThirdParty/SDL2/lib/x86)

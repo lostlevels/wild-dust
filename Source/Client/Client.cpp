@@ -47,5 +47,7 @@ void Client::tick() {
 		}
 	}
 
-	SDL_GL_SwapWindow(mGameWindow);
+	mRenderer->beginFrame();
+
+	mRenderer->endFrame();
 }
