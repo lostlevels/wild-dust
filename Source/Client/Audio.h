@@ -3,6 +3,7 @@
 #include <al.h>
 #include <alc.h>
 
+class AudioSource;
 class Music;
 class SoundEffect;
 
@@ -17,9 +18,14 @@ public:
 
 	bool hasAudioSupport() const { return mDevice && mContext; }
 
+	Music *createMusic();
+	void destroyMusic(Music *music);
+
+	SoundEffect *createSoundEffect();
+	void destroySoundEffect(SoundEffect *sfx);
+
 private:
 	ALCdevice *mDevice;
 	ALCcontext *mContext;
-	Music *mAnnoying;
-	SoundEffect *mTeleport;
+	std::vector<AudioSource*> mSources;
 };

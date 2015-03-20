@@ -27,19 +27,14 @@ bool AudioSystem::init() {
 
 	gLogger.info("Successfuly opened audio device and created audio context.\n");
 
-	mAnnoying = new Music();
-	mAnnoying->openOggVorbisStream("../Content/Music/short.ogg");
-
-	mTeleport = new SoundEffect();
-	mTeleport->loadWave("../Content/SFX/teleport.wav");
-	mTeleport->play();
-
 	return true;
 }
 
 void AudioSystem::shutdown() {
-	delete mAnnoying;
-	delete mTeleport;
+	for (AudioSource *source : mSources) {
+		delete source;
+	}
+	mSources.clear();
 
 	if (mDevice) {
 		if (mContext) {
@@ -51,6 +46,40 @@ void AudioSystem::shutdown() {
 	}
 }
 
+Music *AudioSystem::createMusic() {
+	Music *music = new Music();
+	mSources.push_back(music);
+	return music;
+}
+
+void AudioSystem::destroyMusic(Music *music) {
+	for (auto it = mSources.begin(); it != mSources.end(); ++it) {
+		if (*it == music) {
+			mSources.erase(it);
+			break;
+		}
+	}
+	delete music;
+}
+
+SoundEffect *AudioSystem::createSoundEffect() {
+	SoundEffect *sfx = new SoundEffect();
+	mSources.push_back(sfx);
+	return sfx;
+}
+
+void AudioSystem::destroySoundEffect(SoundEffect *sfx) {
+	for (auto it = mSources.begin(); it != mSources.end(); ++it) {
+		if (*it == sfx) {
+			mSources.erase(it);
+			break;
+		}
+	}
+	delete sfx;
+}
+
 void AudioSystem::update() {
-	mAnnoying->update();
+	for (AudioSource *source : mSources) {
+		source->update();
+	}
 }
