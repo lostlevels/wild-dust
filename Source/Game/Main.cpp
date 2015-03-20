@@ -21,14 +21,14 @@ int main(int argc, char *argv[])
 	gCore.init();
 
 	Server *server = new Server();
-	server->init();
+	server->init(100, 100);
 	
 	Client *client = new Client();
 	client->init();
 	
 	while (!client->isQuitSignaled())
 	{
-		server->tick();
+		server->update();
 		client->tick();
 	}
 

@@ -32,6 +32,8 @@ bool Client::init() {
 	if (!mRenderer->init())
 		return false;
 
+	mTickTock.reset();
+
 	return true;
 }
 
@@ -49,6 +51,9 @@ void Client::tick() {
 			break;
 		}
 	}
+
+	float dt = mTickTock.getElapsedSeconds();
+	mTickTock.reset();
 
 	mRenderer->beginFrame();
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/Clock.h"
+
 class Renderer;
 
 class CLIENT_API Client {
@@ -22,4 +24,5 @@ private:
 	int mWindowHeight;
 	bool mQuitSignaled;
 	Renderer *mRenderer;
+	Clock mTickTock;
 };
