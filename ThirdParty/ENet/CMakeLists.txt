@@ -1,0 +1,7 @@
+file(GLOB SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c)
+file(GLOB_RECURSE HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+if (WIN32)
+	add_definitions(-D_WINSOCK_DEPRECATED_NO_WARNINGS)
+endif()
+add_library(ENet STATIC ${SOURCES} ${HEADERS})

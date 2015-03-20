@@ -1,0 +1,5 @@
+file(GLOB SOURCES *.cpp)
+file(GLOB HEADERS *.h)
+add_executable(Game ${WIN32_NOCONSOLE} ${SOURCES} ${HEADERS})
+target_link_libraries(Game Client)
+target_link_libraries(Game Server)

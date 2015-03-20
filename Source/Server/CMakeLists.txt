@@ -1,0 +1,5 @@
+file(GLOB SOURCES *.cpp)
+file(GLOB HEADERS *.h)
+add_definitions(-DBUILDING_SERVER)
+add_library(Server SHARED ${SOURCES} ${HEADERS})
+target_link_libraries(Server ${ENET_LIBS})

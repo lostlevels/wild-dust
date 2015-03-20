@@ -1,6 +1,6 @@
-file(GLOB SOURCES *.cpp)
-file(GLOB HEADERS *.h)
-include_directories(${SDL2_INCLUDEDIR})
-link_directories(${SDL2_LIBDIR})
-add_executable(Game ${WIN32_NOCONSOLE} ${SOURCES} ${HEADERS})
-target_link_libraries(Game ${SDL2_LIBS})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${SDL2_INCLUDEDIR} ${GLEW_INCLUDEDIR} ${ENET_INCLUDEDIR})
+link_directories(${SDL2_LIBDIR} ${GLEW_LIBDIR} ${ENET_LIBDIR})
+
+add_subdirectory(Client)
+add_subdirectory(Server)
+add_subdirectory(Game)

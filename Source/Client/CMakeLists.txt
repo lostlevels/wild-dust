@@ -1,0 +1,5 @@
+file(GLOB SOURCES *.cpp)
+file(GLOB HEADERS *.h)
+add_library(Client SHARED ${SOURCES} ${HEADERS})
+add_definitions(-DBUILDING_CLIENT)
+target_link_libraries(Client ${SDL2_LIBS} ${GLEW_LIBS} ${ENET_LIBS})
