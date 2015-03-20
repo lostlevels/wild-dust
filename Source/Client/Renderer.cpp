@@ -102,8 +102,6 @@ void Renderer::beginFrame() {
 	m2DShader->use();
 	m2DShader->setUniformMat4("gTransform", mProjMatrix);
 
-	mGrass->use(0);
-
 	drawQuad(mGrass, Vec2(0.0f, 0.0f), 0.0f, 1.0f, 0.0f);
 
 	PumpOpenGLErrors();
@@ -130,6 +128,8 @@ void Renderer::drawQuad(Texture *texture, const Vec2 &position, float rotation, 
 
 	glBindBuffer(GL_ARRAY_BUFFER, mVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_DYNAMIC_DRAW);
+
+	texture->use(0);
 
 	glBindVertexArray(mVAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
