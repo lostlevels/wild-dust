@@ -138,18 +138,18 @@ void Renderer::freeUnreferencedTextures() {
 	}
 }
 
-void Renderer::drawQuad(Texture *texture, const Vec2 &position, float rotation, float scale, float z) {
+void Renderer::drawQuad(Texture *texture, const Vec2 &position, float scale, float z) {
 	float verts[] = {
-		position.x, position.y, z,
+		position.x * scale, position.y * scale, z,
 		0.0f, 0.0f,
 
-		position.x + texture->getWidth(), position.y, z,
+		(position.x + texture->getWidth()) * scale, position.y * scale, z,
 		1.0f, 0.0f,
 
-		position.x + texture->getWidth(), position.y + texture->getHeight(), z,
+		(position.x + texture->getWidth()) * scale, (position.y + texture->getHeight()) * scale, z,
 		1.0f, 1.0f,
 
-		position.x, position.y + texture->getHeight(), z,
+		position.x * scale, (position.y + texture->getHeight()) * scale, z,
 		0.0f, 1.0f
 	};
 
@@ -163,28 +163,30 @@ void Renderer::drawQuad(Texture *texture, const Vec2 &position, float rotation, 
 	glBindVertexArray(0);
 }
 
-void Renderer::drawQuad(Texture *texture, const Vec2 &position, const Recti &source, float rotation, float scale, float z) {
+void Renderer::drawQuad(Texture *texture, const Vec2 &position, const Recti &source, float scale, float z) {
 	float uvLeft = (float)source.x / (float)texture->getWidth();
 	float uvTop = (float)source.y / (float)texture->getHeight();
 	float uvRight = uvLeft + (float)source.w / (float)texture->getWidth();
 	float uvBottom = uvTop + (float)source.h / (float)texture->getHeight();
 
 	float verts[] = {
-		position.x, position.y, z,
+		(position.x  * scale) * scale, position.y  * scale, z,
 		uvLeft, uvTop,
 
-		position.x + source.w, position.y, z,
+		(position.x + source.w) * scale, position.y * scale, z,
 		uvRight, uvTop,
 
-		position.x + source.w, position.y + source.h, z,
+		(position.x + source.w) * scale, (position.y + source.h) * scale, z,
 		uvRight, uvBottom,
 
-		position.x, position.y + source.h, z,
+		position.x * scale, (position.y + source.h) * scale, z,
 		uvLeft, uvBottom
 	};
 
 	glBindBuffer(GL_ARRAY_BUFFER, mVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_DYNAMIC_DRAW);
+
+	texture->use(0);
 
 	glBindVertexArray(mVAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);

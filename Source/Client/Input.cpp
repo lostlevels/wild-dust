@@ -22,6 +22,9 @@ PlayerInput InputSystem::makeInputState() {
 	if (keyboardState[SDL_SCANCODE_SPACE]) {
 		state.buttonMask |= BTN_JUMP;
 	}
+	if (keyboardState[SDL_SCANCODE_X]) {
+		state.buttonMask |= BTN_ATTACK;
+	}
 
 	return state;
 }

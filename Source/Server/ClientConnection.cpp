@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "Server.h"
 #include "World.h"
+#include "Projectile.h"
 
 ClientConnection::ClientConnection(Server *server, ENetPeer *peer) {
 	mServer = server;
@@ -44,5 +45,9 @@ void ClientConnection::processPlayerInput(const PlayerInput &input) {
 	}
 	if (input.buttonMask & BTN_JUMP) {
 		mPlayer->mPosition -= Vec2(0.0f, 20.0f);
+	}
+	if (input.buttonMask & BTN_ATTACK) {
+		SV_Projectile *proj = mServer->getWorld()->spawnEntityTyped<SV_Projectile>("Projectile");
+		proj->mPosition = mPlayer->mPosition + Vec2(150.0f, 0.0f);
 	}
 }

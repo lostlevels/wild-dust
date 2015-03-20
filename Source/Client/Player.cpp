@@ -26,5 +26,5 @@ void CL_Player::update(float dt) {
 
 void CL_Player::draw() {
 	Renderer *renderer = mClient->getRenderer();
-	renderer->drawQuad(mGrass, mPosition, 0.0f, 1.0f, 0.0f);
+	renderer->drawQuad(mGrass, mPosition, 0.5f, 0.0f);
 }

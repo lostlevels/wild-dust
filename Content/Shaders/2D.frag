@@ -8,4 +8,6 @@ out vec4 oFragColor;
 
 void main() {
 	oFragColor = texture(gColorTexture, vTexCoord);
+	if (oFragColor.a < 0.8)
+		discard;
 }
