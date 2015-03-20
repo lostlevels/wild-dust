@@ -15,6 +15,8 @@ public:
 	void shutdown();
 	void update();
 
+	ServerWorld *getWorld() { return mWorld; }
+
 private:
 	void tick(float dt);
 	void sendWorldUpdates();

@@ -62,9 +62,6 @@ bool Renderer::init() {
 	m2DShader->addInput("iTexCoord", 1);
 	m2DShader->loadFromFile("../Content/Shaders/2D.vert", "../Content/Shaders/2D.frag");
 
-	mGrass = new Texture();
-	mGrass->loadFromFile("../Content/Textures/Grass.jpg");
-
 	glGenBuffers(1, &mVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, mVBO);
 
@@ -90,7 +87,11 @@ bool Renderer::init() {
 }
 
 void Renderer::shutdown() {
-	delete mGrass;
+	for (auto it : mTextureMap) {
+		delete it.second;
+	}
+	mTextureMap.clear();
+
 	delete m2DShader;
 }
 
@@ -102,13 +103,39 @@ void Renderer::beginFrame() {
 	m2DShader->use();
 	m2DShader->setUniformMat4("gTransform", mProjMatrix);
 
-	drawQuad(mGrass, Vec2(0.0f, 0.0f), 0.0f, 1.0f, 0.0f);
-
 	PumpOpenGLErrors();
 }
 
 void Renderer::endFrame() {
 	SDL_GL_SwapWindow(mContext->getGameWindow());
+}
+
+Texture *Renderer::getTexture(const std::string &filename) {
+	auto it = mTextureMap.find(filename);
+	if (it != mTextureMap.end()) {
+		return it->second;
+	}
+
+	Texture *texture = new Texture();
+	if (texture->loadFromFile(filename)) {
+		texture->incrementRefs();
+		mTextureMap.insert({ filename, texture });
+		return texture;
+	}
+
+	return NULL;
+}
+
+void Renderer::freeUnreferencedTextures() {
+	for (auto it = mTextureMap.begin(); it != mTextureMap.end();) {
+		if (it->second->getRefCount() == 0) {
+			delete it->second;
+			it = mTextureMap.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
 }
 
 void Renderer::drawQuad(Texture *texture, const Vec2 &position, float rotation, float scale, float z) {

@@ -2,9 +2,12 @@
 #include "Server.h"
 #include "World.h"
 #include "ClientConnection.h"
+#include "Shared/Protocol.h"
+#include "EntityRegistration.h"
 
 Server::Server() {
-	mWorld = new ServerWorld();
+	mWorld = new ServerWorld(this);
+	RegisterServerEntityTypes(mWorld);
 }
 
 Server::~Server() {
@@ -25,6 +28,7 @@ bool Server::init(int tickRate, int sendRate) {
 		return false;
 	}
 
+	mTimeLeftToSimulate = 0.0f;
 
 	return true;
 }
@@ -76,7 +80,7 @@ void Server::processNetworkEvents() {
 }
 
 void Server::handleConnectEvent(ENetPeer *peer) {
-	ClientConnection *connection = new ClientConnection(peer);
+	ClientConnection *connection = new ClientConnection(this, peer);
 	mConnections.push_back(connection);
 
 	peer->data = connection;
@@ -108,5 +112,13 @@ void Server::tick(float dt) {
 }
 
 void Server::sendWorldUpdates() {
+	uint8_t snapshotBuffer[128000];
 
+	BitStream snapshot(snapshotBuffer, sizeof(snapshotBuffer));
+	snapshot.writeU8(NETCMD_STC_WORLD_SNAPSHOT);
+	mWorld->writeToSnapshot(snapshot);
+
+	for (ClientConnection *conn : mConnections) {
+		conn->sendMessage(snapshot, false);
+	}
 }

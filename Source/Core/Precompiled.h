@@ -5,12 +5,18 @@
 #include <Windows.h>
 #endif
 
+#ifdef NULL
+#undef NULL
+#define NULL nullptr
+#endif
+
 #include <string>
 #include <cstdint>
 #include <cstdio>
 #include <cstdarg>
 #include <map>
 #include <vector>
+#include <functional>
 
 #include <glm/glm.hpp>
 

@@ -14,9 +14,15 @@ public:
 	int getWidth() const { return mWidth; }
 	int getHeight() const { return mHeight; }
 
+	int getRefCount() const { return mRefCount; }
+	void incrementRefs() { ++mRefCount; }
+	void decrementRefs() { --mRefCount; }
+
 private:
 	GLuint mName;
 
 	int mWidth;
 	int mHeight;
+
+	int mRefCount;
 };

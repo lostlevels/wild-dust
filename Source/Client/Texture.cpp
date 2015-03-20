@@ -8,6 +8,8 @@ Texture::Texture() {
 
 	mWidth = 0;
 	mHeight = 0;
+
+	mRefCount = 0;
 }
 
 Texture::~Texture() {

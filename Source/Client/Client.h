@@ -5,6 +5,7 @@
 
 class Renderer;
 class ClientWorld;
+class InputSystem;
 
 enum ClientNetworkState {
 	CLIENT_IDLE,
@@ -30,7 +31,10 @@ public:
 	int getWindowHeight() const { return mWindowHeight; }
 	bool isQuitSignaled() const { return mQuitSignaled; }
 
+	Renderer *getRenderer() const { return mRenderer; }
+
 private:
+	void sendPlayerInput();
 	void processNetworkEvents();
 	void handleConnectEvent();
 	void handleDisconnectEvent();
@@ -46,10 +50,12 @@ private:
 	Clock mTickTock;
 	Renderer *mRenderer;
 	ClientWorld *mWorld;
+	InputSystem *mInput;
 
 private:
 	ENetHost *mHost;
 	ENetPeer *mPeer;
 	ClientNetworkState mNetworkState;
 	Clock mConnectionClock;
+	Clock mSendInputClock;
 };

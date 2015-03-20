@@ -22,8 +22,19 @@ public:
 	int64_t readI64() const { return readAny<int64_t>(); }
 	uint64_t readU64() const { return readAny<uint64_t>(); }
 
+	void writeBytes(const void *data, int dataSize);
+	void readBytes(void *data, int dataSize) const;
+
+	void writeString(const std::string &str);
+	std::string readString() const;
+
 	template<class T> void writeAny(const T &x);
 	template<class T> T readAny() const;
+
+	uint8_t *getDataBuffer() { return mDataBuffer; }
+	const uint8_t *getDataBuffer() const { return mDataBuffer; }
+	int getCapacity() const { return mDataBufferSize; }
+	int getSize() const { return mDataBufferPosition; }
 
 private:
 	uint8_t *mDataBuffer;
@@ -51,6 +62,29 @@ inline int8_t BitStream::readI8() const {
 
 inline uint8_t BitStream::readU8() const {
 	return mDataBuffer[mDataBufferPosition++];
+}
+
+inline void BitStream::writeBytes(const void *data, int dataSize) {
+	memcpy(mDataBuffer + mDataBufferPosition, data, dataSize);
+	mDataBufferPosition += dataSize;
+}
+
+inline void BitStream::readBytes(void *data, int dataSize) const {
+	memcpy(data, mDataBuffer + mDataBufferPosition, dataSize);
+	mDataBufferPosition += dataSize;
+}
+
+inline void BitStream::writeString(const std::string &str) {
+	writeU16(str.size());
+	writeBytes(str.data(), str.size());
+}
+
+inline std::string BitStream::readString() const {
+	uint16_t size = readU16();
+	std::string str;
+	str.resize(size);
+	readBytes(&str[0], size);
+	return str;
 }
 
 template<class T> inline void BitStream::writeAny(const T &x) {

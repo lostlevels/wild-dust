@@ -16,7 +16,7 @@ void Shader::addInput(const std::string &name, int attribIndex) {
 static GLuint CompileShaderFromFile(GLenum type, const std::string &filename) {
 	FILE *file = fopen(filename.c_str(), "rb");
 	if (file == NULL) {
-		// TODO: Report error
+		gLogger.error("Could not open shader file from %s\n", filename.c_str());
 		return 0;
 	}
 
@@ -72,12 +72,10 @@ bool Shader::loadFromFile(const std::string &vsFilename, const std::string &fsFi
 
 	glLinkProgram(mName);
 
-	/*
 	glDetachShader(mName, vertexShader);
 	glDetachShader(mName, fragShader);
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragShader);
-	*/
 
 	GLint linkStatus;
 	glGetProgramiv(mName, GL_LINK_STATUS, &linkStatus);

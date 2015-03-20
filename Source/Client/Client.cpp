@@ -3,12 +3,18 @@
 #include "Renderer.h"
 #include "World.h"
 #include "Shared/Protocol.h"
+#include "EntityRegistration.h"
+#include "Input.h"
 
 Client::Client() {
 	mQuitSignaled = false;
 
 	mRenderer = new Renderer(this);
+
 	mWorld = new ClientWorld(this);
+	RegisterClientEntityTypes(mWorld);
+
+	mInput = new InputSystem(this);
 
 	mHost = enet_host_create(NULL, 1, 2, 0, 0);
 	if (mHost == NULL) {
@@ -19,6 +25,8 @@ Client::Client() {
 }
 
 Client::~Client() {
+	delete mInput;
+	delete mWorld;
 	delete mRenderer;
 }
 
@@ -98,11 +106,29 @@ void Client::tick() {
 	float dt = mTickTock.getElapsedSeconds();
 	mTickTock.reset();
 
+	// TODO: Don't hardcode this..
+	if (mSendInputClock.getElapsedSeconds() >= (1.0f / 128.0f)) {
+		sendPlayerInput();
+		mSendInputClock.reset();
+	}
+
 	processNetworkEvents();
 
 	mWorld->update(dt);
 
 	renderFrame();
+}
+
+void Client::sendPlayerInput() {
+	PlayerInput input = mInput->makeInputState();
+
+	uint8_t messageBuffer[128000];
+	BitStream message(messageBuffer, sizeof(messageBuffer));
+	message.writeU8(NETCMD_CTS_PLAYER_INPUT);
+	message.writeAny<PlayerInput>(input);
+
+	ENetPacket *packet = enet_packet_create(message.getDataBuffer(), message.getSize(), ENET_PACKET_FLAG_RELIABLE | ENET_PACKET_FLAG_NO_ALLOCATE);
+	enet_peer_send(mPeer, 0, packet);
 }
 
 void Client::processNetworkEvents() {
@@ -145,12 +171,15 @@ void Client::handleReceiveEvent(const BitStream &stream) {
 	uint8_t cmdID = stream.readU8();
 	switch (cmdID) {
 	case NETCMD_STC_WORLD_SNAPSHOT:
-		// TODO: Read world snapshot from stream
+		mWorld->readFromSnapshot(stream);
 		break;
 	}
 }
 
 void Client::renderFrame() {
 	mRenderer->beginFrame();
+
+	mWorld->draw();
+
 	mRenderer->endFrame();
 }

@@ -14,6 +14,9 @@ public:
 	void beginFrame();
 	void endFrame();
 
+	Texture *getTexture(const std::string &filename);
+	void freeUnreferencedTextures();
+
 	void drawQuad(Texture *texture, const Vec2 &position, float rotation, float scale, float z);
 	void drawQuad(Texture *texture, const Vec2 &position, const Recti &source, float rotation, float scale, float z);
 
@@ -23,8 +26,8 @@ private:
 	glm::mat4 mProjMatrix;
 	glm::mat4 mViewMatrix;
 	Shader *m2DShader;
-	Texture *mGrass;
 	GLuint mVAO;
 	GLuint mVBO;
 	GLuint mIBO;
+	std::map<std::string, Texture*> mTextureMap;
 };
