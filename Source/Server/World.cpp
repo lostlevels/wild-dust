@@ -94,6 +94,8 @@ void ServerWorld::deleteRemovedEntities() {
 }
 
 void ServerWorld::deleteAllEntities() {
+	deleteRemovedEntities();
+
 	for (SV_Entity *entity : mEntities) {
 		delete entity;
 	}

@@ -5,6 +5,7 @@
 #include "Shared/Protocol.h"
 #include "EntityRegistration.h"
 #include "Input.h"
+#include "Audio.h"
 
 Client::Client() {
 	mQuitSignaled = false;
@@ -16,6 +17,8 @@ Client::Client() {
 
 	mInput = new InputSystem(this);
 
+	mAudio = new AudioSystem();
+
 	mHost = enet_host_create(NULL, 1, 2, 0, 0);
 	if (mHost == NULL) {
 		gLogger.error("Could not create client host!\n");
@@ -25,6 +28,8 @@ Client::Client() {
 }
 
 Client::~Client() {
+	enet_host_destroy(mHost);
+	delete mAudio;
 	delete mInput;
 	delete mWorld;
 	delete mRenderer;
@@ -150,6 +155,7 @@ void Client::processNetworkEvents() {
 		case ENET_EVENT_TYPE_RECEIVE:
 			BitStream stream(evt.packet->data, evt.packet->dataLength);
 			handleReceiveEvent(stream);
+			enet_packet_destroy(evt.packet);
 			break;
 		}
 	}

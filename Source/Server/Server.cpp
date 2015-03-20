@@ -34,7 +34,12 @@ bool Server::init(int tickRate, int sendRate) {
 }
 
 void Server::shutdown() {
+	for (ClientConnection *conn : mConnections) {
+		delete conn;
+	}
+	mConnections.clear();
 
+	enet_host_destroy(mHost);
 }
 
 void Server::update() {
@@ -52,6 +57,7 @@ void Server::update() {
 	// Sends out world updates to clients
 	if (mSendClock.getElapsedSeconds() >= (1.0f / (float)mSendRate)) {
 		sendWorldUpdates();
+		mWorld->deleteRemovedEntities();
 		mSendClock.reset();
 	}
 
@@ -74,6 +80,7 @@ void Server::processNetworkEvents() {
 		case ENET_EVENT_TYPE_RECEIVE:
 			BitStream stream(evt.packet->data, evt.packet->dataLength);
 			handleReceiveEvent(evt.peer, stream);
+			enet_packet_destroy(evt.packet);
 			break;
 		}
 	}

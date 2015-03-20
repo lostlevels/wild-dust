@@ -93,15 +93,19 @@ void Renderer::shutdown() {
 	mTextureMap.clear();
 
 	delete m2DShader;
+
+	glDeleteVertexArrays(1, &mVAO);
+	glDeleteBuffers(1, &mIBO);
+	glDeleteBuffers(1, &mVBO);
 }
 
 void Renderer::beginFrame() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	mProjMatrix = glm::ortho(0.0f, (float)mContext->getWindowWidth(), (float)mContext->getWindowHeight(), 0.0f, 0.0f, 1.0f);
+	glm::mat4 projMatrix = glm::ortho(0.0f, (float)mContext->getWindowWidth(), (float)mContext->getWindowHeight(), 0.0f, 0.0f, 1.0f);
 
 	m2DShader->use();
-	m2DShader->setUniformMat4("gTransform", mProjMatrix);
+	m2DShader->setUniformMat4("gTransform", projMatrix);
 
 	PumpOpenGLErrors();
 }

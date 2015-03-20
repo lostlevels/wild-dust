@@ -6,6 +6,7 @@
 class Renderer;
 class ClientWorld;
 class InputSystem;
+class AudioSystem;
 
 enum ClientNetworkState {
 	CLIENT_IDLE,
@@ -51,6 +52,7 @@ private:
 	Renderer *mRenderer;
 	ClientWorld *mWorld;
 	InputSystem *mInput;
+	AudioSystem *mAudio;
 
 private:
 	ENetHost *mHost;

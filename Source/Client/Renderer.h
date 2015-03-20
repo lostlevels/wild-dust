@@ -23,8 +23,6 @@ public:
 private:
 	Client *mContext;
 	SDL_GLContext mGLContext;
-	glm::mat4 mProjMatrix;
-	glm::mat4 mViewMatrix;
 	Shader *m2DShader;
 	GLuint mVAO;
 	GLuint mVBO;
