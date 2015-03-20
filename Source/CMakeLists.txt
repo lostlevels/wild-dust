@@ -1,0 +1,6 @@
+file(GLOB SOURCES *.cpp)
+file(GLOB HEADERS *.h)
+include_directories(${SDL2_INCLUDEDIR})
+link_directories(${SDL2_LIBDIR})
+add_executable(Game ${WIN32_NOCONSOLE} ${SOURCES} ${HEADERS})
+target_link_libraries(Game ${SDL2_LIBS})

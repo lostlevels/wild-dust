@@ -1,0 +1,24 @@
+cmake_minimum_required(VERSION 2.8)
+project(CodeAGame2015)
+
+if (WIN32)
+	set(WIN32_NOCONSOLE WIN32)
+else()
+	set(WIN32_NOCONSOLE "")
+endif()
+
+if(WIN32)
+	set(SDL2_INCLUDEDIR ${CMAKE_SOURCE_DIR}/ThirdParty/SDL2/include)
+	set(SDL2_LIBDIR ${CMAKE_SOURCE_DIR}/ThirdParty/SDL2/lib/x86)
+	set(SDL2_LIBS SDL2.lib)
+else()
+	# TODO: Use find library stuff
+endif()
+
+set(OUTPUT_DIR ${CMAKE_SOURCE_DIR}/Binaries)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${OUTPUT_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${OUTPUT_DIR})
+
+add_subdirectory(Source)
