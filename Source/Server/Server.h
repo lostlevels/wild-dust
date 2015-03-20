@@ -1,9 +1,10 @@
 #pragma once
 
-#include <enet/enet.h>
 #include "Core/Clock.h"
+#include "Core/BitStream.h"
 
 class ServerWorld;
+class ClientConnection;
 
 class SERVER_API Server {
 public:
@@ -19,9 +20,9 @@ private:
 	void sendWorldUpdates();
 
 	void processNetworkEvents();
-	void handleConnectEvent();
-	void handleDisconnectEvent();
-	void handleReceiveEvent();
+	void handleConnectEvent(ENetPeer *peer);
+	void handleDisconnectEvent(ENetPeer *peer);
+	void handleReceiveEvent(ENetPeer *peer, const BitStream &stream);
 
 private:
 	int mTickRate;
@@ -34,4 +35,6 @@ private:
 
 private:
 	ENetHost *mHost;
+
+	std::vector<ClientConnection*> mConnections;
 };

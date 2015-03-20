@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/Clock.h"
+#include "Core/BitStream.h"
 
 class Renderer;
 class ClientWorld;
@@ -33,7 +34,7 @@ private:
 	void processNetworkEvents();
 	void handleConnectEvent();
 	void handleDisconnectEvent();
-	void handleReceiveEvent();
+	void handleReceiveEvent(const BitStream &stream);
 
 	void renderFrame();
 

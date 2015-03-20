@@ -1,6 +1,7 @@
 #include "Precompiled.h"
 #include "Server.h"
 #include "World.h"
+#include "ClientConnection.h"
 
 Server::Server() {
 	mWorld = new ServerWorld();
@@ -59,30 +60,47 @@ void Server::processNetworkEvents() {
 	while (enet_host_service(mHost, &evt, 0)) {
 		switch (evt.type) {
 		case ENET_EVENT_TYPE_CONNECT:
-			handleConnectEvent();
+			handleConnectEvent(evt.peer);
 			break;
 
 		case ENET_EVENT_TYPE_DISCONNECT:
-			handleDisconnectEvent();
+			handleDisconnectEvent(evt.peer);
 			break;
 
 		case ENET_EVENT_TYPE_RECEIVE:
-			handleReceiveEvent();
+			BitStream stream(evt.packet->data, evt.packet->dataLength);
+			handleReceiveEvent(evt.peer, stream);
 			break;
 		}
 	}
 }
 
-void Server::handleConnectEvent() {
-	gLogger.info("Client connected!\n");
+void Server::handleConnectEvent(ENetPeer *peer) {
+	ClientConnection *connection = new ClientConnection(peer);
+	mConnections.push_back(connection);
+
+	peer->data = connection;
+
+	char ipAddress[128];
+	enet_address_get_host_ip(&peer->address, ipAddress, sizeof(ipAddress));
+
+	gLogger.info("Client connected from %s:%d!\n", ipAddress, peer->address.port);
 }
 
-void Server::handleDisconnectEvent() {
+void Server::handleDisconnectEvent(ENetPeer *peer) {
+	for (auto it = mConnections.begin(); it != mConnections.end(); ++it) {
+		if (*it == peer->data) {
+			mConnections.erase(it);
+			break;
+		}
+	}
+
 	gLogger.info("Client disconnected!\n");
 }
 
-void Server::handleReceiveEvent() {
-
+void Server::handleReceiveEvent(ENetPeer *peer, const BitStream &stream) {
+	ClientConnection *conn = reinterpret_cast<ClientConnection*>(peer->data);
+	conn->handleCommand(stream);
 }
 
 void Server::tick(float dt) {

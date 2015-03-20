@@ -2,6 +2,7 @@
 #include "Client.h"
 #include "Renderer.h"
 #include "World.h"
+#include "Shared/Protocol.h"
 
 Client::Client() {
 	mQuitSignaled = false;
@@ -117,13 +118,14 @@ void Client::processNetworkEvents() {
 			break;
 
 		case ENET_EVENT_TYPE_RECEIVE:
-			handleReceiveEvent();
+			BitStream stream(evt.packet->data, evt.packet->dataLength);
+			handleReceiveEvent(stream);
 			break;
 		}
 	}
 
 	if (mNetworkState == CLIENT_CONNECTING && mConnectionClock.getElapsedSeconds() >= 5.0f) {
-		gLogger.info("Connection to server failed after 5 seconds, aborting.");
+		gLogger.info("Connection to server failed after 5 seconds, aborting.\n");
 		disconnectFromServer();
 	}
 }
@@ -139,8 +141,13 @@ void Client::handleDisconnectEvent() {
 	mPeer = NULL;
 }
 
-void Client::handleReceiveEvent() {
-	gLogger.info("Received stuff from server.\n");
+void Client::handleReceiveEvent(const BitStream &stream) {
+	uint8_t cmdID = stream.readU8();
+	switch (cmdID) {
+	case NETCMD_STC_WORLD_SNAPSHOT:
+		// TODO: Read world snapshot from stream
+		break;
+	}
 }
 
 void Client::renderFrame() {
