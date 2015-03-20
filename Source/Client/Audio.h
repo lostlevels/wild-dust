@@ -4,6 +4,7 @@
 #include <alc.h>
 
 class Music;
+class SoundEffect;
 
 class AudioSystem {
 public:
@@ -20,4 +21,5 @@ private:
 	ALCdevice *mDevice;
 	ALCcontext *mContext;
 	Music *mAnnoying;
+	SoundEffect *mTeleport;
 };

@@ -1,6 +1,7 @@
 #include "Precompiled.h"
 #include "Audio.h"
 #include "Music.h"
+#include "SoundEffect.h"
 
 AudioSystem::AudioSystem() {
 	mDevice = NULL;
@@ -28,14 +29,17 @@ bool AudioSystem::init() {
 
 	mAnnoying = new Music();
 	mAnnoying->openOggVorbisStream("../Content/Music/short.ogg");
-	mAnnoying->play();
-	mAnnoying->mLoops = -1;
+
+	mTeleport = new SoundEffect();
+	mTeleport->loadWave("../Content/SFX/teleport.wav");
+	mTeleport->play();
 
 	return true;
 }
 
 void AudioSystem::shutdown() {
 	delete mAnnoying;
+	delete mTeleport;
 
 	if (mDevice) {
 		if (mContext) {
