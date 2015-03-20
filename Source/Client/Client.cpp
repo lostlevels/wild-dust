@@ -1,11 +1,13 @@
 #include "Precompiled.h"
 #include "Client.h"
 #include "Renderer.h"
+#include "World.h"
 
 Client::Client() {
 	mQuitSignaled = false;
 
 	mRenderer = new Renderer(this);
+	mWorld = new ClientWorld(this);
 
 	mHost = enet_host_create(NULL, 1, 2, 0, 0);
 	if (mHost == NULL) {
@@ -47,9 +49,11 @@ bool Client::init() {
 }
 
 void Client::shutdown() {
-	disconnectFromServer();
+	mWorld->deleteAllEntities();
 
 	mRenderer->shutdown();
+
+	disconnectFromServer();
 
 	SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
@@ -95,6 +99,8 @@ void Client::tick() {
 
 	processNetworkEvents();
 
+	mWorld->update(dt);
+
 	renderFrame();
 }
 
@@ -124,10 +130,13 @@ void Client::processNetworkEvents() {
 
 void Client::handleConnectEvent() {
 	gLogger.info("Connection to server succeeded.\n");
+	mNetworkState = CLIENT_CONNECTED;
 }
 
 void Client::handleDisconnectEvent() {
 	gLogger.info("Disconnected from server.\n");
+	mNetworkState = CLIENT_IDLE;
+	mPeer = NULL;
 }
 
 void Client::handleReceiveEvent() {

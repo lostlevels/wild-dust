@@ -3,6 +3,7 @@
 #include "Core/Clock.h"
 
 class Renderer;
+class ClientWorld;
 
 enum ClientNetworkState {
 	CLIENT_IDLE,
@@ -41,8 +42,9 @@ private:
 	int mWindowWidth;
 	int mWindowHeight;
 	bool mQuitSignaled;
-	Renderer *mRenderer;
 	Clock mTickTock;
+	Renderer *mRenderer;
+	ClientWorld *mWorld;
 
 private:
 	ENetHost *mHost;

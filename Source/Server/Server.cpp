@@ -1,5 +1,14 @@
 #include "Precompiled.h"
 #include "Server.h"
+#include "World.h"
+
+Server::Server() {
+	mWorld = new ServerWorld();
+}
+
+Server::~Server() {
+	delete mWorld;
+}
 
 bool Server::init(int tickRate, int sendRate) {
 	mTickRate = tickRate;
@@ -14,6 +23,7 @@ bool Server::init(int tickRate, int sendRate) {
 		gLogger.error("Could not create ENet host.\n");
 		return false;
 	}
+
 
 	return true;
 }
@@ -30,7 +40,7 @@ void Server::update() {
 	mTimeLeftToSimulate += dt;
 	const  float tickTimestep = 1.0f / (float)mTickRate;
 	while (mTimeLeftToSimulate >= tickTimestep) {
-		tick();
+		tick(tickTimestep);
 		mTimeLeftToSimulate -= tickTimestep;
 	}
 
@@ -75,8 +85,8 @@ void Server::handleReceiveEvent() {
 
 }
 
-void Server::tick() {
-
+void Server::tick(float dt) {
+	mWorld->update(dt);
 }
 
 void Server::sendWorldUpdates() {

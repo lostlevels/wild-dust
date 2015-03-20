@@ -10,6 +10,7 @@
 #include <cstdio>
 #include <cstdarg>
 #include <map>
+#include <vector>
 
 #include <glm/glm.hpp>
 
