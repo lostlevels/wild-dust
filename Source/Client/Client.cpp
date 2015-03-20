@@ -15,12 +15,15 @@ Client::~Client() {
 bool Client::init() {
 	SDL_Init(SDL_INIT_VIDEO);
 
+	mWindowWidth = 1280;
+	mWindowHeight = 720;
+
 	mGameWindow = SDL_CreateWindow(
 		"Code a Game 2015",
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
-		1280,
-		720,
+		mWindowWidth,
+		mWindowHeight,
 		SDL_WINDOW_OPENGL);
 
 	if (mGameWindow == NULL)

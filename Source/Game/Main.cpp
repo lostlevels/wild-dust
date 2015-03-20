@@ -2,6 +2,8 @@
 #define WIN32_LEAN_AND_MEAN 1
 #include <Windows.h>
 #endif
+#include "Core/Precompiled.h"
+#include "Core/Core.h"
 #include "Client/Precompiled.h"
 #include "Client/Client.h"
 #include "Server/Precompiled.h"
@@ -15,6 +17,8 @@ int main(int argc, char *argv[])
 #endif
 {
 	enet_initialize();
+
+	gCore.init();
 
 	Server *server = new Server();
 	server->init();
@@ -33,6 +37,8 @@ int main(int argc, char *argv[])
 
 	client->shutdown();
 	delete client;
+
+	gCore.shutdown();
 
 	enet_deinitialize();
 

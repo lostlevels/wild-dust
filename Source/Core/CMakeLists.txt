@@ -1,0 +1,5 @@
+file(GLOB SOURCES *.cpp)
+file(GLOB HEADERS *.h)
+add_library(Core SHARED ${SOURCES} ${HEADERS})
+add_definitions(-DBUILDING_CORE)
+target_link_libraries(Core)
