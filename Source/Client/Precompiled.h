@@ -3,6 +3,7 @@
 #include "Core/Precompiled.h"
 
 #include <SDL.h>
+
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
