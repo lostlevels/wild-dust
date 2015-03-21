@@ -1,0 +1,5 @@
+file(GLOB SOURCES *.cpp)
+file(GLOB HEADERS *.h)
+add_executable(DedicatedServer ${SOURCES} ${HEADERS})
+add_definitions(-DDEDICATED)
+target_link_libraries(DedicatedServer Server)

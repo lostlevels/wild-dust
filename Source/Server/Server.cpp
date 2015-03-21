@@ -18,13 +18,15 @@ Server::~Server() {
 	delete mWorld;
 }
 
-bool Server::init(int tickRate, int sendRate) {
+bool Server::init(int portNumber, int tickRate, int sendRate, int maxPlayers) {
+	mPortNumber = portNumber;
 	mTickRate = tickRate;
 	mSendRate = sendRate;
+	mMaxPlayers = maxPlayers;
 	
 	ENetAddress hostAddr;
 	hostAddr.host = ENET_HOST_ANY;
-	hostAddr.port = 5000;
+	hostAddr.port = portNumber;
 
 	mHost = enet_host_create(&hostAddr, 32, 2, 0, 0);
 	if (mHost == NULL) {
@@ -34,10 +36,14 @@ bool Server::init(int tickRate, int sendRate) {
 
 	mTimeLeftToSimulate = 0.0f;
 
+	gLogger.info("Server is now listening on port %d.\n", portNumber);
+
 	return true;
 }
 
 void Server::shutdown() {
+	gLogger.info("Server is shutting down..\n");
+
 	for (ClientConnection *conn : mConnections) {
 		delete conn;
 	}
@@ -74,7 +80,12 @@ void Server::processNetworkEvents() {
 	while (enet_host_service(mHost, &evt, 0)) {
 		switch (evt.type) {
 		case ENET_EVENT_TYPE_CONNECT:
-			handleConnectEvent(evt.peer);
+			if (getNumConnectedPlayers() >= mMaxPlayers) {
+				enet_peer_disconnect_now(evt.peer, 0);
+			}
+			else {
+				handleConnectEvent(evt.peer);
+			}
 			break;
 
 		case ENET_EVENT_TYPE_DISCONNECT:
@@ -98,8 +109,7 @@ void Server::handleConnectEvent(ENetPeer *peer) {
 
 	char ipAddress[128];
 	enet_address_get_host_ip(&peer->address, ipAddress, sizeof(ipAddress));
-
-	gLogger.info("Client connected from %s:%d!\n", ipAddress, peer->address.port);
+	gLogger.info("Client connected from %s:%d.\n", ipAddress, peer->address.port);
 }
 
 void Server::handleDisconnectEvent(ENetPeer *peer) {
@@ -111,7 +121,9 @@ void Server::handleDisconnectEvent(ENetPeer *peer) {
 		}
 	}
 
-	gLogger.info("Client disconnected!\n");
+	char ipAddress[128];
+	enet_address_get_host_ip(&peer->address, ipAddress, sizeof(ipAddress));
+	gLogger.info("Client with address %s:%d disconnected.\n", ipAddress, peer->address.port);
 }
 
 void Server::handleReceiveEvent(ENetPeer *peer, const BitStream &stream) {

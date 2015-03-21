@@ -1,7 +1,3 @@
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN 1
-#include <Windows.h>
-#endif
 #include "Core/Precompiled.h"
 #include "Core/Core.h"
 #include "Core/Config.h"
@@ -44,8 +40,16 @@ int main(int argc, char *argv[])
 #else
 	if (ArgvContains(argv, argc, "-server")) {
 #endif
+		Config listenCfg;
+		listenCfg.loadFromFile("Config/Listen.cfg");
+
 		listenServer = new Server();
-		listenServer->init(100, 100);
+		listenServer->init(
+			listenCfg.getInt("PortNumber", 5000),
+			listenCfg.getInt("TickRate", 64),
+			listenCfg.getInt("SendRate", 64),
+			listenCfg.getInt("MaxPlayers", 64)
+			);
 	}
 	
 	Client *client = new Client();

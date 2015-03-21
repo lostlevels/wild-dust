@@ -44,7 +44,7 @@ bool Client::init() {
 	SDL_Init(SDL_INIT_VIDEO);
 	TTF_Init();
 
-	mSettings.loadFromFile("Game.cfg");
+	mSettings.loadFromFile("Config/Game.cfg");
 
 	mWindowWidth = mSettings.getInt("ResolutionWidth", 640);
 	mWindowHeight = mSettings.getInt("ResolutionHeight", 480);

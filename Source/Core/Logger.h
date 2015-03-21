@@ -6,8 +6,13 @@ public:
 	void init();
 	void shutdown();
 
+	void useStdio() { mUsingStdio = true; }
+
 	void info(const char *format, ...);
 	void error(const char *format, ...);
+
+private:
+	bool mUsingStdio;
 };
 
 extern CORE_API Logger gLogger;
