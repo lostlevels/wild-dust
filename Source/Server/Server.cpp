@@ -81,7 +81,7 @@ void Server::processNetworkEvents() {
 		switch (evt.type) {
 		case ENET_EVENT_TYPE_CONNECT:
 			if (getNumConnectedPlayers() >= mMaxPlayers) {
-				enet_peer_disconnect_now(evt.peer, 0);
+				handleRejectConnectEvent(evt.peer);
 			}
 			else {
 				handleConnectEvent(evt.peer);
@@ -110,6 +110,12 @@ void Server::handleConnectEvent(ENetPeer *peer) {
 	char ipAddress[128];
 	enet_address_get_host_ip(&peer->address, ipAddress, sizeof(ipAddress));
 	gLogger.info("Client connected from %s:%d.\n", ipAddress, peer->address.port);
+}
+
+void Server::handleRejectConnectEvent(ENetPeer *peer) {
+	char ipAddress[128];
+	enet_address_get_host_ip(&peer->address, ipAddress, sizeof(ipAddress));
+	gLogger.info("Client with address %s:%d was rejected (server is full!).\n", ipAddress, peer->address.port);
 }
 
 void Server::handleDisconnectEvent(ENetPeer *peer) {

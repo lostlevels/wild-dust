@@ -30,6 +30,7 @@ private:
 
 	void processNetworkEvents();
 	void handleConnectEvent(ENetPeer *peer);
+	void handleRejectConnectEvent(ENetPeer *peer);
 	void handleDisconnectEvent(ENetPeer *peer);
 	void handleReceiveEvent(ENetPeer *peer, const BitStream &stream);
 
