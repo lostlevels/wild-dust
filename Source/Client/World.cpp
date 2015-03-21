@@ -42,6 +42,8 @@ void ClientWorld::deleteRemovedEntities() {
 }
 
 void ClientWorld::deleteAllEntities() {
+	deleteRemovedEntities();
+
 	for (CL_Entity *entity : mEntities) {
 		delete entity;
 	}
