@@ -18,6 +18,7 @@ bool ArgvContains(char *argv[], int argc, const char *what) {
 }
 #endif
 
+
 #ifdef _WIN32
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 #else

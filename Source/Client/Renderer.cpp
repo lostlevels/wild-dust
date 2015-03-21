@@ -50,7 +50,7 @@ Renderer::Renderer(Client *context) {
 bool Renderer::init() {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	mGLContext = SDL_GL_CreateContext(mContext->getGameWindow());
 	SDL_GL_MakeCurrent(mContext->getGameWindow(), mGLContext);
 
@@ -59,18 +59,21 @@ bool Renderer::init() {
 		return false;
 
 	PumpOpenGLErrors(false);
-
+    
+    bool shaderLoaded;
 	m2DShader = new Shader();
 	m2DShader->addInput("iPosition", 0);
 	m2DShader->addInput("iTexCoord", 1);
 	m2DShader->addInput("iColor", 2);
-	m2DShader->loadFromFile("../Content/Shaders/2D.vert", "../Content/Shaders/2D.frag");
-
+	shaderLoaded = m2DShader->loadFromFile("../Content/Shaders/2D.vert", "../Content/Shaders/2D.frag");
+    assert(shaderLoaded);
+    
 	mFontShader = new Shader();
 	mFontShader->addInput("iPosition", 0);
 	mFontShader->addInput("iTexCoord", 1);
-	mFontShader->loadFromFile("../Content/Shaders/Font.vert", "../Content/Shaders/Font.frag");
-
+	shaderLoaded = mFontShader->loadFromFile("../Content/Shaders/Font.vert", "../Content/Shaders/Font.frag");
+    assert(shaderLoaded);
+    
 	return true;
 }
 

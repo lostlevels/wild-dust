@@ -64,8 +64,11 @@ bool Client::init() {
 
 	if (mGameWindow == NULL)
 		return false;
-
-	if (!mRenderer->init())
+    
+    bool rendererInited = mRenderer->init();
+    assert(rendererInited);
+    
+	if (!rendererInited)
 		return false;
 
 	mAudio->init();
