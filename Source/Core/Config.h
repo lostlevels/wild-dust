@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef _WIN32
+#define stricmp strcmp
+#endif
+
 class CORE_API Config {
 public:
 	Config();

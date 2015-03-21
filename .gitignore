@@ -8,3 +8,4 @@ Build/
 *.dll
 *.ilk
 *.pdb
+.DS_Store
