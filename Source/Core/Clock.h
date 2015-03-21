@@ -12,6 +12,6 @@ private:
 	LARGE_INTEGER mCounterFrequency;
 	LARGE_INTEGER mLastSet;
 #else
-
+    long mLastTime;
 #endif
 };
