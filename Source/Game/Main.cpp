@@ -7,6 +7,9 @@
 #include "Server/Server.h"
 #include <enet/enet.h>
 
+#include "Core/EventEmitter.h"
+#include "Network/Connection.h"
+
 #ifndef _WIN32
 bool ArgvContains(char *argv[], int argc, const char *what) {
 	for (int i = 1; i < argc; ++i) {
@@ -29,7 +32,21 @@ int main(int argc, char *argv[])
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
 #endif
-
+	
+	// Note for tamatias - this is only me testing if events are firing - feel free to delete
+	class Foo : public EventEmitter {
+	public:
+		void publish() {
+			emit<const std::string&>("event", "dataaaaa");
+		}
+	};
+	Foo foo;
+	foo.on("event", [](const std::string &data) {
+		printf("it is %s\n", data.c_str());
+	});
+	foo.publish();
+	//////
+	
 	Server *listenServer = NULL;
 
 	enet_initialize();
@@ -55,10 +72,17 @@ int main(int argc, char *argv[])
 	
 	Client *client = new Client();
 	client->init();
-	client->connectToServer("127.0.0.1", 5000);
-	
+	// client->connectToServer("127.0.0.1", 5000);
+	Connection s;
+	Connection c;
+	s.serve(1336);
+	c.connect("127.0.0.1", 1336);
+
 	while (!client->isQuitSignaled())
 	{
+		s.processNetworkEvents();
+		c.processNetworkEvents();
+		
 		if (listenServer) {
 			listenServer->update();
 		}

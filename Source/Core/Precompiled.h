@@ -41,3 +41,4 @@ typedef Vec4 Color;
 
 #include "Logger.h"
 #include "Rect.h"
+#include "EventEmitter.h"

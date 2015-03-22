@@ -137,13 +137,13 @@ void Client::tick() {
 	float dt = mTickTock.getElapsedSeconds();
 	mTickTock.reset();
 
-	// TODO: Don't hardcode this..
-	if (mSendInputClock.getElapsedSeconds() >= (1.0f / 128.0f)) {
-		sendPlayerInput();
-		mSendInputClock.reset();
-	}
+	// // TODO: Don't hardcode this..
+	// if (mSendInputClock.getElapsedSeconds() >= (1.0f / 128.0f)) {
+	// 	sendPlayerInput();
+	// 	mSendInputClock.reset();
+	// }
 
-	processNetworkEvents();
+	// processNetworkEvents();
 
 	mWorld->update(dt);
 

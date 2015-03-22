@@ -2,7 +2,9 @@
 
 class BitStream {
 public:
-	BitStream(uint8_t *dataBuffer, int dataBufferSize);
+	BitStream(uint8_t *dataBuffer, int dataBufferSize, bool dataBufferAllocated = false);
+	BitStream(int dataBufferSize);
+	~BitStream();
 
 	void writeI8(int8_t x);
 	void writeU8(uint8_t x);
@@ -42,12 +44,29 @@ private:
 	uint8_t *mDataBuffer;
 	int mDataBufferSize;
 	mutable int mDataBufferPosition;
+	bool mMemoryAllocated;
+
+	// Prevent copy constructor and assignment since don't want to deal with deleting memory twice right now.
+	BitStream(const BitStream&) = delete;
+    const BitStream& operator = (const BitStream&) = delete;
 };
 
-inline BitStream::BitStream(uint8_t *dataBuffer, int dataBufferSize) {
+inline BitStream::BitStream(uint8_t *dataBuffer, int dataBufferSize, bool dataBufferAllocated) {
 	mDataBuffer = dataBuffer;
 	mDataBufferSize = dataBufferSize;
 	mDataBufferPosition = 0;
+	mMemoryAllocated = dataBufferAllocated;
+}
+
+inline BitStream::BitStream(int dataBufferSize) : BitStream(new uint8_t[dataBufferSize], dataBufferSize, true) {
+
+}
+
+inline BitStream::~BitStream() {
+	if (mMemoryAllocated) {
+		delete [] mDataBuffer;
+		mDataBuffer = nullptr;
+	}
 }
 
 inline void BitStream::writeI8(int8_t x) {

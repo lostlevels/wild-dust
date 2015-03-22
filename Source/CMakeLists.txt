@@ -14,6 +14,7 @@ link_directories(
 	${OPENAL_LIBDIR})
 
 add_subdirectory(Core)
+add_subdirectory(Network)
 add_subdirectory(Client)
 add_subdirectory(Server)
 add_subdirectory(Game)
