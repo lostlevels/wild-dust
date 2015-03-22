@@ -12,6 +12,7 @@ public:
 	void writeU32(uint32_t x) { writeAny(x); }
 	void writeI64(int64_t x) { writeAny(x); }
 	void writeU64(uint64_t x) { writeAny(x); }
+	void writeFloat(float x) { writeAny(x);}
 
 	int8_t readI8() const;
 	uint8_t readU8() const;
@@ -21,6 +22,7 @@ public:
 	uint32_t readU32() const { return readAny<uint32_t>(); }
 	int64_t readI64() const { return readAny<int64_t>(); }
 	uint64_t readU64() const { return readAny<uint64_t>(); }
+	float readFloat() const { return readAny<float>(); }
 
 	void writeBytes(const void *data, int dataSize);
 	void readBytes(void *data, int dataSize) const;
