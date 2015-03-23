@@ -15,7 +15,7 @@ void SV_Player::createPhysicsBody() {
 	mPhysBody = physWorld->CreateBody(&bodyDef);
 
 	b2PolygonShape shape;
-	shape.SetAsBox(16, 16);
+	shape.SetAsBox(16, 32);
 
 	b2FixtureDef fixtureDef;
 	fixtureDef.shape = &shape;
@@ -29,8 +29,8 @@ void SV_Player::update(float dt) {
 
 void SV_Player::writeToStream(BitStream &stream) {
 	b2Vec2 position = mPhysBody->GetPosition();
-	stream.writeFloat(position.x-16);
-	stream.writeFloat(position.y-16);
+	stream.writeFloat(position.x);
+	stream.writeFloat(position.y);
 }
 
 void SV_Player::moveLeft() {

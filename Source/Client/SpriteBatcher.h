@@ -26,6 +26,7 @@ public:
 	void submit();
 
 	// Adds sprites to the batch, they will be cleared out the next frame
+	void addSprite(const Vec2 &position, const Vec2 &size, const Recti &source, const Color &tint);
 	void addSprite(const Vec2 &position, const Recti &source, const Color &tint);
 	void addSprite(const Vec2 &position, const Color &tint);
 

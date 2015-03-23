@@ -89,7 +89,7 @@ void SpriteBatcher::submit() {
 	}
 }
 
-void SpriteBatcher::addSprite(const Vec2 &position, const Recti &source, const Color &tint) {
+void SpriteBatcher::addSprite(const Vec2 &position, const Vec2 &size, const Recti &source, const Color &tint) {
 	SpriteVertex *v;
 
 	float uvLeft = (float)source.x / (float)mTexture->getWidth();
@@ -109,7 +109,7 @@ void SpriteBatcher::addSprite(const Vec2 &position, const Recti &source, const C
 	++mVertexData;
 
 	v = mVertexData;
-	v->x = position.x + source.w;
+	v->x = position.x + size.x;
 	v->y = position.y;
 	v->u = uvRight;
 	v->v = uvTop;
@@ -120,8 +120,8 @@ void SpriteBatcher::addSprite(const Vec2 &position, const Recti &source, const C
 	++mVertexData;
 
 	v = mVertexData;
-	v->x = position.x + source.w;
-	v->y = position.y + source.h;
+	v->x = position.x + size.x;
+	v->y = position.y + size.y;
 	v->u = uvRight;
 	v->v = uvBottom;
 	v->r = tint.r;
@@ -132,7 +132,7 @@ void SpriteBatcher::addSprite(const Vec2 &position, const Recti &source, const C
 
 	v = mVertexData;
 	v->x = position.x;
-	v->y = position.y + source.h;
+	v->y = position.y + size.y;
 	v->u = uvLeft;
 	v->v = uvBottom;
 	v->r = tint.r;
@@ -162,6 +162,10 @@ void SpriteBatcher::addSprite(const Vec2 &position, const Recti &source, const C
 	++mIndexData;
 
 	++mSpriteCount;
+}
+
+void SpriteBatcher::addSprite(const Vec2 &position, const Recti &source, const Color &tint) {
+	addSprite(position, Vec2(source.w, source.h), source, tint);
 }
 
 void SpriteBatcher::addSprite(const Vec2 &position, const Color &tint) {

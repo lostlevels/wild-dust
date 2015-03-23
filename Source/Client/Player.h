@@ -3,7 +3,8 @@
 #include "Entity.h"
 #include "CameraTarget.h"
 
-class Texture;
+class AnimationSheet;
+class Animation;
 
 class CL_Player : public CL_Entity, public ICameraTarget {
 public:
@@ -19,7 +20,14 @@ public:
 	virtual Vec2 ICameraTarget_getPosition() const;
 	virtual Vec2 ICameraTarget_getSize() const;
 
+	const Vec2 &getPosition() const { return mPosition; }
+
+protected:
+	AnimationSheet *mAnimSheet;
+	Animation *mIdleAnimation;
+	Animation *mWalkAnimation;
+	Animation *mShootAnimation;
+
 private:
-	Texture *mGrass;
 	Vec2 mPosition;
 };

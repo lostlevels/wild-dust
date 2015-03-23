@@ -4,13 +4,19 @@
 #include "Renderer.h"
 #include "Texture.h"
 #include "SpriteBatcher.h"
+#include "AnimationSheet.h"
 
 CL_Player::CL_Player(Client *client) : CL_Entity(client) {
-	mGrass = client->getRenderer()->getTexture("../Content/Textures/Characters/Cowboy.png");
+	mAnimSheet = new AnimationSheet(client->getRenderer());
+	mAnimSheet->loadFromFile("../Content/Textures/Characters/Cowboy.png", 18, 32);
+	
+	mIdleAnimation = mAnimSheet->createAnimation("Idle", { 0 });
+	mWalkAnimation = mAnimSheet->createAnimation("Walk", { 1, 2, 3, 4 });
+	mShootAnimation = mAnimSheet->createAnimation("Shoot", { 9, 10, 11 });
 }
 
 CL_Player::~CL_Player() {
-	mGrass->decrementRefs();
+	delete mAnimSheet;
 }
 
 void CL_Player::readFromStream(const BitStream &stream) {
@@ -19,13 +25,11 @@ void CL_Player::readFromStream(const BitStream &stream) {
 }
 
 void CL_Player::update(float dt) {
-
+	mWalkAnimation->animate(dt);
 }
 
 void CL_Player::draw() {
-	Renderer *renderer = mClient->getRenderer();
-	SpriteBatcher *batcher = renderer->getSpriteBatcher(mGrass, BLEND_ALPHA);
-	batcher->addSprite(mPosition, Color(1.0f));
+	mWalkAnimation->draw(mPosition, Vec2(16, 32), Color(1.0f));
 }
 
 Vec2 CL_Player::ICameraTarget_getPosition() const {
@@ -33,5 +37,5 @@ Vec2 CL_Player::ICameraTarget_getPosition() const {
 }
 
 Vec2 CL_Player::ICameraTarget_getSize() const {
-	return Vec2(mGrass->getWidth(), mGrass->getHeight());
+	return Vec2(16, 16);
 }
