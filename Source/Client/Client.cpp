@@ -9,6 +9,7 @@
 #include "GUI.h"
 #include <SDL_ttf.h>
 
+
 Client::Client() {
 	mQuitSignaled = false;
 

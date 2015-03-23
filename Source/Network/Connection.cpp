@@ -54,7 +54,7 @@ void Connection::processClient() {
 			stream.rewind();
 			onServerData(stream);
 			emit<const BitStream&>(event, stream);
-			
+
 			enet_packet_destroy(evt.packet);
 			break;
 		}

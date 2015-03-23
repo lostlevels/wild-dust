@@ -29,9 +29,7 @@ public:
 
 	const std::string &getName() const { return mPlayerName; }
 	float getPing() const { return mPing; }
-	
 	float getServerTime() const;
-	
 private:
 	Clock mClock;
 	ENetHost *mHost;
