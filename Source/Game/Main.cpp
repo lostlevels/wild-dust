@@ -49,7 +49,8 @@ int main(int argc, char *argv[])
 			listenCfg.getInt("PortNumber", 5000),
 			listenCfg.getInt("TickRate", 64),
 			listenCfg.getInt("SendRate", 64),
-			listenCfg.getInt("MaxPlayers", 64)
+			listenCfg.getInt("MaxPlayers", 64),
+			listenCfg.getString("ServerMap", "Desert.tmx")
 			);
 	}
 	

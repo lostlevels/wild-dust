@@ -6,6 +6,7 @@ class Client;
 class Shader;
 class Texture;
 class SpriteBatcher;
+class Camera;
 
 class Renderer {
 public:
@@ -14,8 +15,10 @@ public:
 	bool init();
 	void shutdown();
 
-	void beginFrame();
+	void beginFrame(Camera *camera);
 	void endFrame();
+
+	void setCameraPosition(const Vec2 &pos);
 
 	Texture *getTexture(const std::string &filename);
 	void freeUnreferencedTextures();
@@ -31,4 +34,5 @@ private:
 	Shader *mFontShader;
 	std::map<std::string, Texture*> mTextureMap;
 	std::vector<SpriteBatcher*> mSpriteBatchers;
+	Vec2 mCameraPos;
 };

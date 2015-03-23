@@ -6,6 +6,7 @@
 #include "SpriteBatcher.h"
 #include "Font.h"
 #include "GUI.h"
+#include "Camera.h"
 
 static void PumpOpenGLErrors(bool report = true) {
 	while (GLenum error = glGetError()) {
@@ -92,16 +93,17 @@ void Renderer::shutdown() {
 	delete m2DShader;
 }
 
-void Renderer::beginFrame() {
+void Renderer::beginFrame(Camera *camera) {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glm::mat4 projMatrix = glm::ortho(0.0f, (float)mContext->getWindowWidth(), (float)mContext->getWindowHeight(), 0.0f, 0.0f, 1.0f);
+	glm::mat4 viewProjMatrix = projMatrix * camera->getViewMatrix();
 
 	mFontShader->use();
 	mFontShader->setUniformMat4("gTransform", projMatrix);
 
 	m2DShader->use();
-	m2DShader->setUniformMat4("gTransform", projMatrix);
+	m2DShader->setUniformMat4("gTransform", viewProjMatrix);
 
 	for (SpriteBatcher *batcher : mSpriteBatchers) {
 		batcher->prepare();

@@ -41,7 +41,8 @@ int main(int argc, char *argv[])
 			cfg.getInt("PortNumber", 5000),
 			cfg.getInt("TickRate", 64),
 			cfg.getInt("SendRate", 64),
-			cfg.getInt("MaxPlayers", 64)
+			cfg.getInt("MaxPlayers", 64),
+			cfg.getString("MapName", "Desert.tmx")
 			))
 	{
 		return EXIT_FAILURE;

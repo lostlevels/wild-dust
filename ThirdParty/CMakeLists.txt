@@ -1,2 +1,5 @@
 add_subdirectory(ENet)
 add_subdirectory(Box2D)
+add_subdirectory(zlib)
+add_subdirectory(TinyXML2)
+add_subdirectory(tmx-parser)

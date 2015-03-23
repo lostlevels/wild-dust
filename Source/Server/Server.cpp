@@ -4,21 +4,25 @@
 #include "ClientConnection.h"
 #include "Shared/Protocol.h"
 #include "EntityRegistration.h"
+#include "Map.h"
 
 Server::Server() {
 	mWorld = new ServerWorld(this);
 	RegisterServerEntityTypes(mWorld);
 
-	b2Vec2 gravity(0.0f, 100.0f);
+	b2Vec2 gravity(0.0f, 1000.0f);
 	mPhysicsWorld = new b2World(gravity);
+
+	mMap = new ServerMap(this);
 }
 
 Server::~Server() {
+	delete mMap;
 	delete mPhysicsWorld;
 	delete mWorld;
 }
 
-bool Server::init(int portNumber, int tickRate, int sendRate, int maxPlayers) {
+bool Server::init(int portNumber, int tickRate, int sendRate, int maxPlayers, const std::string &mapName) {
 	mPortNumber = portNumber;
 	mTickRate = tickRate;
 	mSendRate = sendRate;
@@ -33,6 +37,8 @@ bool Server::init(int portNumber, int tickRate, int sendRate, int maxPlayers) {
 		gLogger.error("Could not create ENet host.\n");
 		return false;
 	}
+
+	changeMap(mapName);
 
 	mTimeLeftToSimulate = 0.0f;
 
@@ -50,6 +56,21 @@ void Server::shutdown() {
 	mConnections.clear();
 
 	enet_host_destroy(mHost);
+}
+
+void Server::changeMap(const std::string &mapName) {
+	if (mMap->loadFromFile(mapName) == false) {
+		return;
+	}
+
+	uint8_t messageBuffer[2048];
+	BitStream message(messageBuffer, sizeof(messageBuffer));
+	message.writeU8(NETCMD_STC_LOAD_MAP);
+	message.writeString(mapName);
+
+	for (ClientConnection *conn : mConnections) {
+		conn->sendMessage(message, true);
+	}
 }
 
 void Server::update() {
@@ -104,6 +125,23 @@ void Server::processNetworkEvents() {
 void Server::handleConnectEvent(ENetPeer *peer) {
 	ClientConnection *connection = new ClientConnection(this, peer);
 	mConnections.push_back(connection);
+
+	if (mMap->isLoaded()) {
+		uint8_t messageBuffer[2048];
+		BitStream message(messageBuffer, sizeof(messageBuffer));
+		message.writeU8(NETCMD_STC_LOAD_MAP);
+		message.writeString(mMap->getName());
+		connection->sendMessage(message, true);
+	}
+
+	// Send baseline snapshot (reliably!)
+	uint8_t snapshotBuffer[128000];
+	BitStream snapshot(snapshotBuffer, sizeof(snapshotBuffer));
+	snapshot.writeU8(NETCMD_STC_WORLD_SNAPSHOT);
+	mWorld->writeToSnapshot(snapshot);
+	connection->sendMessage(snapshot, true);
+
+	connection->sendPlayerEntityID();
 
 	peer->data = connection;
 

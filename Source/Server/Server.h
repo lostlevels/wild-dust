@@ -5,17 +5,22 @@
 
 class ServerWorld;
 class ClientConnection;
+class ServerMap;
 
 class SERVER_API Server {
 public:
 	Server();
 	~Server();
 
-	bool init(int portNumber, int tickRate, int sendRate, int maxPlayers);
+	bool init(int portNumber, int tickRate, int sendRate, int maxPlayers, const std::string &mapName);
 	void shutdown();
+
+	void changeMap(const std::string &mapName);
+
 	void update();
 
 	ServerWorld *getWorld() { return mWorld; }
+	b2World *getPhysicsWorld() { return mPhysicsWorld; }
 
 	int getPortNumber() const { return mPortNumber; }
 	int getTickRate() const { return mTickRate; }
@@ -45,6 +50,8 @@ private:
 
 	ServerWorld *mWorld;
 	b2World *mPhysicsWorld;
+
+	ServerMap *mMap;
 
 private:
 	ENetHost *mHost;

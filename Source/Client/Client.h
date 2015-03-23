@@ -6,14 +6,18 @@
 
 class Renderer;
 class ClientWorld;
+class ClientMap;
 class InputSystem;
 class AudioSystem;
 class GUI;
+class Camera;
+class CL_Player;
 
 enum ClientNetworkState {
 	CLIENT_IDLE,
 	CLIENT_CONNECTING,
 	CLIENT_CONNECTED,
+	CLIENT_INGAME
 };
 
 class CLIENT_API Client {
@@ -45,6 +49,8 @@ private:
 	void handleConnectEvent();
 	void handleDisconnectEvent();
 	void handleReceiveEvent(const BitStream &stream);
+	void handleIdentifyPlayerCommand(const BitStream &stream);
+	void handleLoadMapCommand(const BitStream &stream);
 
 	void renderFrame();
 
@@ -57,9 +63,11 @@ private:
 	Config mSettings;
 	Renderer *mRenderer;
 	ClientWorld *mWorld;
+	ClientMap *mMap;
 	InputSystem *mInput;
 	AudioSystem *mAudio;
 	GUI *mGUI;
+	Camera *mCamera;
 
 private:
 	ENetHost *mHost;
@@ -67,4 +75,5 @@ private:
 	ClientNetworkState mNetworkState;
 	Clock mConnectionClock;
 	Clock mSendInputClock;
+	CL_Player *mPlayerEntity;
 };

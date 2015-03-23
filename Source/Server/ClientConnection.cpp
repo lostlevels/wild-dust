@@ -4,7 +4,6 @@
 #include "Player.h"
 #include "Server.h"
 #include "World.h"
-#include "Projectile.h"
 
 ClientConnection::ClientConnection(Server *server, ENetPeer *peer) {
 	mServer = server;
@@ -27,27 +26,37 @@ void ClientConnection::handleCommand(const BitStream &stream) {
 }
 
 void ClientConnection::sendMessage(const BitStream &message, bool reliably) {
-	enet_uint32 packetFlags = ENET_PACKET_FLAG_NO_ALLOCATE;
+	enet_uint32 packetFlags = 0;
 	if (reliably) {
 		packetFlags |= ENET_PACKET_FLAG_RELIABLE;
 	}
+	else {
+		packetFlags |= ENET_PACKET_FLAG_UNSEQUENCED;
+	}
 
 	ENetPacket *packet = enet_packet_create(message.getDataBuffer(), message.getSize(), packetFlags);
-	enet_peer_send(mPeer, 0, packet);
+	enet_peer_send(mPeer, reliably ? 0 : 1, packet);
+}
+
+void ClientConnection::sendPlayerEntityID() {
+	uint8_t messageBuffer[2048];
+	BitStream message(messageBuffer, sizeof(messageBuffer));
+	message.writeU8(NETCMD_STC_PLAYER_IDENTIFY);
+	message.writeAny<EntityID>(mPlayer->getEntityID());
+	sendMessage(message, true);
 }
 
 void ClientConnection::processPlayerInput(const PlayerInput &input) {
 	if (input.buttonMask & BTN_MOVE_LEFT) {
-		mPlayer->mPosition -= Vec2(20.0f, 0.0f);
+		mPlayer->moveLeft();
 	}
 	if (input.buttonMask & BTN_MOVE_RIGHT) {
-		mPlayer->mPosition += Vec2(20.0f, 0.0f);
+		mPlayer->moveRight();
 	}
 	if (input.buttonMask & BTN_JUMP) {
-		mPlayer->mPosition -= Vec2(0.0f, 20.0f);
+		mPlayer->jump();
 	}
 	if (input.buttonMask & BTN_ATTACK) {
-		SV_Projectile *proj = mServer->getWorld()->spawnEntityTyped<SV_Projectile>("Projectile");
-		proj->mPosition = mPlayer->mPosition + Vec2(150.0f, 0.0f);
+		mPlayer->shoot();
 	}
 }

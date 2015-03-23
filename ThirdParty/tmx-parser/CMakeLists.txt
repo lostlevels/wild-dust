@@ -1,0 +1,6 @@
+file(GLOB_RECURSE SOURCES *.cpp)
+file(GLOB_RECURSE HEADERS *.h)
+include_directories(${ZLIB_INCLUDEDIR} ${TINYXML2_INCLUDEDIR})
+link_directories(${ZLIB_LIBDIR} ${TINYXML2_LIBDIR})
+add_library(tmx-parser STATIC ${SOURCES} ${HEADERS})
+target_link_libraries(tmx-parser ${ZLIB_LIBS} ${TINYXML2_LIBS})

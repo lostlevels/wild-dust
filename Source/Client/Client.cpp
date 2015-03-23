@@ -2,11 +2,14 @@
 #include "Client.h"
 #include "Renderer.h"
 #include "World.h"
+#include "Map.h"
 #include "Shared/Protocol.h"
 #include "EntityRegistration.h"
 #include "Input.h"
 #include "Audio.h"
 #include "GUI.h"
+#include "Camera.h"
+#include "Player.h"
 #include <SDL_ttf.h>
 
 Client::Client() {
@@ -17,11 +20,15 @@ Client::Client() {
 	mWorld = new ClientWorld(this);
 	RegisterClientEntityTypes(mWorld);
 
+	mMap = new ClientMap(this);
+
 	mInput = new InputSystem(this);
 
 	mAudio = new AudioSystem();
 
 	mGUI = new GUI(this);
+
+	mCamera = new Camera();
 
 	mHost = enet_host_create(NULL, 1, 2, 0, 0);
 	if (mHost == NULL) {
@@ -29,13 +36,16 @@ Client::Client() {
 	}
 
 	mPeer = NULL;
+	mPlayerEntity = NULL;
 }
 
 Client::~Client() {
 	enet_host_destroy(mHost);
+	delete mCamera;
 	delete mGUI;
 	delete mAudio;
 	delete mInput;
+	delete mMap;
 	delete mWorld;
 	delete mRenderer;
 }
@@ -84,6 +94,8 @@ bool Client::init() {
 }
 
 void Client::shutdown() {
+	mMap->unload();
+
 	mWorld->deleteAllEntities();
 
 	mGUI->shutdown();
@@ -123,6 +135,7 @@ void Client::disconnectFromServer() {
 		mPeer = NULL;
 	}
 	mNetworkState = CLIENT_IDLE;
+	mPlayerEntity = NULL;
 }
 
 void Client::tick() {
@@ -145,6 +158,12 @@ void Client::tick() {
 
 	processNetworkEvents();
 
+	if (mPlayerEntity) {
+		mCamera->setTarget(mPlayerEntity);
+	}
+	mCamera->setScreenSize(mWindowWidth, mWindowHeight);
+	mCamera->update();
+
 	mWorld->update(dt);
 
 	renderFrame();
@@ -153,7 +172,7 @@ void Client::tick() {
 }
 
 void Client::sendPlayerInput() {
-	if (mNetworkState != CLIENT_CONNECTED) {
+	if (mNetworkState < CLIENT_INGAME) {
 		return;
 	}
 
@@ -208,14 +227,42 @@ void Client::handleDisconnectEvent() {
 void Client::handleReceiveEvent(const BitStream &stream) {
 	uint8_t cmdID = stream.readU8();
 	switch (cmdID) {
+	case NETCMD_STC_PLAYER_IDENTIFY:
+		handleIdentifyPlayerCommand(stream);
+		break;
+
+	case NETCMD_STC_LOAD_MAP:
+		handleLoadMapCommand(stream);
+		break;
+
 	case NETCMD_STC_WORLD_SNAPSHOT:
 		mWorld->readFromSnapshot(stream);
 		break;
 	}
 }
 
+void Client::handleIdentifyPlayerCommand(const BitStream &stream) {
+	EntityID id = stream.readAny<EntityID>();
+	mPlayerEntity = (CL_Player*)mWorld->findEntityByID(id);
+}
+
+void Client::handleLoadMapCommand(const BitStream &stream) {
+	std::string mapName = stream.readString();
+
+	if (!mMap->loadFromFile(mapName)) {
+		gLogger.error("Could not map, disconnecting.\n");
+		disconnectFromServer();
+		return;
+	}
+
+	mRenderer->freeUnreferencedTextures();
+
+	mNetworkState = CLIENT_INGAME;
+}
+
 void Client::renderFrame() {
-	mRenderer->beginFrame();
+	mRenderer->beginFrame(mCamera);
+	mMap->draw();
 	mWorld->draw();
 	mRenderer->endFrame();
 }

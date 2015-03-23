@@ -15,6 +15,8 @@ public:
 
 	virtual void update(float dt);
 
+	EntityID getEntityID() const { return mID; }
+
 protected:
 	Server *mServer;
 

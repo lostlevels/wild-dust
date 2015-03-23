@@ -14,6 +14,9 @@ public:
 	void handleCommand(const BitStream &stream);
 	void sendMessage(const BitStream &message, bool reliably);
 
+	// Sends a message to the client to inform it of its controlled entity ID
+	void sendPlayerEntityID();
+
 private:
 	void processPlayerInput(const PlayerInput &input);
 

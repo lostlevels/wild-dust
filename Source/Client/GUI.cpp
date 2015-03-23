@@ -36,6 +36,10 @@ void GUI::render() {
 	case CLIENT_IDLE:
 		status = "Idle..";
 		break;
+
+	case CLIENT_INGAME:
+		status = "In-game.";
+		break;
 	}
 	mVera->drawText(status, 25, 25);
 }
