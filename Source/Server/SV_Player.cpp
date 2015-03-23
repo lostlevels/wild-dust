@@ -12,6 +12,7 @@
 SV_Player::SV_Player(Server *server) : SV_PhysicsEntity(server, true) {
 	setBox(32, 64);
 	mState = PLAYER_IDLE;
+	mLookingLeft = true;
 }
 
 void SV_Player::update(float dt) {
@@ -39,18 +40,21 @@ void SV_Player::update(float dt) {
 void SV_Player::writeToStream(BitStream &stream) {
 	SV_PhysicsEntity::writeToStream(stream);
 	stream.writeU8(mState);
+	stream.writeBool(mLookingLeft);
 }
 
 void SV_Player::moveLeft() {
 	Vec2 vel = getVelocity();
-	vel.x -= 100;
+	vel.x = -300;
 	setVelocity(vel);
+	mLookingLeft = true;
 }
 
 void SV_Player::moveRight() {
 	Vec2 vel = getVelocity();
-	vel.x += 100;
+	vel.x = 300;
 	setVelocity(vel);
+	mLookingLeft = false;
 }
 
 void SV_Player::shoot() {
@@ -60,12 +64,38 @@ void SV_Player::shoot() {
 	mShootTimer.reset();
 	mState = PLAYER_SHOOTING;
 
-	SV_Projectile *proj = mServer->getWorld()->spawnEntityTyped<SV_Projectile>("Projectile");
-	proj->setPosition(getPosition() + Vec2(getWidth() + 1, getHeight() / 2 + 5));
+	Vec2 projOffset(0.0f, getHeight() / 2 + 5);
+	if (mLookingLeft) {
+		projOffset.x = -5;
+	}
+	else {
+		projOffset.x = getWidth() + 5;
+	}
+
+	SV_Projectile *proj = mServer->getWorld()->spawnEntityTyped<SV_Projectile>(ENTITY_PROJECTILE);
+	proj->setPosition(getPosition() + projOffset);
+	proj->mMovingLeft = mLookingLeft;
+	proj->mFiredBy = this;
 }
 
 void SV_Player::jump() {
-	Vec2 vel = getVelocity();
-	vel.y -= 100;
-	setVelocity(vel);
+	bool canJump = false;
+
+	for (b2ContactEdge *edge = getBody()->GetContactList(); edge; edge = edge->next) {
+		b2Contact *contact = edge->contact;
+		if (contact->IsTouching() == false) {
+			continue;
+		}
+
+		if (contact->GetManifold()->localNormal.y == -1) {
+			canJump = true;
+			break;
+		}
+	}
+
+	if (canJump) {
+		Vec2 vel = getVelocity();
+		vel.y -= 180;
+		setVelocity(vel);
+	}
 }

@@ -67,15 +67,15 @@ void ServerMap::createCollisionObject(int x, int y, int w, int h) {
 	int realY = y + h / 2;
 
 	b2Body *object = physWorld->CreateBody(&bodyDef);
-	object->SetTransform(b2Vec2(realX, realY), 0.0f);
+	object->SetTransform(b2Vec2(realX / 100.0f, realY / 100.0f), 0.0f);
 
 	b2PolygonShape shape;
-	shape.SetAsBox(w / 2, h / 2);
+	shape.SetAsBox((w / 100.0f) / 2, (h / 100.0f) / 2);
 
 	b2FixtureDef fixtureDef;
 	fixtureDef.shape = &shape;
 	fixtureDef.density = 1.0f;
-	fixtureDef.friction = 100.0f;
+	fixtureDef.friction = 1.0f;
 
 	object->CreateFixture(&fixtureDef);
 

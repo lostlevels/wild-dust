@@ -2,6 +2,7 @@
 
 #include "Core/BitStream.h"
 #include "Shared/Protocol.h"
+#include "Shared/EntityTypes.h"
 
 class Server;
 class SV_Entity;
@@ -13,15 +14,17 @@ public:
 	ServerWorld(Server *server);
 	~ServerWorld();
 
-	void registerEntityType(const std::string &typeName, CreateServerEntityFunc func);
+	void registerEntityType(EntityType type, CreateServerEntityFunc func);
 
 	void writeToSnapshot(BitStream &snapshot);
 
-	SV_Entity *spawnEntity(const std::string &typeName);
-	template<class T> T *spawnEntityTyped(const std::string &typeName);
+	SV_Entity *spawnEntity(EntityType type);
+	template<class T> T *spawnEntityTyped(EntityType type);
 	EntityID findIDByEntity(SV_Entity *entity);
 	SV_Entity *findEntityByID(EntityID id);
 	void destroyEntity(SV_Entity *entity);
+	void scheduleDestroyEntity(SV_Entity *entity);
+	void destroyScheduledEntities();
 	void deleteRemovedEntities();
 	void deleteAllEntities();
 
@@ -31,11 +34,12 @@ private:
 	Server *mServer;
 	std::vector<SV_Entity*> mEntities;
 	std::vector<SV_Entity*> mRemovedEntities;
+	std::vector<SV_Entity*> mEntitiesScheduledForDestruction;
 	std::map<EntityID, SV_Entity*> mIDToEntityMap;
 	std::map<SV_Entity*, EntityID> mEntityToIDMap;
-	std::map<std::string, CreateServerEntityFunc> mCreateFuncs;
+	std::map<EntityType, CreateServerEntityFunc> mCreateFuncs;
 };
 
-template<class T> T *ServerWorld::spawnEntityTyped(const std::string &typeName) {
-	return reinterpret_cast<T*>(spawnEntity(typeName));
+template<class T> T *ServerWorld::spawnEntityTyped(EntityType type) {
+	return reinterpret_cast<T*>(spawnEntity(type));
 }

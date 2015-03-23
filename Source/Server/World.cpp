@@ -10,10 +10,10 @@ ServerWorld::~ServerWorld() {
 	deleteAllEntities();
 }
 
-void ServerWorld::registerEntityType(const std::string &typeName, CreateServerEntityFunc func) {
-	auto result = mCreateFuncs.find(typeName);
+void ServerWorld::registerEntityType(EntityType type, CreateServerEntityFunc func) {
+	auto result = mCreateFuncs.find(type);
 	if (result == mCreateFuncs.end()) {
-		mCreateFuncs.insert({ typeName, func });
+		mCreateFuncs.insert({ type, func });
 	}
 }
 
@@ -21,8 +21,7 @@ void ServerWorld::writeToSnapshot(BitStream &snapshot) {
 	snapshot.writeU32(mEntities.size());
 	for (SV_Entity *entity : mEntities) {
 		snapshot.writeAny<EntityID>(entity->mID);
-		snapshot.writeString(entity->mTypeName);
-		assert(entity->mTypeName.size() > 0);
+		snapshot.writeU32(entity->mType);
 		entity->writeToStream(snapshot);
 	}
 
@@ -32,8 +31,8 @@ void ServerWorld::writeToSnapshot(BitStream &snapshot) {
 	}
 }
 
-SV_Entity *ServerWorld::spawnEntity(const std::string &typeName) {
-	auto result = mCreateFuncs.find(typeName);
+SV_Entity *ServerWorld::spawnEntity(EntityType type) {
+	auto result = mCreateFuncs.find(type);
 	if (result == mCreateFuncs.end()) {
 		return NULL;
 	}
@@ -44,7 +43,7 @@ SV_Entity *ServerWorld::spawnEntity(const std::string &typeName) {
 	static uint32_t entityID = 0;
 	++entityID;
 
-	entity->mTypeName = typeName;
+	entity->mType = type;
 	entity->mID = entityID;
 
 	mIDToEntityMap.insert({ entityID, entity });
@@ -70,6 +69,9 @@ void ServerWorld::destroyEntity(SV_Entity *entity) {
 		}
 	}
 }
+void ServerWorld::scheduleDestroyEntity(SV_Entity *entity) {
+	mEntitiesScheduledForDestruction.push_back(entity);
+}
 
 EntityID ServerWorld::findIDByEntity(SV_Entity *entity) {
 	auto result = mEntityToIDMap.find(entity);
@@ -85,6 +87,13 @@ SV_Entity *ServerWorld::findEntityByID(EntityID id) {
 		return result->second;
 	}
 	return NULL;
+}
+
+void ServerWorld::destroyScheduledEntities() {
+	for (SV_Entity *entity : mEntitiesScheduledForDestruction) {
+		destroyEntity(entity);
+	}
+	mEntitiesScheduledForDestruction.clear();
 }
 
 void ServerWorld::deleteRemovedEntities() {

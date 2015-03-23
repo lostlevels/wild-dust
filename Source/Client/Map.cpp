@@ -129,7 +129,7 @@ void ClientMap::draw() const {
 				tileSource.w = TILE_WIDTH;
 				tileSource.h = TILE_HEIGHT;
 				
-				batchers[tilesetID]->addSprite(Vec2(x*TILE_WIDTH, y*TILE_HEIGHT), tileSource, Color(1.0f));
+				batchers[tilesetID]->addSprite(Vec2(x*TILE_WIDTH, y*TILE_HEIGHT), tileSource, Color(1.0f), FLIP_NONE);
 			}
 		}
 	}

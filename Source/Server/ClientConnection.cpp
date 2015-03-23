@@ -9,7 +9,7 @@ ClientConnection::ClientConnection(Server *server, ENetPeer *peer) {
 	mServer = server;
 	mPeer = peer;
 
-	mPlayer = server->getWorld()->spawnEntityTyped<SV_Player>("Player");
+	mPlayer = server->getWorld()->spawnEntityTyped<SV_Player>(ENTITY_PLAYER);
 }
 
 ClientConnection::~ClientConnection() {

@@ -11,10 +11,10 @@ ClientWorld::~ClientWorld() {
 	deleteAllEntities();
 }
 
-void ClientWorld::registerEntityType(const std::string &typeName, CreateClientEntityFunc func) {
-	auto result = mCreateFuncs.find(typeName);
+void ClientWorld::registerEntityType(EntityType type, CreateClientEntityFunc func) {
+	auto result = mCreateFuncs.find(type);
 	if (result == mCreateFuncs.end()) {
-		mCreateFuncs.insert({ typeName, func });
+		mCreateFuncs.insert({ type, func });
 	}
 }
 
@@ -54,14 +54,14 @@ void ClientWorld::readFromSnapshot(const BitStream &snapshot) {
 	uint32_t numEnts = snapshot.readU32();
 	for (uint32_t i = 0; i < numEnts; ++i) {
 		EntityID entityID = snapshot.readAny<EntityID>();
-		std::string entityTypeName = snapshot.readString();
+		EntityType entityType = (EntityType)snapshot.readAny<uint32_t>();
 
 		CL_Entity *entity = findEntityByID(entityID);
 		if (entity == NULL) {
-			auto createFunc = mCreateFuncs.find(entityTypeName);
+			auto createFunc = mCreateFuncs.find(entityType);
 			if (createFunc != mCreateFuncs.end()) {
 				entity = createFunc->second(mClient);
-				entity->mTypeName = entityTypeName;
+				entity->mType = entityType;
 				addEntity(entityID, entity);
 			}
 		}
@@ -73,7 +73,9 @@ void ClientWorld::readFromSnapshot(const BitStream &snapshot) {
 	for (uint32_t i = 0; i < numRemovedEnts; ++i) {
 		EntityID id = snapshot.readAny<EntityID>();
 		CL_Entity *entity = findEntityByID(id);
-		removeEntity(id, entity);
+		if (entity) {
+			removeEntity(id, entity);
+		}
 	}
 }
 

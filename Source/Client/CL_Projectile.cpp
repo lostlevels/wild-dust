@@ -25,5 +25,5 @@ void CL_Projectile::draw() {
 	source.h = mTexture->getHeight();
 	Renderer *renderer = mClient->getRenderer();
 	SpriteBatcher *batcher = renderer->getSpriteBatcher(mTexture, BLEND_ALPHA);
-	batcher->addSprite(getPosition(), getSize(), source, Color(1.0f));
+	batcher->addSprite(getPosition(), getSize(), source, Color(1.0f), FLIP_NONE);
 }

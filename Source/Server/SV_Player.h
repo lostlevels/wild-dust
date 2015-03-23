@@ -21,4 +21,5 @@ public:
 protected:
 	PlayerState mState;
 	Clock mShootTimer;
+	bool mLookingLeft;
 };

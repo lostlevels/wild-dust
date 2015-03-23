@@ -2,6 +2,7 @@
 
 #include "Core/BitStream.h"
 #include "Shared/Protocol.h"
+#include "Shared/EntityTypes.h"
 
 class Client;
 
@@ -21,7 +22,7 @@ protected:
 	Client *mClient;
 
 private:
-	std::string mTypeName;
+	EntityType mType;
 	EntityID mID;
 	friend class ClientWorld;
 };

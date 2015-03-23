@@ -13,6 +13,7 @@ public:
 	void writeI64(int64_t x) { writeAny(x); }
 	void writeU64(uint64_t x) { writeAny(x); }
 	void writeFloat(float x) { writeAny(x);}
+	void writeBool(bool x) { writeU8(!!x); }
 
 	int8_t readI8() const;
 	uint8_t readU8() const;
@@ -23,6 +24,7 @@ public:
 	int64_t readI64() const { return readAny<int64_t>(); }
 	uint64_t readU64() const { return readAny<uint64_t>(); }
 	float readFloat() const { return readAny<float>(); }
+	bool readBool() const { return !!readU8(); }
 
 	void writeBytes(const void *data, int dataSize);
 	void readBytes(void *data, int dataSize) const;

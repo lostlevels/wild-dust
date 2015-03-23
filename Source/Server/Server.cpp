@@ -7,7 +7,7 @@
 #include "Map.h"
 
 Server::Server() {
-	b2Vec2 gravity(0.0f, 1000.0f);
+	b2Vec2 gravity(0.0f, 10.0f);
 	mPhysicsWorld = new b2World(gravity);
 
 	mWorld = new ServerWorld(this);
@@ -82,6 +82,7 @@ void Server::update() {
 	const  float tickTimestep = 1.0f / (float)mTickRate;
 	while (mTimeLeftToSimulate >= tickTimestep) {
 		tick(tickTimestep);
+		mWorld->destroyScheduledEntities();
 		mTimeLeftToSimulate -= tickTimestep;
 	}
 

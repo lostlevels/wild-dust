@@ -6,6 +6,6 @@
 #define ENTITY_FACTORY(x) [](Server *server){return new x(server); }
 
 void RegisterServerEntityTypes(ServerWorld *world) {
-	world->registerEntityType("Player", ENTITY_FACTORY(SV_Player));
-	world->registerEntityType("Projectile", ENTITY_FACTORY(SV_Projectile));
+	world->registerEntityType(ENTITY_PLAYER, ENTITY_FACTORY(SV_Player));
+	world->registerEntityType(ENTITY_PROJECTILE, ENTITY_FACTORY(SV_Projectile));
 }

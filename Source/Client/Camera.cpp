@@ -24,5 +24,9 @@ void Camera::update() {
 	mPosition = mTarget->ICameraTarget_getPosition();
 	mPosition.x -= mScreenWidth / 2;
 	mPosition.y -= mScreenHeight / 2;
-	mViewMatrix = glm::translate(glm::mat4(1.0f), Vec3(-mPosition, 0.0f));
+
+	int translateX = (int)-mPosition.x;
+	int translateY = (int)-mPosition.y;
+
+	mViewMatrix = glm::translate(glm::mat4(1.0f), Vec3(translateX, translateY, 0.0f));
 }

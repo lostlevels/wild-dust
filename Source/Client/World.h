@@ -2,6 +2,7 @@
 
 #include "Core/BitStream.h"
 #include "Shared/Protocol.h"
+#include "Shared/EntityTypes.h"
 
 class Client;
 class CL_Entity;
@@ -13,7 +14,7 @@ public:
 	ClientWorld(Client *client);
 	~ClientWorld();
 
-	void registerEntityType(const std::string &typeName, CreateClientEntityFunc func);
+	void registerEntityType(EntityType type, CreateClientEntityFunc func);
 
 	EntityID findIDByEntity(CL_Entity *entity);
 	CL_Entity *findEntityByID(EntityID id);
@@ -31,7 +32,7 @@ private:
 
 private:
 	Client *mClient;
-	std::map<std::string, CreateClientEntityFunc> mCreateFuncs;
+	std::map<EntityType, CreateClientEntityFunc> mCreateFuncs;
 	std::vector<CL_Entity*> mEntities;
 	std::vector<CL_Entity*> mRemovedEntities;
 	std::map<EntityID, CL_Entity*> mIDToEntityMap;

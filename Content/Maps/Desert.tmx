@@ -5,10 +5,10 @@
  </tileset>
  <layer name="Tile Layer 1" width="100" height="100">
   <data encoding="base64" compression="zlib">
-   eJzt0EENAAAIBKBz9u9sDN3kQQE6SQMAAAAAAAAAAAAAAAAAAAAsq8O2b748AwAAAAAAAAAAAAAAAAAAAAAAAAAAAFwxGI9H+Q==
+   eJzt0sEJACAMBMFo/0WnAR8+hAsyC1NAjlRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiTl24P91O3Na7D0P7yU3hIAAAAAAAAAAAAAAAAAAAAAAAAAAAA4a4sSFwE=
   </data>
  </layer>
- <objectgroup name="Collision">
+ <objectgroup name="Collision" visible="0">
   <object id="15" x="0" y="688" width="816" height="112"/>
   <object id="16" x="816" y="672" width="160" height="128"/>
   <object id="17" x="976" y="656" width="624" height="144"/>

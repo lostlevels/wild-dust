@@ -23,6 +23,10 @@ public:
 	float getFriction() const;
 	void setFriction(float fric);
 
+	void limitSpeed(float speed);
+
+	b2Body *getBody() const { return mBody; }
+
 private:
 	void destroyFixture();
 

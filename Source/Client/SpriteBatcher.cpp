@@ -89,7 +89,7 @@ void SpriteBatcher::submit() {
 	}
 }
 
-void SpriteBatcher::addSprite(const Vec2 &position, const Vec2 &size, const Recti &source, const Color &tint) {
+void SpriteBatcher::addSprite(const Vec2 &position, const Vec2 &size, const Recti &source, const Color &tint, uint8_t flipFlags) {
 	SpriteVertex *v;
 
 	float left = floor(position.x);
@@ -101,6 +101,18 @@ void SpriteBatcher::addSprite(const Vec2 &position, const Vec2 &size, const Rect
 	float uvTop = (float)source.y / (float)mTexture->getHeight();
 	float uvRight = uvLeft + (float)source.w / (float)mTexture->getWidth();
 	float uvBottom = uvTop + (float)source.h / (float)mTexture->getHeight();
+
+	if (flipFlags & FLIP_H) {
+		float oldUVRight = uvRight;
+		uvRight = uvLeft;
+		uvLeft = oldUVRight;
+	}
+
+	if (flipFlags & FLIP_V) {
+		float oldUVBottom = uvBottom;
+		uvBottom = uvTop;
+		uvTop = oldUVBottom;
+	}
 
 	v = mVertexData;
 	v->x = left;
@@ -169,15 +181,15 @@ void SpriteBatcher::addSprite(const Vec2 &position, const Vec2 &size, const Rect
 	++mSpriteCount;
 }
 
-void SpriteBatcher::addSprite(const Vec2 &position, const Recti &source, const Color &tint) {
-	addSprite(position, Vec2(source.w, source.h), source, tint);
+void SpriteBatcher::addSprite(const Vec2 &position, const Recti &source, const Color &tint, uint8_t flipFlags) {
+	addSprite(position, Vec2(source.w, source.h), source, tint, flipFlags);
 }
 
-void SpriteBatcher::addSprite(const Vec2 &position, const Color &tint) {
+void SpriteBatcher::addSprite(const Vec2 &position, const Color &tint, uint8_t flipFlags) {
 	Recti source;
 	source.x = 0;
 	source.y = 0;
 	source.w = mTexture->getWidth();
 	source.h = mTexture->getHeight();
-	addSprite(position, source, tint);
+	addSprite(position, source, tint, flipFlags);
 }

@@ -2,6 +2,7 @@
 
 #include "Core/BitStream.h"
 #include "Shared/Protocol.h"
+#include "Shared/EntityTypes.h"
 
 class Server;
 
@@ -15,13 +16,14 @@ public:
 
 	virtual void update(float dt);
 
+	EntityType getEntityType() const { return mType; }
 	EntityID getEntityID() const { return mID; }
 
 protected:
 	Server *mServer;
 
 private:
-	std::string mTypeName;
+	EntityType mType;
 	EntityID mID;
 	friend class ServerWorld;
 };

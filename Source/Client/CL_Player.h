@@ -36,4 +36,5 @@ private:
 
 private:
 	PlayerState mState;
+	bool mLookingLeft;
 };

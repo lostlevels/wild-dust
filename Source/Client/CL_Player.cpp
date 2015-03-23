@@ -19,6 +19,9 @@ CL_Player::CL_Player(Client *client) : CL_PhysicsEntity(client) {
 
 	mShootAnimation = mAnimSheet->createAnimation("Shoot", { 9, 10, 11, 12, 13 });
 	mShootAnimation->setLoopCount(1);
+	mShootAnimation->setSpeed(10.0f);
+
+	mLookingLeft = false;
 }
 
 CL_Player::~CL_Player() {
@@ -29,7 +32,9 @@ void CL_Player::readFromStream(const BitStream &stream) {
 	CL_PhysicsEntity::readFromStream(stream);
 
 	PlayerState oldState = mState;
+
 	mState = (PlayerState)stream.readU8();
+	mLookingLeft = stream.readBool();
 
 	if (mState != oldState) {
 		if (mState == PLAYER_SHOOTING) {
@@ -43,7 +48,9 @@ void CL_Player::update(float dt) {
 }
 
 void CL_Player::draw() {
-	getCurrentAnim()->draw(getPosition(), getSize(), Color(1.0f));
+	Animation *currAnim = getCurrentAnim();
+	currAnim->setFlipX(mLookingLeft);
+	currAnim->draw(getPosition(), getSize(), Color(1.0f));
 }
 
 Animation *CL_Player::getCurrentAnim() {

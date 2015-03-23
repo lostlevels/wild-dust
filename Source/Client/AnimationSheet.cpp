@@ -12,6 +12,8 @@ Animation::Animation(AnimationSheet *sheet, const std::vector<int>& frames) {
 	mTimer = 0.0f;
 	mLoopCount = -1;
 	mLoopsLeft = -1;
+	mFlipX = false;
+	mFlipY = false;
 }
 
 void Animation::animate(float dt) {
@@ -44,8 +46,16 @@ void Animation::draw(const Vec2 &position, const Vec2 &size, const Color &tint) 
 	source.w = mSheet->getFrameWidth();
 	source.h = mSheet->getFrameHeight();
 
+	uint8_t flipFlags = 0;
+	if (getFlipX()) {
+		flipFlags |= FLIP_H;
+	}
+	if (getFlipY()) {
+		flipFlags |= FLIP_V;
+	}
+
 	SpriteBatcher *batcher = renderer->getSpriteBatcher(mSheet->getTexture(), BLEND_ALPHA);
-	batcher->addSprite(position, size, source, tint);
+	batcher->addSprite(position, size, source, tint, flipFlags);
 }
 
 AnimationSheet::AnimationSheet(Renderer *renderer) {

@@ -29,6 +29,12 @@ public:
 		mLoopsLeft = count;
 	}
 
+	bool getFlipX() const { return mFlipX; }
+	void setFlipX(bool flip) { mFlipX = flip; }
+
+	bool getFlipY() const { return mFlipY; }
+	void setFlipY(bool flip) { mFlipY = flip; }
+
 private:
 	AnimationSheet *mSheet;
 	std::vector<int> mFrames;
@@ -37,6 +43,8 @@ private:
 	float mTimer;
 	int mLoopCount;
 	int mLoopsLeft;
+	bool mFlipX;
+	bool mFlipY;
 };
 
 class AnimationSheet {
