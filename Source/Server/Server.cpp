@@ -7,19 +7,19 @@
 #include "Map.h"
 
 Server::Server() {
-	mWorld = new ServerWorld(this);
-	RegisterServerEntityTypes(mWorld);
-
 	b2Vec2 gravity(0.0f, 1000.0f);
 	mPhysicsWorld = new b2World(gravity);
+
+	mWorld = new ServerWorld(this);
+	RegisterServerEntityTypes(mWorld);
 
 	mMap = new ServerMap(this);
 }
 
 Server::~Server() {
 	delete mMap;
-	delete mPhysicsWorld;
 	delete mWorld;
+	delete mPhysicsWorld;
 }
 
 bool Server::init(int portNumber, int tickRate, int sendRate, int maxPlayers, const std::string &mapName) {
