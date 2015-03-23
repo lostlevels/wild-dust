@@ -2,6 +2,7 @@
 
 #include "Entity.h"
 #include "CameraTarget.h"
+#include "Shared/PlayerState.h"
 
 class AnimationSheet;
 class Animation;
@@ -21,13 +22,23 @@ public:
 	virtual Vec2 ICameraTarget_getSize() const;
 
 	const Vec2 &getPosition() const { return mPosition; }
+	const Vec2 &getSize() const { return mSize; }
+
+	PlayerState getState() const { return mState; }
 
 protected:
 	AnimationSheet *mAnimSheet;
 	Animation *mIdleAnimation;
 	Animation *mWalkAnimation;
+	Animation *mJumpAnimation;
 	Animation *mShootAnimation;
 
 private:
+	Animation *getCurrentAnim();
+
+private:
 	Vec2 mPosition;
+	Vec2 mSize;
+
+	PlayerState mState;
 };

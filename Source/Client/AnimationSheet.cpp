@@ -25,11 +25,11 @@ void Animation::animate(float dt) {
 void Animation::draw(const Vec2 &position, const Vec2 &size, const Color &tint) {
 	Renderer *renderer = mSheet->getRenderer();
 
-	int framesPerCol = mSheet->getTexture()->getHeight() / mSheet->getFrameWidth();
+	int framesPerRow = mSheet->getTexture()->getWidth() / mSheet->getFrameWidth();
 
 	int currentFrame = mFrames[mCurrentFrameIndex];
-	int currentFrameX = currentFrame % framesPerCol;
-	int currentFrameY = currentFrame / framesPerCol;
+	int currentFrameX = currentFrame % framesPerRow;
+	int currentFrameY = currentFrame / framesPerRow;
 
 	Recti source;
 	source.x = currentFrameX * mSheet->getFrameWidth();

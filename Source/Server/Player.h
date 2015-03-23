@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Entity.h"
+#include "Shared/PlayerState.h"
 
 class SV_Player : public SV_Entity {
 public:
@@ -19,6 +20,8 @@ public:
 protected:
 	b2Body *mPhysBody;
 	b2Fixture *mPhysFixture;
+
+	PlayerState mState;
 
 private:
 	void createPhysicsBody();

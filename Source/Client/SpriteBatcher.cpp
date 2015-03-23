@@ -82,15 +82,20 @@ void SpriteBatcher::submit() {
 		glBindVertexArray(mVAOs[mActiveBufferIndex]);
 		glDrawElements(GL_TRIANGLES, 6 * mSpriteCount, GL_UNSIGNED_INT, NULL);
 		glBindVertexArray(0);
+	}
 
-		if (++mActiveBufferIndex >= 3) {
-			mActiveBufferIndex = 0;
-		}
+	if (++mActiveBufferIndex >= 3) {
+		mActiveBufferIndex = 0;
 	}
 }
 
 void SpriteBatcher::addSprite(const Vec2 &position, const Vec2 &size, const Recti &source, const Color &tint) {
 	SpriteVertex *v;
+
+	float left = floor(position.x);
+	float right = left + floor(size.x);
+	float top = floor(position.y);
+	float bottom = top + floor(size.y);
 
 	float uvLeft = (float)source.x / (float)mTexture->getWidth();
 	float uvTop = (float)source.y / (float)mTexture->getHeight();
@@ -98,8 +103,8 @@ void SpriteBatcher::addSprite(const Vec2 &position, const Vec2 &size, const Rect
 	float uvBottom = uvTop + (float)source.h / (float)mTexture->getHeight();
 
 	v = mVertexData;
-	v->x = position.x;
-	v->y = position.y;
+	v->x = left;
+	v->y = top;
 	v->u = uvLeft;
 	v->v = uvTop;
 	v->r = tint.r;
@@ -109,8 +114,8 @@ void SpriteBatcher::addSprite(const Vec2 &position, const Vec2 &size, const Rect
 	++mVertexData;
 
 	v = mVertexData;
-	v->x = position.x + size.x;
-	v->y = position.y;
+	v->x = right;
+	v->y = top;
 	v->u = uvRight;
 	v->v = uvTop;
 	v->r = tint.r;
@@ -120,8 +125,8 @@ void SpriteBatcher::addSprite(const Vec2 &position, const Vec2 &size, const Rect
 	++mVertexData;
 
 	v = mVertexData;
-	v->x = position.x + size.x;
-	v->y = position.y + size.y;
+	v->x = right;
+	v->y = bottom;
 	v->u = uvRight;
 	v->v = uvBottom;
 	v->r = tint.r;
@@ -131,8 +136,8 @@ void SpriteBatcher::addSprite(const Vec2 &position, const Vec2 &size, const Rect
 	++mVertexData;
 
 	v = mVertexData;
-	v->x = position.x;
-	v->y = position.y + size.y;
+	v->x = left;
+	v->y = bottom;
 	v->u = uvLeft;
 	v->v = uvBottom;
 	v->r = tint.r;

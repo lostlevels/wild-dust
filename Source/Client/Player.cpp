@@ -10,9 +10,10 @@ CL_Player::CL_Player(Client *client) : CL_Entity(client) {
 	mAnimSheet = new AnimationSheet(client->getRenderer());
 	mAnimSheet->loadFromFile("../Content/Textures/Characters/Cowboy.png", 18, 32);
 	
-	mIdleAnimation = mAnimSheet->createAnimation("Idle", { 0 });
-	mWalkAnimation = mAnimSheet->createAnimation("Walk", { 1, 2, 3, 4 });
-	mShootAnimation = mAnimSheet->createAnimation("Shoot", { 9, 10, 11 });
+	mIdleAnimation = mAnimSheet->createAnimation("Idle", { 12 });
+	mWalkAnimation = mAnimSheet->createAnimation("Walk", { 6, 7, 8, 9 });
+	mJumpAnimation = mAnimSheet->createAnimation("Jump", { 5 });
+	mShootAnimation = mAnimSheet->createAnimation("Shoot", { 9, 10, 11, 12, 13 });
 }
 
 CL_Player::~CL_Player() {
@@ -22,14 +23,34 @@ CL_Player::~CL_Player() {
 void CL_Player::readFromStream(const BitStream &stream) {
 	mPosition.x = stream.readFloat();
 	mPosition.y = stream.readFloat();
+	mSize.x = stream.readU16();
+	mSize.y = stream.readU16();
+	mState = (PlayerState)stream.readU8();
 }
 
 void CL_Player::update(float dt) {
-	mWalkAnimation->animate(dt);
+	getCurrentAnim()->animate(dt);
 }
 
 void CL_Player::draw() {
-	mWalkAnimation->draw(mPosition, Vec2(16, 32), Color(1.0f));
+	getCurrentAnim()->draw(mPosition, mSize, Color(1.0f));
+}
+
+Animation *CL_Player::getCurrentAnim() {
+	switch (mState) {
+	case PLAYER_IDLE:
+		return mIdleAnimation;
+
+	case PLAYER_MOVING:
+		return mWalkAnimation;
+
+	case PLAYER_JUMPING:
+		return mJumpAnimation;
+
+	case PLAYER_SHOOTING:
+		return mShootAnimation;
+	}
+	return NULL;
 }
 
 Vec2 CL_Player::ICameraTarget_getPosition() const {
@@ -37,5 +58,5 @@ Vec2 CL_Player::ICameraTarget_getPosition() const {
 }
 
 Vec2 CL_Player::ICameraTarget_getSize() const {
-	return Vec2(16, 16);
+	return mSize;
 }
