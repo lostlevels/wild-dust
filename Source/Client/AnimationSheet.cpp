@@ -10,13 +10,20 @@ Animation::Animation(AnimationSheet *sheet, const std::vector<int>& frames) {
 	mCurrentFrameIndex = 0;
 	mSpeed = 10.0f;
 	mTimer = 0.0f;
+	mLoopCount = -1;
+	mLoopsLeft = -1;
 }
 
 void Animation::animate(float dt) {
+	if (mLoopsLeft == 0) {
+		return;
+	}
+
 	mTimer += dt;
 	if (mTimer >= (1.0f / mSpeed)) {
 		if (++mCurrentFrameIndex >= (int)mFrames.size()) {
 			mCurrentFrameIndex = 0;
+			--mLoopsLeft;
 		}
 		mTimer = 0.0f;
 	}

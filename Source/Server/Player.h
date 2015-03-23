@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Entity.h"
+#include "Core/Clock.h"
 #include "Shared/PlayerState.h"
 
 class SV_Player : public SV_Entity {
@@ -22,6 +23,8 @@ protected:
 	b2Fixture *mPhysFixture;
 
 	PlayerState mState;
+
+	Clock mShootTimer;
 
 private:
 	void createPhysicsBody();

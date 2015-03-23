@@ -22,6 +22,7 @@ void ServerWorld::writeToSnapshot(BitStream &snapshot) {
 	for (SV_Entity *entity : mEntities) {
 		snapshot.writeAny<EntityID>(entity->mID);
 		snapshot.writeString(entity->mTypeName);
+		assert(entity->mTypeName.size() > 0);
 		entity->writeToStream(snapshot);
 	}
 

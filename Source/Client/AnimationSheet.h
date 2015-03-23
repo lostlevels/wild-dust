@@ -15,11 +15,19 @@ public:
 	void reset() {
 		mCurrentFrameIndex = 0;
 		mTimer = 0.0f;
+		mLoopsLeft = mLoopCount;
 	}
 
-	// Playback speed in frames per second
+	// Playback speed in frames per second (default: 10)
 	float getSpeed() const { return mSpeed; }
 	void setSpeed(float speed) { mSpeed = speed; }
+
+	// Number of loops (-1 for infinite, default: -1)
+	int getLoopCount() const { return mLoopCount; }
+	void setLoopCount(int count) {
+		mLoopCount = count;
+		mLoopsLeft = count;
+	}
 
 private:
 	AnimationSheet *mSheet;
@@ -27,6 +35,8 @@ private:
 	int mCurrentFrameIndex;
 	float mSpeed;
 	float mTimer;
+	int mLoopCount;
+	int mLoopsLeft;
 };
 
 class AnimationSheet {

@@ -11,9 +11,14 @@ CL_Player::CL_Player(Client *client) : CL_Entity(client) {
 	mAnimSheet->loadFromFile("../Content/Textures/Characters/Cowboy.png", 18, 32);
 	
 	mIdleAnimation = mAnimSheet->createAnimation("Idle", { 12 });
+	mIdleAnimation->setLoopCount(0);
+	
 	mWalkAnimation = mAnimSheet->createAnimation("Walk", { 6, 7, 8, 9 });
+	
 	mJumpAnimation = mAnimSheet->createAnimation("Jump", { 5 });
+
 	mShootAnimation = mAnimSheet->createAnimation("Shoot", { 9, 10, 11, 12, 13 });
+	mShootAnimation->setLoopCount(1);
 }
 
 CL_Player::~CL_Player() {
@@ -21,11 +26,19 @@ CL_Player::~CL_Player() {
 }
 
 void CL_Player::readFromStream(const BitStream &stream) {
+	PlayerState oldState = mState;
+
 	mPosition.x = stream.readFloat();
 	mPosition.y = stream.readFloat();
 	mSize.x = stream.readU16();
 	mSize.y = stream.readU16();
 	mState = (PlayerState)stream.readU8();
+	
+	if (mState != oldState) {
+		if (mState == PLAYER_SHOOTING) {
+			mShootAnimation->reset();
+		}
+	}
 }
 
 void CL_Player::update(float dt) {
