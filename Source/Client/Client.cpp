@@ -10,6 +10,7 @@
 #include "GUI.h"
 #include "Camera.h"
 #include "CL_Player.h"
+#include "Music.h"
 #include <SDL_ttf.h>
 
 Client::Client() {
@@ -85,6 +86,11 @@ bool Client::init() {
 
 	if (!mGUI->init())
 		return false;
+
+	mMusic = mAudio->createMusic();
+	mMusic->openOggVorbisStream("../Content/Music/Texas.ogg");
+	mMusic->mLoops = -1;
+	mMusic->play();
 
 	mTickTock.reset();
 

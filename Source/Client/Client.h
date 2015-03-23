@@ -12,6 +12,7 @@ class AudioSystem;
 class GUI;
 class Camera;
 class CL_Player;
+class Music;
 
 enum ClientNetworkState {
 	CLIENT_IDLE,
@@ -68,6 +69,7 @@ private:
 	AudioSystem *mAudio;
 	GUI *mGUI;
 	Camera *mCamera;
+	Music *mMusic;
 
 private:
 	ENetHost *mHost;
