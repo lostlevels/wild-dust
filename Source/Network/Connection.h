@@ -4,18 +4,8 @@
 #include <map>
 #include <enet/enet.h>
 #include "Core/EventEmitter.h"
-
-//
-// Emitted events:
-//
-//
-
-// All data in bitstream assumed to be:
-//
-// "eventName"
-// data
-//
-//
+#include "Core/Clock.h"
+#include "Network/ClientConnectionData.h"
 
 class Connection : public EventEmitter {
 public:
@@ -40,13 +30,16 @@ public:
 	const std::string &getName() const { return mPlayerName; }
 	float getPing() const { return mPing; }
 	
+	float getServerTime() const;
+	
 private:
+	Clock mClock;
 	ENetHost *mHost;
 	ENetPeer *mClientToServer;
 
 	// Double map
-	std::map<ENetPeer*, std::string> mClientsToNames;
-	std::map<std::string, ENetPeer*> mNamesToClients;
+	std::map<std::string, ClientConnectionData*> mNamesToClients;
+	std::map<ENetPeer*, ClientConnectionData*> mPeerToClients;
 
 	bool mServing;
 	bool mConnected;
@@ -54,6 +47,7 @@ private:
 	// Client only
 	std::string mPlayerName;
 	float mPing;
+	float mServerTimeOffset;
 
 	void processServer();
 	void processClient();
@@ -66,6 +60,10 @@ private:
 
 	void onClientData(const BitStream &stream, ENetPeer *peer);
 	void onServerData(const BitStream &stream);
-	
+
 	void sendTo(ENetPacket *packet, ENetPeer *peer);
+	
+	void pingClient(const std::string &client);
+	void onPinged(const BitStream &stream);
+	void updatePings();
 };

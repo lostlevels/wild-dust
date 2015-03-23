@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 class BitStream {
 public:
 	BitStream(uint8_t *dataBuffer, int dataBufferSize, bool dataBufferAllocated = false);
@@ -33,6 +35,7 @@ public:
 	std::string readString() const;
 
 	template<class T> void writeAny(const T &x);
+	template<class T> void writeAny(const std::string &x); // To support string type in template
 	template<class T> T readAny() const;
 
 	uint8_t *getDataBuffer() { return mDataBuffer; }
@@ -40,16 +43,34 @@ public:
 	int getCapacity() const { return mDataBufferSize; }
 	int getSize() const { return mDataBufferPosition; }
 
+	void rewind() { mDataBufferPosition = 0; }
+
+	BitStream(const BitStream&);
+
 private:
 	uint8_t *mDataBuffer;
 	int mDataBufferSize;
 	mutable int mDataBufferPosition;
 	bool mMemoryAllocated;
 
-	// Prevent copy constructor and assignment since don't want to deal with deleting memory twice right now.
-	BitStream(const BitStream&) = delete;
+	// Prevent assignment since don't want to deal with deleting memory twice right now.
     const BitStream& operator = (const BitStream&) = delete;
 };
+
+inline BitStream::BitStream(const BitStream& other) {
+	if (&other != this) {
+		mDataBuffer = other.mDataBuffer;
+		mDataBufferSize = other.mDataBufferSize;
+		mMemoryAllocated = other.mMemoryAllocated;
+		mDataBufferPosition = 0;
+
+		if (mMemoryAllocated) {
+			// Even though i hate exceptions, I'm tempted to just throw one here if copy constructing an allocated one...
+			mDataBuffer = new  uint8_t[mDataBufferSize];
+			memcpy(mDataBuffer, other.mDataBuffer, mDataBufferSize);
+		}
+	}
+}
 
 inline BitStream::BitStream(uint8_t *dataBuffer, int dataBufferSize, bool dataBufferAllocated) {
 	mDataBuffer = dataBuffer;
@@ -113,9 +134,24 @@ template<class T> inline void BitStream::writeAny(const T &x) {
 	mDataBufferPosition += sizeof(x);
 }
 
+template<class T> inline void BitStream::writeAny(const std::string &x) {
+	writeString(x);
+}
+
 template<class T> inline T BitStream::readAny() const {
 	T x;
 	memcpy(&x, mDataBuffer + mDataBufferPosition, sizeof(x));
 	mDataBufferPosition += sizeof(x);
 	return x;
+}
+
+template <typename T> inline
+void writeStream(BitStream &stream, T t) {
+	stream.writeAny<T>(t);
+}
+
+template <typename First, typename... Args> inline
+void writeStream(BitStream &stream, First head, Args... args) {
+	stream.writeAny<First>(head);
+	writeStream(stream, std::forward<Args>(args)...);
 }

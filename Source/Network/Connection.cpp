@@ -1,22 +1,32 @@
 #include "Precompiled.h"
 #include "Connection.h"
 #include "Core/Logger.h"
+#include <string>
 
 #define NUM_CHANNELS 2
 #define CHANNEL_RELIABLE 0
 #define CHANNEL_UNRELIABLE 1
+
+#define MIN_PACKETS_NEEDED_FOR_PING 10
 
 static std::string generateUniqueName() {
 	static unsigned long long number = 0;
 	return "player" + std::to_string(number++);
 }
 
+static uint8_t scrachBuffer[1024];
+
+static BitStream getTempBistream() {
+	return BitStream(scrachBuffer, sizeof(scrachBuffer));
+}
+
 Connection::Connection() : mHost(nullptr),
+	mClientToServer(nullptr),
 	mServing(false),
 	mConnected(false),
-	mClientToServer(nullptr),
 	mPlayerName(""),
-	mPing(0) {
+	mPing(0),
+	mServerTimeOffset(0) {
 
 }
 
@@ -40,7 +50,11 @@ void Connection::processClient() {
 
 		case ENET_EVENT_TYPE_RECEIVE:
 			BitStream stream(evt.packet->data, evt.packet->dataLength);
+			std::string event = stream.readString();
+			stream.rewind();
 			onServerData(stream);
+			emit<const BitStream&>(event, stream);
+			
 			enet_packet_destroy(evt.packet);
 			break;
 		}
@@ -49,6 +63,10 @@ void Connection::processClient() {
 
 bool Connection::isFullyReady() const {
 	return isServer() ? mConnected : mConnected && !mPlayerName.empty() && mPing > .00001f;
+}
+
+float Connection::getServerTime() const {
+	return isServer() ? mClock.getElapsedSeconds() : mClock.getElapsedSeconds() + mServerTimeOffset;
 }
 
 void Connection::onConnectedToServer() {
@@ -65,6 +83,15 @@ void Connection::onServerData(const BitStream &stream) {
 	std::string event = stream.readString();
 	if (event == "yourname")
 		mPlayerName = stream.readString();
+	else if (event == "ping")
+		onPinged(stream);
+	else if (event == "latency") {
+		float serverTime = stream.readFloat();
+		mPing = stream.readFloat();
+
+		mServerTimeOffset = serverTime + mPing/2.0f - mClock.getElapsedSeconds();
+		printf("Time %f Latency %f\n", stream.readFloat(), stream.readFloat());
+	}
 }
 
 void Connection::processServer() {
@@ -87,34 +114,76 @@ void Connection::processServer() {
 			break;
 		}
 	}
+
+	updatePings();
+}
+
+void Connection::updatePings() {
+	for (auto &kv : mPeerToClients) {
+		auto client = kv.second;
+
+		// Ping every .10 seconds.
+		if (client->mPingClock.getElapsedSeconds() > .10f && client->mPings.size() < MIN_PACKETS_NEEDED_FOR_PING) {
+			client->mPingClock.reset();
+			pingClient(client->mName);
+		}
+	}
 }
 
 void Connection::onClientData(const BitStream &stream, ENetPeer *peer) {
-	gLogger.info("Received from client %s %s\n", stream.readString().c_str(), stream.readString().c_str());
+	if (mPeerToClients.find(peer) == mPeerToClients.end()) return;
+
+	auto client = mPeerToClients[peer];
+	auto event = stream.readString();
+
+	if (event == "pong") {
+		float time = mClock.getElapsedSeconds() - stream.readFloat();
+		if (time < .00000001f)
+			return;
+
+		client->mPings.push_back(time);
+
+		if (client->mPings.size() >= MIN_PACKETS_NEEDED_FOR_PING) {
+			std::sort(client->mPings.begin(), client->mPings.end());
+			client->mPing = client->mPings[client->mPings.size() / 2];
+			// gLogger.info("Client ping median is %f\n", client->mPing);
+
+			BitStream latencyStream = getTempBistream();
+			writeStream<std::string, float, float>(latencyStream, "latency", mClock.getElapsedSeconds(), client->mPing);
+
+			// Might have to be careful of reliable here in case it messes with time
+			send(latencyStream, true, client->mName);
+		}
+	}
 }
 
 void Connection::onClientConnected(ENetPeer *peer) {
 	std::string name = generateUniqueName();
 
-	mClientsToNames[peer] = name;
-	mNamesToClients[name] = peer;
+	auto clientData = new ClientConnectionData(name, peer);
+
+	mPeerToClients[peer] = clientData;
+	mNamesToClients[name] = clientData;
 
 	emit<const std::string&>("playerentered", name);
 
-	static uint8_t streamBuffer[512];
-	BitStream stream(streamBuffer, sizeof(streamBuffer));
+	BitStream stream = getTempBistream();
 	stream.writeString("yourname");
 	stream.writeString(name);
 
 	send(stream, true, name);
+	pingClient(name);
 
 	gLogger.info("client connected %s\n", name.c_str());
 }
 
 void Connection::onClientDisconnected(ENetPeer *peer) {
-	if (mClientsToNames.find(peer) != mClientsToNames.end()) {
-		auto &name = mClientsToNames[peer];
-		mClientsToNames.erase(peer);
+	if (mPeerToClients.find(peer) != mPeerToClients.end()) {
+		std::string name = mPeerToClients[peer]->mName;
+
+		delete mPeerToClients[peer];
+
+		mPeerToClients.erase(peer);
 		mNamesToClients.erase(name);
 	}
 }
@@ -158,6 +227,20 @@ void Connection::serve(unsigned short port) {
 	mConnected = true;
 }
 
+void Connection::pingClient(const std::string &client) {
+	BitStream stream = getTempBistream();
+	writeStream<std::string, float>(stream, "ping", mClock.getElapsedSeconds());
+	send(stream, false, client);
+}
+
+void Connection::onPinged(const BitStream &stream) {
+	// Pong it back, need to reconstruct since stream's size changes on read and write.
+	BitStream packet = getTempBistream();
+	writeStream<std::string, float>(packet, "pong", stream.readFloat());
+
+	send(packet, false);
+}
+
 void Connection::send(const BitStream &stream, bool reliable, const std::string &receiver) {
 	send(stream.getDataBuffer(), stream.getSize(), reliable, receiver);
 }
@@ -168,12 +251,12 @@ void Connection::send(const uint8_t *data, int size, bool reliable, const std::s
 	ENetPacket *packet = enet_packet_create(data, size, reliable ? ENET_PACKET_FLAG_RELIABLE : 0);
 
 	if (mServing && !receiver.empty() && mNamesToClients.find(receiver) != mNamesToClients.end()) {
-		sendTo(packet, mNamesToClients[receiver]);
+		sendTo(packet, mNamesToClients[receiver]->mPeer);
 	}
 	else if (mServing) {
 		// Broadcast
 		for (auto &kv : mNamesToClients) {
-			sendTo(packet, kv.second);
+			sendTo(packet, kv.second->mPeer);
 		}
 	}
 	else if (!mServing && mClientToServer) {

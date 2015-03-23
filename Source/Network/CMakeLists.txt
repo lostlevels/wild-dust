@@ -1,0 +1,6 @@
+file(GLOB SOURCES *.cpp)
+file(GLOB HEADERS *.h)
+add_pch(Precompiled.h Precompiled.cpp ${SOURCES})
+add_library(Network SHARED ${SOURCES} ${HEADERS})
+target_link_libraries(Network ${ENET_LIBS})
+target_link_libraries(Network Core)

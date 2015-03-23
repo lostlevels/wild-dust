@@ -28,9 +28,27 @@ void Entity::removeOldSnapshots() {
 }
 
 void Entity::interpolate(float time) {
-
+	TransformSnapshot snapshot = getSnapshot(time);
+	mPosition = snapshot.mPosition;
 }
 
 TransformSnapshot Entity::getSnapshot(float time) {
-
+	if (mSnapshots.empty() || time < mSnapshots[0].mTime || time > mSnapshots[mSnapshots.size() - 1].mTime)
+		return TransformSnapshot();
+	
+	for (int i = mSnapshots.size() - 2; i > -1; --i) {
+		auto &snapshot = mSnapshots[i];
+		if (snapshot.mTime < time) {
+			auto &snapshotAfter = mSnapshots[i + 1];
+			float t = (time - snapshot.mTime) / (snapshotAfter.mTime - snapshot.mTime);
+			
+			TransformSnapshot lerpedShot;
+			lerpedShot.mPosition = glm::mix(snapshot.mPosition, snapshotAfter.mPosition, t);
+			lerpedShot.mTime = time;
+			
+			return lerpedShot;
+		}
+	}
+	
+	return TransformSnapshot();
 }
