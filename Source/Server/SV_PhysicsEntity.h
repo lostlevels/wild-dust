@@ -14,6 +14,9 @@ public:
 	Vec2 getPosition() const;
 	void setPosition(const Vec2 &pos);
 
+	int getWidth() const { return mWidth; }
+	int getHeight() const { return mHeight; }
+
 	Vec2 getVelocity() const;
 	void setVelocity(const Vec2 &vel);
 

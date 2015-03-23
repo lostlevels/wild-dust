@@ -15,6 +15,5 @@ public:
 	virtual void draw();
 
 private:
-	Vec2 mPosition;
-	Texture *mBoomerang;
+	Texture *mTexture;
 };

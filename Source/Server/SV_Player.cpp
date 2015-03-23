@@ -1,6 +1,8 @@
 #include "Precompiled.h"
 #include "SV_Player.h"
 #include "Server.h"
+#include "World.h"
+#include "SV_Projectile.h"
 
 #define PLAYER_WIDTH 32
 #define PLAYER_HEIGHT 64
@@ -57,6 +59,9 @@ void SV_Player::shoot() {
 	}
 	mShootTimer.reset();
 	mState = PLAYER_SHOOTING;
+
+	SV_Projectile *proj = mServer->getWorld()->spawnEntityTyped<SV_Projectile>("Projectile");
+	proj->setPosition(getPosition() + Vec2(getWidth() + 1, getHeight() / 2 + 5));
 }
 
 void SV_Player::jump() {
