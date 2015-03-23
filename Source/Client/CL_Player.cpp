@@ -1,12 +1,12 @@
 #include "Precompiled.h"
-#include "Player.h"
+#include "CL_Player.h"
 #include "Client.h"
 #include "Renderer.h"
 #include "Texture.h"
 #include "SpriteBatcher.h"
 #include "AnimationSheet.h"
 
-CL_Player::CL_Player(Client *client) : CL_Entity(client) {
+CL_Player::CL_Player(Client *client) : CL_PhysicsEntity(client) {
 	mAnimSheet = new AnimationSheet(client->getRenderer());
 	mAnimSheet->loadFromFile("../Content/Textures/Characters/Cowboy.png", 18, 32);
 	
@@ -26,14 +26,11 @@ CL_Player::~CL_Player() {
 }
 
 void CL_Player::readFromStream(const BitStream &stream) {
-	PlayerState oldState = mState;
+	CL_PhysicsEntity::readFromStream(stream);
 
-	mPosition.x = stream.readFloat();
-	mPosition.y = stream.readFloat();
-	mSize.x = stream.readU16();
-	mSize.y = stream.readU16();
+	PlayerState oldState = mState;
 	mState = (PlayerState)stream.readU8();
-	
+
 	if (mState != oldState) {
 		if (mState == PLAYER_SHOOTING) {
 			mShootAnimation->reset();
@@ -46,7 +43,7 @@ void CL_Player::update(float dt) {
 }
 
 void CL_Player::draw() {
-	getCurrentAnim()->draw(mPosition, mSize, Color(1.0f));
+	getCurrentAnim()->draw(getPosition(), getSize(), Color(1.0f));
 }
 
 Animation *CL_Player::getCurrentAnim() {
@@ -67,9 +64,9 @@ Animation *CL_Player::getCurrentAnim() {
 }
 
 Vec2 CL_Player::ICameraTarget_getPosition() const {
-	return mPosition;
+	return getPosition();
 }
 
 Vec2 CL_Player::ICameraTarget_getSize() const {
-	return mSize;
+	return getSize();
 }

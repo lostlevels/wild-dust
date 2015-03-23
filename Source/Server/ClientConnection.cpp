@@ -1,9 +1,9 @@
 #include "Precompiled.h"
 #include "ClientConnection.h"
 #include "Shared/Protocol.h"
-#include "Player.h"
 #include "Server.h"
 #include "World.h"
+#include "SV_Player.h"
 
 ClientConnection::ClientConnection(Server *server, ENetPeer *peer) {
 	mServer = server;

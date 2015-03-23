@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Entity.h"
+#include "SV_Entity.h"
 
 class SV_Projectile : public SV_Entity {
 public:

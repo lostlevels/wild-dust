@@ -1,11 +1,11 @@
 #include "Precompiled.h"
-#include "Projectile.h"
+#include "CL_Projectile.h"
 #include "Texture.h"
 #include "Client.h"
 #include "Renderer.h"
 #include "SpriteBatcher.h"
 
-CL_Projectile::CL_Projectile(Client *client) : CL_Entity(client) {
+CL_Projectile::CL_Projectile(Client *client) : CL_PhysicsEntity(client) {
 	mBoomerang = client->getRenderer()->getTexture("../Content/Textures/Boomerang.png");
 }
 
@@ -14,8 +14,7 @@ CL_Projectile::~CL_Projectile() {
 }
 
 void CL_Projectile::readFromStream(const BitStream &stream) {
-	CL_Entity::readFromStream(stream);
-	mPosition = stream.readAny<Vec2>();
+	CL_PhysicsEntity::readFromStream(stream);
 }
 
 void CL_Projectile::draw() {

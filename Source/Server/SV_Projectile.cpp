@@ -1,5 +1,5 @@
 #include "Precompiled.h"
-#include "Projectile.h"
+#include "SV_Projectile.h"
 
 SV_Projectile::SV_Projectile(Server *server) : SV_Entity(server) {
 

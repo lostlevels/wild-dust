@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Entity.h"
+#include "CL_PhysicsEntity.h"
 #include "Core/Clock.h"
 
 class Texture;
 
-class CL_Projectile : public CL_Entity {
+class CL_Projectile : public CL_PhysicsEntity {
 public:
 	CL_Projectile(Client *client);
 	virtual ~CL_Projectile();

@@ -1,7 +1,7 @@
 #include "Precompiled.h"
-#include "Player.h"
 #include "World.h"
-#include "Projectile.h"
+#include "SV_Player.h"
+#include "SV_Projectile.h"
 
 #define ENTITY_FACTORY(x) [](Server *server){return new x(server); }
 

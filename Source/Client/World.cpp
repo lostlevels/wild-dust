@@ -1,6 +1,6 @@
 #include "Precompiled.h"
 #include "World.h"
-#include "Entity.h"
+#include "CL_Entity.h"
 #include "Shared/Protocol.h"
 
 ClientWorld::ClientWorld(Client *client) {

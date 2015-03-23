@@ -1,5 +1,5 @@
 #include "Precompiled.h"
-#include "Entity.h"
+#include "CL_Entity.h"
 
 CL_Entity::CL_Entity(Client *client) {
 	mClient = client;

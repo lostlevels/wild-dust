@@ -1,6 +1,6 @@
 #include "Precompiled.h"
 #include "World.h"
-#include "Entity.h"
+#include "SV_Entity.h"
 
 ServerWorld::ServerWorld(Server *server) {
 	mServer = server;

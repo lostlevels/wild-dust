@@ -1,7 +1,7 @@
 #include "Precompiled.h"
-#include "Player.h"
 #include "World.h"
-#include "Projectile.h"
+#include "CL_Player.h"
+#include "CL_Projectile.h"
 
 #define ENTITY_FACTORY(x) [](Client *client){return new x(client); }
 

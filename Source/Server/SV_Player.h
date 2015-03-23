@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Entity.h"
+#include "SV_PhysicsEntity.h"
 #include "Core/Clock.h"
 #include "Shared/PlayerState.h"
 
-class SV_Player : public SV_Entity {
+class SV_Player : public SV_PhysicsEntity {
 public:
 	SV_Player(Server *server);
 
@@ -19,13 +19,6 @@ public:
 	virtual void jump();
 
 protected:
-	b2Body *mPhysBody;
-	b2Fixture *mPhysFixture;
-
 	PlayerState mState;
-
 	Clock mShootTimer;
-
-private:
-	void createPhysicsBody();
 };

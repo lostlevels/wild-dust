@@ -1,5 +1,5 @@
 #include "Precompiled.h"
-#include "Entity.h"
+#include "SV_Entity.h"
 
 SV_Entity::SV_Entity(Server *server) {
 	mServer = server;

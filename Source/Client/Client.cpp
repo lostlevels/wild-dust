@@ -9,7 +9,7 @@
 #include "Audio.h"
 #include "GUI.h"
 #include "Camera.h"
-#include "Player.h"
+#include "CL_Player.h"
 #include <SDL_ttf.h>
 
 Client::Client() {

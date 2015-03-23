@@ -1,13 +1,14 @@
 #pragma once
 
-#include "Entity.h"
+#include "CL_Entity.h"
+#include "CL_PhysicsEntity.h"
 #include "CameraTarget.h"
 #include "Shared/PlayerState.h"
 
 class AnimationSheet;
 class Animation;
 
-class CL_Player : public CL_Entity, public ICameraTarget {
+class CL_Player : public CL_PhysicsEntity, public ICameraTarget {
 public:
 	CL_Player(Client *client);
 	virtual ~CL_Player();
@@ -20,9 +21,6 @@ public:
 
 	virtual Vec2 ICameraTarget_getPosition() const;
 	virtual Vec2 ICameraTarget_getSize() const;
-
-	const Vec2 &getPosition() const { return mPosition; }
-	const Vec2 &getSize() const { return mSize; }
 
 	PlayerState getState() const { return mState; }
 
@@ -37,8 +35,5 @@ private:
 	Animation *getCurrentAnim();
 
 private:
-	Vec2 mPosition;
-	Vec2 mSize;
-
 	PlayerState mState;
 };
