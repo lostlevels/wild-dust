@@ -6,6 +6,7 @@
 class ServerWorld;
 class ClientConnection;
 class ServerMap;
+class Physics;
 
 class SERVER_API Server {
 public:
@@ -19,8 +20,10 @@ public:
 
 	void update();
 
+	Physics *getPhysics() { return mPhysics; }
+
 	ServerWorld *getWorld() { return mWorld; }
-	b2World *getPhysicsWorld() { return mPhysicsWorld; }
+	ServerMap *getMap() { return mMap; }
 
 	int getPortNumber() const { return mPortNumber; }
 	int getTickRate() const { return mTickRate; }
@@ -48,9 +51,9 @@ private:
 	float mTimeLeftToSimulate;
 	Clock mSendClock;
 
-	ServerWorld *mWorld;
-	b2World *mPhysicsWorld;
+	Physics *mPhysics;
 
+	ServerWorld *mWorld;
 	ServerMap *mMap;
 
 private:

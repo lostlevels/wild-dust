@@ -5,8 +5,10 @@
 #include "Texture.h"
 #include "SpriteBatcher.h"
 #include "AnimationSheet.h"
+#include "Physics/PhysicsObject.h"
+#include "Physics/PlayerMovement.h"
 
-CL_Player::CL_Player(Client *client) : CL_PhysicsEntity(client) {
+CL_Player::CL_Player(Client *client) : CL_PhysicsEntity(client, true) {
 	mAnimSheet = new AnimationSheet(client->getRenderer());
 	mAnimSheet->loadFromFile("../Content/Textures/Characters/Cowboy.png", 18, 32);
 	
@@ -21,10 +23,13 @@ CL_Player::CL_Player(Client *client) : CL_PhysicsEntity(client) {
 	mShootAnimation->setLoopCount(1);
 	mShootAnimation->setSpeed(10.0f);
 
+	mMovement = new PlayerMovement(getPhysicsObject());
+
 	mLookingLeft = false;
 }
 
 CL_Player::~CL_Player() {
+	delete mMovement;
 	delete mAnimSheet;
 }
 
@@ -48,9 +53,13 @@ void CL_Player::update(float dt) {
 }
 
 void CL_Player::draw() {
+	Vec2 size(
+		getPhysicsObject()->getWidth(),
+		getPhysicsObject()->getHeight());
+
 	Animation *currAnim = getCurrentAnim();
 	currAnim->setFlipX(mLookingLeft);
-	currAnim->draw(getPosition(), getSize(), Color(1.0f));
+	currAnim->draw(getPhysicsObject()->getPosition(), size, Color(1.0f));
 }
 
 Animation *CL_Player::getCurrentAnim() {
@@ -71,9 +80,11 @@ Animation *CL_Player::getCurrentAnim() {
 }
 
 Vec2 CL_Player::ICameraTarget_getPosition() const {
-	return getPosition();
+	return getPhysicsObject()->getPosition();
 }
 
 Vec2 CL_Player::ICameraTarget_getSize() const {
-	return getSize();
+	return Vec2(
+		getPhysicsObject()->getWidth(),
+		getPhysicsObject()->getHeight());
 }

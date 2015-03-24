@@ -10,5 +10,7 @@ target_link_libraries(Client
 	${ENET_LIBS}
 	${OPENGL_gl_LIBRARY}
 	${OPENAL_LIBS}
-	${TMXPARSER_LIBS})
+	${TMXPARSER_LIBS}
+	${BOX2D_LIBS})
 target_link_libraries(Client Core)
+target_link_libraries(Client Physics)

@@ -4,8 +4,9 @@
 #include "Client.h"
 #include "Renderer.h"
 #include "SpriteBatcher.h"
+#include "Physics/PhysicsObject.h"
 
-CL_Projectile::CL_Projectile(Client *client) : CL_PhysicsEntity(client) {
+CL_Projectile::CL_Projectile(Client *client) : CL_PhysicsEntity(client, false) {
 	mTexture = client->getRenderer()->getTexture("../Content/Textures/Misc/Bullet.png");
 }
 
@@ -18,6 +19,10 @@ void CL_Projectile::readFromStream(const BitStream &stream) {
 }
 
 void CL_Projectile::draw() {
+	Vec2 size(
+		getPhysicsObject()->getWidth(),
+		getPhysicsObject()->getHeight());
+
 	Recti source;
 	source.x = 0;
 	source.y = 0;
@@ -25,5 +30,5 @@ void CL_Projectile::draw() {
 	source.h = mTexture->getHeight();
 	Renderer *renderer = mClient->getRenderer();
 	SpriteBatcher *batcher = renderer->getSpriteBatcher(mTexture, BLEND_ALPHA);
-	batcher->addSprite(getPosition(), getSize(), source, Color(1.0f), FLIP_NONE);
+	batcher->addSprite(getPhysicsObject()->getPosition(), size, source, Color(1.0f), FLIP_NONE);
 }

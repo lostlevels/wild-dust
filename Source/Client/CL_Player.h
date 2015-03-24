@@ -7,6 +7,7 @@
 
 class AnimationSheet;
 class Animation;
+class PlayerMovement;
 
 class CL_Player : public CL_PhysicsEntity, public ICameraTarget {
 public:
@@ -24,6 +25,10 @@ public:
 
 	PlayerState getState() const { return mState; }
 
+	PlayerMovement *getPM() const { return mMovement; }
+
+	bool mLookingLeft;
+
 protected:
 	AnimationSheet *mAnimSheet;
 	Animation *mIdleAnimation;
@@ -36,5 +41,6 @@ private:
 
 private:
 	PlayerState mState;
-	bool mLookingLeft;
+
+	PlayerMovement *mMovement;
 };

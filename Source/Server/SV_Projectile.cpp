@@ -7,7 +7,7 @@
 #define PROJECTILE_VELOCITY 1000
 
 SV_Projectile::SV_Projectile(Server *server) : SV_PhysicsEntity(server, true) {
-	setBox(8, 8);
+	getPhysicsObject()->setBox(8, 8);
 	mMovingLeft = false;
 	mFiredBy = NULL;
 }
@@ -19,13 +19,10 @@ void SV_Projectile::writeToStream(BitStream &stream) {
 void SV_Projectile::update(float dt) {
 	bool shouldDestroy = false;
 
-	for (const b2ContactEdge *contactEdge = getBody()->GetContactList(); contactEdge; contactEdge = contactEdge->next) {
-		const b2Contact *contact = contactEdge->contact;
-		if (!contact->IsTouching()) {
-			continue;
-		}
-
-		SV_Entity *collider = (SV_Entity*)contact->GetFixtureA()->GetUserData();
+	std::vector<PhysicsCollision> cols = getPhysicsObject()->getCollisions();
+	
+	for (PhysicsCollision &col : cols) {
+		SV_Entity *collider = (SV_Entity*)col.otherObject->getUserData();
 		if (collider) {
 			if (collider->getEntityType() == ENTITY_PLAYER) {
 				if (collider != mFiredBy) {
@@ -47,5 +44,5 @@ void SV_Projectile::update(float dt) {
 		return;
 	}
 
-	setVelocity(Vec2(mMovingLeft ? -PROJECTILE_VELOCITY : PROJECTILE_VELOCITY, 0.0));
+	getPhysicsObject()->setVelocity(Vec2(mMovingLeft ? -PROJECTILE_VELOCITY : PROJECTILE_VELOCITY, 0.0));
 }

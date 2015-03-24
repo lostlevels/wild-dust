@@ -6,6 +6,7 @@
 class Client;
 class Texture;
 class ClientMap;
+class PhysicsObject;
 
 class ClientMapTileset {
 public:
@@ -57,11 +58,15 @@ public:
 	void draw() const;
 
 private:
+	void createCollider(int x, int y, int w, int h);
+
+private:
 	Client *mClient;
 	bool mIsLoaded;
 	std::string mName;
 	std::vector<ClientMapTileset*> mTilesets;
 	std::vector<ClientMapLayer*> mLayers;
+	std::vector<PhysicsObject*> mColliders;
 	int mWidth;
 	int mHeight;
 };

@@ -4,6 +4,7 @@
 #include "Server.h"
 #include "World.h"
 #include "SV_Player.h"
+#include "Physics/PlayerMovement.h"
 
 ClientConnection::ClientConnection(Server *server, ENetPeer *peer) {
 	mServer = server;
@@ -48,13 +49,15 @@ void ClientConnection::sendPlayerEntityID() {
 
 void ClientConnection::processPlayerInput(const PlayerInput &input) {
 	if (input.buttonMask & BTN_MOVE_LEFT) {
-		mPlayer->moveLeft();
+		mPlayer->getPM()->moveLeft();
+		mPlayer->mLookingLeft = true;
 	}
 	if (input.buttonMask & BTN_MOVE_RIGHT) {
-		mPlayer->moveRight();
+		mPlayer->getPM()->moveRight();
+		mPlayer->mLookingLeft = false;
 	}
 	if (input.buttonMask & BTN_JUMP) {
-		mPlayer->jump();
+		mPlayer->getPM()->jump();
 	}
 	if (input.buttonMask & BTN_ATTACK) {
 		mPlayer->shoot();

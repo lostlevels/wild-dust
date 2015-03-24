@@ -5,10 +5,10 @@
 #include "Shared/Protocol.h"
 #include "EntityRegistration.h"
 #include "Map.h"
+#include "Physics/Physics.h"
 
 Server::Server() {
-	b2Vec2 gravity(0.0f, 10.0f);
-	mPhysicsWorld = new b2World(gravity);
+	mPhysics = new Physics();
 
 	mWorld = new ServerWorld(this);
 	RegisterServerEntityTypes(mWorld);
@@ -19,7 +19,7 @@ Server::Server() {
 Server::~Server() {
 	delete mMap;
 	delete mWorld;
-	delete mPhysicsWorld;
+	delete mPhysics;
 }
 
 bool Server::init(int portNumber, int tickRate, int sendRate, int maxPlayers, const std::string &mapName) {
@@ -177,7 +177,7 @@ void Server::handleReceiveEvent(ENetPeer *peer, const BitStream &stream) {
 }
 
 void Server::tick(float dt) {
-	mPhysicsWorld->Step(dt, 10, 10);
+	mPhysics->step(dt);
 	mWorld->update(dt);
 }
 

@@ -16,6 +16,7 @@ link_directories(
 	${TMXPARSER_LIBDIR})
 
 add_subdirectory(Core)
+add_subdirectory(Physics)
 add_subdirectory(Client)
 add_subdirectory(Server)
 add_subdirectory(Game)

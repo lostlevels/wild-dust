@@ -1,5 +1,6 @@
 #include "Precompiled.h"
 #include "Client.h"
+#include "Physics/Physics.h"
 #include "Renderer.h"
 #include "World.h"
 #include "Map.h"
@@ -11,10 +12,13 @@
 #include "Camera.h"
 #include "CL_Player.h"
 #include "Music.h"
+#include "Physics/PlayerMovement.h"
 #include <SDL_ttf.h>
 
 Client::Client() {
 	mQuitSignaled = false;
+
+	mPhysics = new Physics();
 
 	mRenderer = new Renderer(this);
 
@@ -38,6 +42,8 @@ Client::Client() {
 
 	mPeer = NULL;
 	mPlayerEntity = NULL;
+
+	mPhysicsAccum = 0.0f;
 }
 
 Client::~Client() {
@@ -49,6 +55,7 @@ Client::~Client() {
 	delete mMap;
 	delete mWorld;
 	delete mRenderer;
+	delete mPhysics;
 }
 
 bool Client::init() {
@@ -162,6 +169,13 @@ void Client::tick() {
 		mSendInputClock.reset();
 	}
 
+	const float fixedPhysicsTimestep = 1.0f / 60.0f;
+	mPhysicsAccum += dt;
+	while (mPhysicsAccum >= fixedPhysicsTimestep) {
+		mPhysics->step(fixedPhysicsTimestep);
+		mPhysicsAccum -= fixedPhysicsTimestep;
+	}
+
 	processNetworkEvents();
 
 	if (mPlayerEntity) {
@@ -184,6 +198,9 @@ void Client::sendPlayerInput() {
 
 	PlayerInput input = mInput->makeInputState();
 
+	// Process input client side for prediction
+	handleInput(input);
+
 	uint8_t messageBuffer[128000];
 	BitStream message(messageBuffer, sizeof(messageBuffer));
 	message.writeU8(NETCMD_CTS_PLAYER_INPUT);
@@ -191,6 +208,20 @@ void Client::sendPlayerInput() {
 
 	ENetPacket *packet = enet_packet_create(message.getDataBuffer(), message.getSize(), ENET_PACKET_FLAG_RELIABLE | ENET_PACKET_FLAG_NO_ALLOCATE);
 	enet_peer_send(mPeer, 0, packet);
+}
+
+void Client::handleInput(PlayerInput input) {
+	if (input.buttonMask & BTN_MOVE_LEFT) {
+		mPlayerEntity->getPM()->moveLeft();
+		mPlayerEntity->mLookingLeft = true;
+	}
+	if (input.buttonMask & BTN_MOVE_RIGHT) {
+		mPlayerEntity->getPM()->moveRight();
+		mPlayerEntity->mLookingLeft = false;
+	}
+	if (input.buttonMask & BTN_JUMP) {
+		mPlayerEntity->getPM()->jump();
+	}
 }
 
 void Client::processNetworkEvents() {

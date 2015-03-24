@@ -2,16 +2,17 @@
 
 #include "CL_Entity.h"
 
+class PhysicsObject;
+
 class CL_PhysicsEntity : public CL_Entity {
 public:
-	CL_PhysicsEntity(Client *client);
+	CL_PhysicsEntity(Client *client, bool canMove);
+	virtual ~CL_PhysicsEntity();
 
 	virtual void readFromStream(const BitStream &stream);
 
-	const Vec2 &getPosition() const { return mPosition; }
-	const Vec2 &getSize() const { return mSize; }
+	PhysicsObject *getPhysicsObject() const { return mPhysObject; }
 
 private:
-	Vec2 mPosition;
-	Vec2 mSize;
+	PhysicsObject *mPhysObject;
 };

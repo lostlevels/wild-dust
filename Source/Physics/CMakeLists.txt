@@ -1,0 +1,7 @@
+file(GLOB SOURCES *.cpp)
+file(GLOB HEADERS *.h)
+add_pch(Precompiled.h Precompiled.cpp ${SOURCES})
+add_library(Physics SHARED ${SOURCES} ${HEADERS})
+add_definitions(-DBUILDING_PHYSICS)
+target_link_libraries(Physics ${BOX2D_LIBS})
+target_link_libraries(Physics Core)
