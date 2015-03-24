@@ -1,6 +1,6 @@
 <AnimationSheet Texture="Characters/Cowboy.png" FrameWidth="36" FrameHeight="64">
 	<Animation Name="Idle">
-		<Frame Index="0" AABB="0 18 36 46" />
+		<Frame Index="12" AABB="0 18 36 46" />
 	</Animation>
 	<Animation Name="Walk">
 		<Frame Index="6" AABB="0 18 36 46" />
