@@ -60,6 +60,6 @@ void ServerMap::createCollider(int x, int y, int w, int h) {
 	PhysicsObject *object = phys->createObject(PHYSICS_STATIC);
 	object->setBox(w, h);
 	object->setPosition(Vec2(x, y));
-	object->setFriction(100.0f);
+	object->setFriction(150.0f);
 	mColliders.push_back(object);
 }

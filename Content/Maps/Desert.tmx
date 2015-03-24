@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="16" tileheight="16" nextobjectid="18">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="50" tilewidth="16" tileheight="16" nextobjectid="30">
  <tileset firstgid="1" name="DesertBlocks" tilewidth="16" tileheight="16">
   <image source="../Textures/Tilesets/DesertBlocks.png" width="16" height="64"/>
  </tileset>
- <layer name="Tile Layer 1" width="100" height="100">
+ <layer name="Tile Layer 1" width="100" height="50">
   <data encoding="base64" compression="zlib">
-   eJzt0sEJACAMBMFo/0WnAR8+hAsyC1NAjlRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiTl24P91O3Na7D0P7yU3hIAAAAAAAAAAAAAAAAAAAAAAAAAAAA4a4sSFwE=
+   eJzt1UEOgjAARcGi97+zeyKJXSCvzbzk720H4RhjHKfpP53v/Wr6Tzxa8WjFoxWPVjxa8WjFoxWPVjxa8WjFoxWPVjxa8WjFoxWPVjxa8WjFoxWPVjxa8WjFoxWPVjxa8WjFY4zXxZ6IR+vMPFrxaLWzR+m78Gs7e6x4lp09VmxFj7veP4V324oed/22wrmf9ljxm3tnT3us8H88N/P8zD5vT3us2Mz9zN4nj1Y8WvFo9e3u32ZmZmZmG+8DJFIKVQ==
   </data>
  </layer>
- <objectgroup name="Collision" visible="0">
-  <object id="15" x="0" y="688" width="816" height="112"/>
-  <object id="16" x="816" y="672" width="160" height="128"/>
-  <object id="17" x="976" y="656" width="624" height="144"/>
+ <objectgroup name="Object Layer 1">
+  <object id="1" x="0" y="688" width="1600" height="112"/>
+  <object id="21" x="1152" y="608" width="80" height="32"/>
+  <object id="22" x="1328" y="608" width="96" height="32"/>
+  <object id="24" x="960" y="448" width="96" height="32"/>
+  <object id="25" x="992" y="560" width="80" height="32"/>
+  <object id="27" x="800" y="512" width="96" height="32"/>
+  <object id="28" x="432" y="592" width="96" height="32"/>
+  <object id="29" x="640" y="560" width="64" height="32"/>
  </objectgroup>
 </map>
