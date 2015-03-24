@@ -96,11 +96,12 @@ std::vector<PhysicsCollision> PhysicsObject::getCollisions() const {
 			continue;
 		}
 
-		b2Vec2 localNormal = contact->GetManifold()->localNormal;
+		b2WorldManifold man;
+		contact->GetWorldManifold(&man);
 
 		PhysicsCollision col;
 		col.otherObject = reinterpret_cast<PhysicsObject*>(contact->GetFixtureA()->GetUserData());
-		col.edgeNormal = Vec2(localNormal.x, localNormal.y);
+		col.edgeNormal = Vec2(man.normal.x, man.normal.y);
 		cols.push_back(col);
 	}
 
