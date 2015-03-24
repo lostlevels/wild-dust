@@ -32,7 +32,7 @@ void PlayerMovement::jump() {
 
 	if (canJump) {
 		Vec2 vel = mPlayerObject->getVelocity();
-		vel.y -= 200;
+		vel.y = -375;
 		mPlayerObject->setVelocity(vel);
 	}
 }
