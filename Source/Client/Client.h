@@ -3,7 +3,9 @@
 #include "Core/Clock.h"
 #include "Core/BitStream.h"
 #include "Core/Config.h"
+#include "Shared/Protocol.h"
 
+class Physics;
 class Renderer;
 class ClientWorld;
 class ClientMap;
@@ -12,6 +14,7 @@ class AudioSystem;
 class GUI;
 class Camera;
 class CL_Player;
+class Music;
 
 enum ClientNetworkState {
 	CLIENT_IDLE,
@@ -38,6 +41,7 @@ public:
 	int getWindowHeight() const { return mWindowHeight; }
 	bool isQuitSignaled() const { return mQuitSignaled; }
 
+	Physics *getPhysics() const { return mPhysics; }
 	Renderer *getRenderer() const { return mRenderer; }
 	GUI *getGUI() const { return mGUI; }
 
@@ -45,6 +49,7 @@ public:
 
 private:
 	void sendPlayerInput();
+	void handleInput(PlayerInput input);
 	void processNetworkEvents();
 	void handleConnectEvent();
 	void handleDisconnectEvent();
@@ -61,6 +66,7 @@ private:
 	bool mQuitSignaled;
 	Clock mTickTock;
 	Config mSettings;
+	Physics *mPhysics;
 	Renderer *mRenderer;
 	ClientWorld *mWorld;
 	ClientMap *mMap;
@@ -68,6 +74,7 @@ private:
 	AudioSystem *mAudio;
 	GUI *mGUI;
 	Camera *mCamera;
+	Music *mMusic;
 
 private:
 	ENetHost *mHost;
@@ -75,5 +82,6 @@ private:
 	ClientNetworkState mNetworkState;
 	Clock mConnectionClock;
 	Clock mSendInputClock;
+	float mPhysicsAccum;
 	CL_Player *mPlayerEntity;
 };

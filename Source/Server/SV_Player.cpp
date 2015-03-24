@@ -3,6 +3,8 @@
 #include "Server.h"
 #include "World.h"
 #include "SV_Projectile.h"
+#include "Physics/PhysicsObject.h"
+#include "Physics/PlayerMovement.h"
 
 #define PLAYER_WIDTH 32
 #define PLAYER_HEIGHT 64
@@ -10,9 +12,15 @@
 #define PLAYER_SHOOT_COOLDOWN 0.5f
 
 SV_Player::SV_Player(Server *server) : SV_PhysicsEntity(server, true) {
-	setBox(32, 64);
+	getPhysicsObject()->setBox(32, 64);
+	mMovement = new PlayerMovement(getPhysicsObject());
+
 	mState = PLAYER_IDLE;
 	mLookingLeft = true;
+}
+
+SV_Player::~SV_Player() {
+	delete mMovement;
 }
 
 void SV_Player::update(float dt) {
@@ -22,7 +30,7 @@ void SV_Player::update(float dt) {
 		}
 	}
 	else {
-		Vec2 vel = getVelocity();
+		Vec2 vel = getPhysicsObject()->getVelocity();
 		if (vel.y != 0) {
 			mState = PLAYER_JUMPING;
 		}
@@ -43,20 +51,6 @@ void SV_Player::writeToStream(BitStream &stream) {
 	stream.writeBool(mLookingLeft);
 }
 
-void SV_Player::moveLeft() {
-	Vec2 vel = getVelocity();
-	vel.x = -300;
-	setVelocity(vel);
-	mLookingLeft = true;
-}
-
-void SV_Player::moveRight() {
-	Vec2 vel = getVelocity();
-	vel.x = 300;
-	setVelocity(vel);
-	mLookingLeft = false;
-}
-
 void SV_Player::shoot() {
 	if (mState == PLAYER_SHOOTING) {
 		return;
@@ -64,38 +58,16 @@ void SV_Player::shoot() {
 	mShootTimer.reset();
 	mState = PLAYER_SHOOTING;
 
-	Vec2 projOffset(0.0f, getHeight() / 2 + 5);
+	Vec2 projOffset(0.0f, getPhysicsObject()->getHeight() / 2 + 5);
 	if (mLookingLeft) {
 		projOffset.x = -5;
 	}
 	else {
-		projOffset.x = getWidth() + 5;
+		projOffset.x = getPhysicsObject()->getWidth() + 5;
 	}
 
 	SV_Projectile *proj = mServer->getWorld()->spawnEntityTyped<SV_Projectile>(ENTITY_PROJECTILE);
-	proj->setPosition(getPosition() + projOffset);
+	proj->getPhysicsObject()->setPosition(getPhysicsObject()->getPosition() + projOffset);
 	proj->mMovingLeft = mLookingLeft;
 	proj->mFiredBy = this;
-}
-
-void SV_Player::jump() {
-	bool canJump = false;
-
-	for (b2ContactEdge *edge = getBody()->GetContactList(); edge; edge = edge->next) {
-		b2Contact *contact = edge->contact;
-		if (contact->IsTouching() == false) {
-			continue;
-		}
-
-		if (contact->GetManifold()->localNormal.y == -1) {
-			canJump = true;
-			break;
-		}
-	}
-
-	if (canJump) {
-		Vec2 vel = getVelocity();
-		vel.y -= 180;
-		setVelocity(vel);
-	}
 }

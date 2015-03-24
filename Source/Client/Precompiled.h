@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/Precompiled.h"
+#include "Physics/Precompiled.h"
 
 #include <SDL.h>
 

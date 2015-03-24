@@ -34,5 +34,4 @@ private:
 	Shader *mFontShader;
 	std::map<std::string, Texture*> mTextureMap;
 	std::vector<SpriteBatcher*> mSpriteBatchers;
-	Vec2 mCameraPos;
 };

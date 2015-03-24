@@ -2,6 +2,8 @@
 #include "Map.h"
 #include "Server.h"
 #include <Tmx.h>
+#include "Physics/Physics.h"
+#include "Physics/PhysicsObject.h"
 
 ServerMap::ServerMap(Server *server) {
 	mServer = server;
@@ -27,7 +29,7 @@ bool ServerMap::loadFromFile(const std::string &mapName) {
 		const Tmx::ObjectGroup *tmxGroup = tmxMap.GetObjectGroup(i);
 		for (int j = 0; j < tmxGroup->GetNumObjects(); ++j) {
 			const Tmx::Object *tmxObject = tmxGroup->GetObject(j);
-			createCollisionObject(
+			createCollider(
 				tmxObject->GetX(),
 				tmxObject->GetY(),
 				tmxObject->GetWidth(),
@@ -44,40 +46,20 @@ bool ServerMap::loadFromFile(const std::string &mapName) {
 }
 
 void ServerMap::unload() {
-	b2World *physWorld = mServer->getPhysicsWorld();
-
-	for (b2Body *object : mCollisionObjects) {
-		physWorld->DestroyBody(object);
+	for (PhysicsObject *collider : mColliders) {
+		delete collider;
 	}
-	mCollisionObjects.clear();
+	mColliders.clear();
 
 	mIsLoaded = false;
 	mName.clear();
 }
 
-void ServerMap::createCollisionObject(int x, int y, int w, int h) {
-	b2World *physWorld = mServer->getPhysicsWorld();
-
-
-	b2BodyDef bodyDef;
-	bodyDef.type = b2_staticBody;
-	bodyDef.fixedRotation = true;
-
-	int realX = x + w / 2;
-	int realY = y + h / 2;
-
-	b2Body *object = physWorld->CreateBody(&bodyDef);
-	object->SetTransform(b2Vec2(realX / 100.0f, realY / 100.0f), 0.0f);
-
-	b2PolygonShape shape;
-	shape.SetAsBox((w / 100.0f) / 2, (h / 100.0f) / 2);
-
-	b2FixtureDef fixtureDef;
-	fixtureDef.shape = &shape;
-	fixtureDef.density = 1.0f;
-	fixtureDef.friction = 1.0f;
-
-	object->CreateFixture(&fixtureDef);
-
-	mCollisionObjects.push_back(object);
+void ServerMap::createCollider(int x, int y, int w, int h) {
+	Physics *phys = mServer->getPhysics();
+	PhysicsObject *object = phys->createObject(PHYSICS_STATIC);
+	object->setBox(w, h);
+	object->setPosition(Vec2(x, y));
+	object->setFriction(100.0f);
+	mColliders.push_back(object);
 }

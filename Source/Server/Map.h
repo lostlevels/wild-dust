@@ -1,6 +1,7 @@
 #pragma once
 
 class Server;
+class PhysicsObject;
 
 class ServerMap {
 public:
@@ -12,12 +13,12 @@ public:
 	std::string getName() const { return mName; }
 
 private:
-	void createCollisionObject(int x, int y, int w, int h);
+	void createCollider(int x, int y, int w, int h);
 	void unload();
 
 private:
 	Server *mServer;
 	bool mIsLoaded;
 	std::string mName;
-	std::vector<b2Body*> mCollisionObjects;
+	std::vector<PhysicsObject*> mColliders;
 };

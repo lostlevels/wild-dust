@@ -5,6 +5,8 @@
 #include "Renderer.h"
 #include "SpriteBatcher.h"
 #include <Tmx.h>
+#include "Physics/Physics.h"
+#include "Physics/PhysicsObject.h"
 
 ClientMapTileset::ClientMapTileset(ClientMap *map) {
 	mMap = map;
@@ -83,6 +85,18 @@ bool ClientMap::loadFromFile(const std::string &mapName) {
 		mLayers.push_back(layer);
 	}
 
+	for (int i = 0; i < tmxMap.GetNumObjectGroups(); ++i) {
+		const Tmx::ObjectGroup *tmxGroup = tmxMap.GetObjectGroup(i);
+		for (int j = 0; j < tmxGroup->GetNumObjects(); ++j) {
+			const Tmx::Object *tmxObject = tmxGroup->GetObject(j);
+			createCollider(
+				tmxObject->GetX(),
+				tmxObject->GetY(),
+				tmxObject->GetWidth(),
+				tmxObject->GetHeight());
+		}
+	}
+
 	gLogger.info("Loaded map '%s` successfully.\n", mapName.c_str());
 
 	mName = mapName;
@@ -101,6 +115,11 @@ void ClientMap::unload() {
 		delete tileset;
 	}
 	mTilesets.clear();
+
+	for (PhysicsObject *collider : mColliders) {
+		delete collider;
+	}
+	mColliders.clear();
 
 	mIsLoaded = false;
 }
@@ -134,3 +153,13 @@ void ClientMap::draw() const {
 		}
 	}
 }
+
+void ClientMap::createCollider(int x, int y, int w, int h) {
+	Physics *phys = mClient->getPhysics();
+	PhysicsObject *object = phys->createObject(PHYSICS_STATIC);
+	object->setBox(w, h);
+	object->setPosition(Vec2(x, y));
+	object->setFriction(100.0f);
+	mColliders.push_back(object);
+}
+
