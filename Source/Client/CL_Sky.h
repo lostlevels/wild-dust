@@ -14,8 +14,12 @@ public:
 	virtual void draw();
 	virtual void update(float dt);
 private:
-	Texture *mTexture;
+	Texture *mStarTexture;
+	Texture *mMoonTexture;
 
 	std::vector<Vec2> mStarPositions;
-	float    mTwinkleTime;
+	std::vector<Vec2> mStarScales;
+
+	void drawMoon();
+	void drawStars();
 };
