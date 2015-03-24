@@ -57,6 +57,11 @@ public:
 
 	void draw() const;
 
+	int getWidth() const { return mWidth; }
+	int getHeight() const { return mHeight; }
+	int getWidthInPixels() const { return getWidth() * 16; }
+	int getHeightInPixels() const { return getHeight() * 16; }
+
 private:
 	void createCollider(int x, int y, int w, int h);
 
