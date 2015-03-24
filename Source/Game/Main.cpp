@@ -56,7 +56,14 @@ int main(int argc, char *argv[])
 	
 	Client *client = new Client();
 	client->init();
-	client->connectToServer("37.142.124.227", 5000);
+	if (listenServer) {
+		client->connectToServer("127.0.0.1", 5000);
+	}
+	else {
+		client->connectToServer(
+			client->getSettings().getString("ServerIP", "127.0.0.1").c_str(),
+			client->getSettings().getInt("ServerPort", 5000));
+	}
 	
 	client->addSky();
 	
