@@ -31,6 +31,9 @@ void SV_Projectile::update(float dt) {
 					break;
 				}
 			}
+			else {
+				shouldDestroy = true;
+			}
 		}
 		else {
 			shouldDestroy = true;
