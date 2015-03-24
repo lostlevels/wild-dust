@@ -21,7 +21,7 @@ CL_Sky::CL_Sky(Client *client) : CL_Entity(client) {
 		position.x = rand() % windowWidth;
 		position.y = rand() % windowHeight;
 		mStarPositions[i] = position;
-		mStarScales[i] = Vec2(0, (rand()%100)/100 * 2 + 1.0f);
+		mStarScales[i] = Vec2(0, (rand()%100)/100.0f * 2 + 1.0f);
 	}
 }
 
