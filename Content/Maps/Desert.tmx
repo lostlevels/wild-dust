@@ -31,7 +31,7 @@
     <property name="Team" value="Bandits"/>
    </properties>
   </object>
-  <object id="51" name="Tumbleweed" type="Prop" x="788" y="490" width="24" height="22">
+  <object id="51" name="Tumbleweed" type="Prop" x="788" y="491" width="24" height="22">
    <properties>
     <property name="Sprite" value="Misc/Tumbleweed.png"/>
    </properties>
@@ -41,62 +41,62 @@
     <property name="Sprite" value="Misc/Tumbleweed.png"/>
    </properties>
   </object>
-  <object id="55" name="Cactus" type="Prop" x="1072" y="672" width="16" height="16">
+  <object id="55" name="Cactus" type="Prop" x="1066" y="637" width="30" height="50">
    <properties>
     <property name="Sprite" value="Misc/Cactus.png"/>
    </properties>
   </object>
-  <object id="56" name="Cactus" type="Prop" x="496" y="616" width="42" height="70">
+  <object id="56" name="Cactus" type="Prop" x="496" y="618" width="42" height="70">
    <properties>
     <property name="Sprite" value="Misc/Cactus.png"/>
    </properties>
   </object>
-  <object id="57" name="Cactus" type="Prop" x="402" y="552" width="24" height="38">
+  <object id="57" name="Cactus" type="Prop" x="400" y="554" width="30" height="38">
    <properties>
     <property name="Sprite" value="Misc/Cactus.png"/>
    </properties>
   </object>
-  <object id="58" name="Cactus" type="Prop" x="594" y="476" width="46" height="84">
+  <object id="58" name="Cactus" type="Prop" x="594" y="477" width="46" height="84">
    <properties>
     <property name="Sprite" value="Misc/Cactus.png"/>
    </properties>
   </object>
-  <object id="59" name="Cactus" type="Prop" x="1004" y="490" width="34" height="68">
+  <object id="59" name="Cactus" type="Prop" x="1004" y="492" width="34" height="68">
    <properties>
     <property name="Sprite" value="Misc/Cactus.png"/>
    </properties>
   </object>
-  <object id="60" name="Cactus" type="Prop" x="962" y="512" width="34" height="46">
+  <object id="60" name="Cactus" type="Prop" x="962" y="514" width="34" height="46">
    <properties>
     <property name="Sprite" value="Misc/Cactus.png"/>
    </properties>
   </object>
-  <object id="61" name="Cactus" type="Prop" x="1190" y="540" width="42" height="50">
+  <object id="61" name="Cactus" type="Prop" x="1190" y="542" width="42" height="50">
    <properties>
     <property name="Sprite" value="Misc/Cactus.png"/>
    </properties>
   </object>
-  <object id="62" name="Tumbleweed" type="Prop" x="802" y="667" width="24" height="22">
+  <object id="62" name="Tumbleweed" type="Prop" x="802" y="668" width="24" height="22">
    <properties>
     <property name="Sprite" value="Misc/Tumbleweed.png"/>
    </properties>
   </object>
-  <object id="63" name="Tumbleweed" type="Prop" x="1484" y="665" width="24" height="22">
+  <object id="63" name="Tumbleweed" type="Prop" x="1484" y="666" width="24" height="22">
    <properties>
     <property name="Sprite" value="Misc/Tumbleweed.png"/>
    </properties>
   </object>
-  <object id="64" name="Tumbleweed" type="Prop" x="838" y="666" width="24" height="22">
+  <object id="64" name="Tumbleweed" type="Prop" x="838" y="667" width="24" height="22">
    <properties>
     <property name="Sprite" value="Misc/Tumbleweed.png"/>
    </properties>
   </object>
-  <object id="65" name="Tumbleweed" type="Prop" x="86" y="665" width="24" height="22">
+  <object id="65" name="Tumbleweed" type="Prop" x="86" y="666" width="24" height="22">
    <properties>
     <property name="Sprite" value="Misc/Tumbleweed.png"/>
    </properties>
   </object>
-  <object id="66" name="Cactus" type="Prop" x="692" y="602" width="40" height="84">
+  <object id="66" name="Cactus" type="Prop" x="692" y="604" width="50" height="84">
    <properties>
     <property name="Sprite" value="Misc/Cactus.png"/>
    </properties>

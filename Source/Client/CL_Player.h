@@ -4,6 +4,8 @@
 #include "CL_PhysicsEntity.h"
 #include "CameraTarget.h"
 #include "Shared/PlayerState.h"
+#include "Shared/Teams.h"
+#include "Shared/CharacterAnimationSet.h"
 
 class AnimationSheet;
 class Animation;
@@ -28,21 +30,21 @@ public:
 
 	PlayerMovement *getPM() const { return mMovement; }
 
+	Team getTeam() const { return mTeam; }
+
 	bool mLookingLeft;
 
 protected:
-	AnimationSheet *mAnimSheet;
-	Animation *mIdleAnimation;
-	Animation *mWalkAnimation;
-	Animation *mJumpAnimation;
-	Animation *mShootAnimation;
-	AnimationRenderer *mAnimRenderer;
+	CharacterAnimationSet mCowboyAnimSet;
+	CharacterAnimationSet mBanditAnimSet;
 
-private:
+	CharacterAnimationSet *getCurrentAnimSet();
 	Animation *getCurrentAnim();
 
 private:
 	PlayerState mState;
 
 	PlayerMovement *mMovement;
+
+	Team mTeam;
 };

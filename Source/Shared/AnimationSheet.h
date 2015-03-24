@@ -23,7 +23,14 @@ public:
 		mLoopsLeft = mLoopCount;
 	}
 
-	const AnimationFrame &getCurrentFrame() const { return mFrames[mCurrentFrameIndex]; }
+	const AnimationFrame &getCurrentFrame() const {
+		if (mCurrentFrameIndex < mFrames.size()) {
+			return mFrames[mCurrentFrameIndex];
+		}
+		else {
+			return mFrames[0];
+		}
+	}
 
 	int getCurrentFrameIndex() const { return mCurrentFrameIndex; }
 	void setCurrentFrameIndex(int index) { mCurrentFrameIndex = index; }

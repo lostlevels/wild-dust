@@ -13,22 +13,34 @@
 #define PLAYER_SHOOT_COOLDOWN 0.5f
 
 SV_Player::SV_Player(Server *server) : SV_PhysicsEntity(server, true) {
-	mAnimSheet = new AnimationSheet();
-	mAnimSheet->loadFromFile("../Content/Animations/Cowboy.xml");
-	mIdleAnimation = mAnimSheet->findAnimation("Idle");
-	mWalkAnimation = mAnimSheet->findAnimation("Walk");
-	mJumpAnimation = mAnimSheet->findAnimation("Jump");
-	mShootAnimation = mAnimSheet->findAnimation("Shoot");
+	mCowboyAnimSet.mAnimSheet = new AnimationSheet();
+	mCowboyAnimSet.mAnimSheet->loadFromFile("../Content/Animations/Cowboy.xml");
+	mCowboyAnimSet.mIdleAnim = mCowboyAnimSet.mAnimSheet->findAnimation("Idle");
+	mCowboyAnimSet.mWalkAnim = mCowboyAnimSet.mAnimSheet->findAnimation("Walk");
+	mCowboyAnimSet.mJumpAnim = mCowboyAnimSet.mAnimSheet->findAnimation("Jump");
+	mCowboyAnimSet.mShootAnim = mCowboyAnimSet.mAnimSheet->findAnimation("Shoot");
+	mCowboyAnimSet.mAnimRenderer = NULL;
+
+	mBanditAnimSet.mAnimSheet = new AnimationSheet();
+	mBanditAnimSet.mAnimSheet->loadFromFile("../Content/Animations/Bandit.xml");
+	mBanditAnimSet.mIdleAnim = mBanditAnimSet.mAnimSheet->findAnimation("Idle");
+	mBanditAnimSet.mWalkAnim = mBanditAnimSet.mAnimSheet->findAnimation("Walk");
+	mBanditAnimSet.mJumpAnim = mBanditAnimSet.mAnimSheet->findAnimation("Jump");
+	mBanditAnimSet.mShootAnim = mBanditAnimSet.mAnimSheet->findAnimation("Shoot");
+	mBanditAnimSet.mAnimRenderer = NULL;
 
 	mMovement = new PlayerMovement(getPhysicsObject());
 
 	mState = PLAYER_IDLE;
 	mLookingLeft = true;
+
+	mTeam = TEAM_BANDITS;
 }
 
 SV_Player::~SV_Player() {
 	delete mMovement;
-	delete mAnimSheet;
+	freeCharacterAnimationSet(&mBanditAnimSet);
+	freeCharacterAnimationSet(&mCowboyAnimSet);
 }
 
 void SV_Player::update(float dt) {
@@ -60,6 +72,7 @@ void SV_Player::update(float dt) {
 
 void SV_Player::writeToStream(BitStream &stream) {
 	SV_PhysicsEntity::writeToStream(stream);
+	stream.writeU8(mTeam);
 	stream.writeU8(mState);
 	stream.writeBool(mLookingLeft);
 	stream.writeU16(getCurrentAnim()->getCurrentFrameIndex());
@@ -86,19 +99,31 @@ void SV_Player::shoot() {
 	proj->mFiredBy = this;
 }
 
-Animation *SV_Player::getCurrentAnim() {
-	switch (mState) {
-	case PLAYER_IDLE:
-		return mIdleAnimation;
 
-	case PLAYER_MOVING:
-		return mWalkAnimation;
-
-	case PLAYER_JUMPING:
-		return mJumpAnimation;
-
-	case PLAYER_SHOOTING:
-		return mShootAnimation;
+CharacterAnimationSet *SV_Player::getCurrentAnimSet() {
+	if (mTeam == TEAM_COWBOYS) {
+		return &mCowboyAnimSet;
+	}
+	else if (mTeam == TEAM_BANDITS) {
+		return &mBanditAnimSet;
 	}
 	return NULL;
 }
+
+Animation *SV_Player::getCurrentAnim() {
+	switch (mState) {
+	case PLAYER_IDLE:
+		return getCurrentAnimSet()->mIdleAnim;
+
+	case PLAYER_MOVING:
+		return getCurrentAnimSet()->mWalkAnim;
+
+	case PLAYER_JUMPING:
+		return getCurrentAnimSet()->mJumpAnim;
+
+	case PLAYER_SHOOTING:
+		return getCurrentAnimSet()->mShootAnim;
+	}
+	return NULL;
+}
+

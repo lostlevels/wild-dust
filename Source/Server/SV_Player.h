@@ -3,6 +3,8 @@
 #include "SV_PhysicsEntity.h"
 #include "Core/Clock.h"
 #include "Shared/PlayerState.h"
+#include "Shared/Teams.h"
+#include "Shared/CharacterAnimationSet.h"
 
 class PlayerMovement;
 class AnimationSheet;
@@ -23,16 +25,19 @@ public:
 
 	PlayerMovement *getPM() const { return mMovement; }
 
+	Team getTeam() const { return mTeam; }
+	void changeTeam(Team newTeam) { mTeam = newTeam; }
+
 private:
+	CharacterAnimationSet mCowboyAnimSet;
+	CharacterAnimationSet mBanditAnimSet;
+
+	CharacterAnimationSet *getCurrentAnimSet();
 	Animation *getCurrentAnim();
 
 protected:
 	PlayerState mState;
 	Clock mShootTimer;
 	PlayerMovement *mMovement;
-	AnimationSheet *mAnimSheet;
-	Animation *mIdleAnimation;
-	Animation *mWalkAnimation;
-	Animation *mJumpAnimation;
-	Animation *mShootAnimation;
+	Team mTeam;
 };

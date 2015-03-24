@@ -1,0 +1,21 @@
+<AnimationSheet Texture="Characters/Bandit.png" FrameWidth="24" FrameHeight="64">
+	<Animation Name="Idle">
+		<Frame Index="9" AABB="0 18 25 46" />
+	</Animation>
+	<Animation Name="Walk">
+		<Frame Index="0" AABB="0 18 25 46" />
+		<Frame Index="1" AABB="0 18 25 46" />
+		<Frame Index="2" AABB="0 18 25 46" />
+		<Frame Index="3" AABB="0 18 25 46" />
+	</Animation>
+	<Animation Name="Jump">
+		<Frame Index="4" AABB="0 18 25 46" />
+	</Animation>
+	<Animation Name="Shoot">
+		<Frame Index="5" AABB="0 18 25 46" />
+		<Frame Index="6" AABB="0 18 25 46" />
+		<Frame Index="7" AABB="0 18 25 46" />
+		<Frame Index="8" AABB="0 18 25 46" />
+		<Frame Index="9" AABB="0 18 25 46" />
+	</Animation>
+</AnimationSheet>
