@@ -1,0 +1,6 @@
+file(GLOB SOURCES *.cpp)
+file(GLOB HEADERS *.h)
+add_pch(Precompiled.h Precompiled.cpp ${SOURCES})
+add_library(Audio SHARED ${SOURCES} ${HEADERS})
+include_directories(${STB_INCLUDEDIR})
+target_link_libraries(Audio ${OPENAL_LIBS} Core)

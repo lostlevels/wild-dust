@@ -1,0 +1,7 @@
+file(GLOB SOURCES *.cpp)
+file(GLOB HEADERS *.h)
+add_pch(Precompiled.h Precompiled.cpp ${SOURCES})
+add_library(Renderer SHARED ${SOURCES} ${HEADERS})
+include_directories(${STB_INCLUDEDIR})
+target_link_libraries(Renderer ${SDL2_LIBS} ${GLEW_LIBS} ${OPENGL_gl_LIBRARY})
+target_link_libraries(Renderer Core)
