@@ -7,6 +7,7 @@
 
 class AnimationSheet;
 class Animation;
+class AnimationRenderer;
 class PlayerMovement;
 
 class CL_Player : public CL_PhysicsEntity, public ICameraTarget {
@@ -35,6 +36,7 @@ protected:
 	Animation *mWalkAnimation;
 	Animation *mJumpAnimation;
 	Animation *mShootAnimation;
+	AnimationRenderer *mAnimRenderer;
 
 private:
 	Animation *getCurrentAnim();

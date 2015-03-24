@@ -1,15 +1,20 @@
 #pragma once
 
-class Renderer;
 class AnimationSheet;
 class Texture;
 
-class Animation {
+struct AnimationFrame {
+	int index;
+	Recti aabb;
+};
+
+class SHARED_API Animation {
 public:
-	Animation(AnimationSheet *sheet, const std::vector<int> &frames);
+	Animation(AnimationSheet *sheet);
+
+	void addFrame(int index, const Recti &aabb);
 
 	void animate(float dt);
-	void draw(const Vec2 &position, const Vec2 &size, const Color &tint);
 
 	// Reset to initial frame
 	void reset() {
@@ -17,6 +22,11 @@ public:
 		mTimer = 0.0f;
 		mLoopsLeft = mLoopCount;
 	}
+
+	const AnimationFrame &getCurrentFrame() const { return mFrames[mCurrentFrameIndex]; }
+
+	int getCurrentFrameIndex() const { return mCurrentFrameIndex; }
+	void setCurrentFrameIndex(int index) { mCurrentFrameIndex = index; }
 
 	// Playback speed in frames per second (default: 10)
 	float getSpeed() const { return mSpeed; }
@@ -37,7 +47,7 @@ public:
 
 private:
 	AnimationSheet *mSheet;
-	std::vector<int> mFrames;
+	std::vector<AnimationFrame> mFrames;
 	int mCurrentFrameIndex;
 	float mSpeed;
 	float mTimer;
@@ -47,26 +57,23 @@ private:
 	bool mFlipY;
 };
 
-class AnimationSheet {
+class SHARED_API AnimationSheet {
 public:
-	AnimationSheet(Renderer *renderer);
+	AnimationSheet();
 	~AnimationSheet();
 
-	bool loadFromFile(const std::string &filename, int frameWidth, int frameHeight);
+	bool loadFromFile(const std::string &filename);
 	void unload();
 
-	Animation *createAnimation(const std::string &name, const std::vector<int> &frames);
+	Animation *createAnimation(const std::string &name);
 	Animation *findAnimation(const std::string &name);
 
-	Renderer *getRenderer() { return mRenderer; }
-
-	Texture *getTexture() const { return mTexture; }
+	std::string getImageFilename() const { return mImageFilename; }
 	int getFrameWidth() const { return mFrameWidth; }
 	int getFrameHeight() const { return mFrameHeight; }
 
 private:
-	Renderer *mRenderer;
-	Texture *mTexture;
+	std::string mImageFilename;
 	int mFrameWidth;
 	int mFrameHeight;
 	std::map<std::string, Animation*> mAnimations;

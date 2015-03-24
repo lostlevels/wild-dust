@@ -4,6 +4,8 @@
 #include <Tmx.h>
 #include "Physics/Physics.h"
 #include "Physics/PhysicsObject.h"
+#include "World.h"
+#include "SV_Prop.h"
 
 ServerMap::ServerMap(Server *server) {
 	mServer = server;
@@ -25,15 +27,32 @@ bool ServerMap::loadFromFile(const std::string &mapName) {
 
 	unload();
 
+	ServerWorld *world = mServer->getWorld();
+
 	for (int i = 0; i < tmxMap.GetNumObjectGroups(); ++i) {
 		const Tmx::ObjectGroup *tmxGroup = tmxMap.GetObjectGroup(i);
-		for (int j = 0; j < tmxGroup->GetNumObjects(); ++j) {
-			const Tmx::Object *tmxObject = tmxGroup->GetObject(j);
-			createCollider(
-				tmxObject->GetX(),
-				tmxObject->GetY(),
-				tmxObject->GetWidth(),
-				tmxObject->GetHeight());
+		if (stricmp(tmxGroup->GetName().c_str(), "Collision") == 0) {
+			for (int j = 0; j < tmxGroup->GetNumObjects(); ++j) {
+				const Tmx::Object *tmxObject = tmxGroup->GetObject(j);
+				createCollider(
+					tmxObject->GetX(),
+					tmxObject->GetY(),
+					tmxObject->GetWidth(),
+					tmxObject->GetHeight());
+			}
+		}
+		else if (stricmp(tmxGroup->GetName().c_str(), "Entities") == 0) {
+			for (int j = 0; j < tmxGroup->GetNumObjects(); ++j) {
+				const Tmx::Object *tmxObject = tmxGroup->GetObject(j);
+				if (stricmp(tmxObject->GetType().c_str(), "Prop") == 0) {
+					SV_Prop *prop = world->spawnEntityTyped<SV_Prop>(ENTITY_PROP);
+					prop->mSpriteName = tmxObject->GetProperties().GetStringProperty("Sprite");
+					prop->mPosition.x = tmxObject->GetX();
+					prop->mPosition.y = tmxObject->GetY();
+					prop->mSize.x = tmxObject->GetWidth();
+					prop->mSize.y = tmxObject->GetHeight();
+				}
+			}
 		}
 	}
 

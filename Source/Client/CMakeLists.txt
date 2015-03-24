@@ -14,3 +14,4 @@ target_link_libraries(Client
 	${BOX2D_LIBS})
 target_link_libraries(Client Core)
 target_link_libraries(Client Physics)
+target_link_libraries(Client Shared)

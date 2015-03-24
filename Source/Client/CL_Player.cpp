@@ -4,24 +4,19 @@
 #include "Renderer.h"
 #include "Texture.h"
 #include "SpriteBatcher.h"
-#include "AnimationSheet.h"
+#include "Shared/AnimationSheet.h"
 #include "Physics/PhysicsObject.h"
 #include "Physics/PlayerMovement.h"
+#include "AnimationRenderer.h"
 
 CL_Player::CL_Player(Client *client) : CL_PhysicsEntity(client, true) {
-	mAnimSheet = new AnimationSheet(client->getRenderer());
-	mAnimSheet->loadFromFile("../Content/Textures/Characters/Cowboy.png", 18, 32);
-	
-	mIdleAnimation = mAnimSheet->createAnimation("Idle", { 12 });
-	mIdleAnimation->setLoopCount(0);
-	
-	mWalkAnimation = mAnimSheet->createAnimation("Walk", { 6, 7, 8, 9 });
-	
-	mJumpAnimation = mAnimSheet->createAnimation("Jump", { 5 });
-
-	mShootAnimation = mAnimSheet->createAnimation("Shoot", { 9, 10, 11, 12, 13 });
-	mShootAnimation->setLoopCount(1);
-	mShootAnimation->setSpeed(10.0f);
+	mAnimSheet = new AnimationSheet();
+	mAnimSheet->loadFromFile("../Content/Animations/Cowboy.xml");
+	mIdleAnimation = mAnimSheet->findAnimation("Idle");
+	mWalkAnimation = mAnimSheet->findAnimation("Walk");
+	mJumpAnimation = mAnimSheet->findAnimation("Jump");
+	mShootAnimation = mAnimSheet->findAnimation("Shoot");
+	mAnimRenderer = new AnimationRenderer(mAnimSheet, client->getRenderer());
 
 	mMovement = new PlayerMovement(getPhysicsObject());
 
@@ -30,6 +25,7 @@ CL_Player::CL_Player(Client *client) : CL_PhysicsEntity(client, true) {
 
 CL_Player::~CL_Player() {
 	delete mMovement;
+	delete mAnimRenderer;
 	delete mAnimSheet;
 }
 
@@ -40,6 +36,7 @@ void CL_Player::readFromStream(const BitStream &stream) {
 
 	mState = (PlayerState)stream.readU8();
 	mLookingLeft = stream.readBool();
+	getCurrentAnim()->setCurrentFrameIndex(stream.readU16());
 
 	if (mState != oldState) {
 		if (mState == PLAYER_SHOOTING) {
@@ -53,13 +50,9 @@ void CL_Player::update(float dt) {
 }
 
 void CL_Player::draw() {
-	Vec2 size(
-		getPhysicsObject()->getWidth(),
-		getPhysicsObject()->getHeight());
-
 	Animation *currAnim = getCurrentAnim();
 	currAnim->setFlipX(mLookingLeft);
-	currAnim->draw(getPhysicsObject()->getPosition(), size, Color(1.0f));
+	mAnimRenderer->render(currAnim, getPhysicsObject()->getPosition(), Vec2(mAnimSheet->getFrameWidth(), mAnimSheet->getFrameHeight()), Color(1.0f));
 }
 
 Animation *CL_Player::getCurrentAnim() {
@@ -84,7 +77,5 @@ Vec2 CL_Player::ICameraTarget_getPosition() const {
 }
 
 Vec2 CL_Player::ICameraTarget_getSize() const {
-	return Vec2(
-		getPhysicsObject()->getWidth(),
-		getPhysicsObject()->getHeight());
+	return Vec2(16, 32);
 }
