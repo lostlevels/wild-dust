@@ -6,6 +6,7 @@ include_directories(
 	${GLM_INCLUDEDIR}
 	${BOX2D_INCLUDEDIR}
 	${OPENAL_INCLUDEDIR}
+	${TINYXML2_INCLUDEDIR}
 	${TMXPARSER_INCLUDEDIR})
 	
 link_directories(
@@ -13,10 +14,12 @@ link_directories(
 	${GLEW_LIBDIR}
 	${ENET_LIBDIR}
 	${OPENAL_LIBDIR}
+	${TINYXML2_LIBDIR}
 	${TMXPARSER_LIBDIR})
 
 add_subdirectory(Core)
 add_subdirectory(Physics)
+add_subdirectory(Shared)
 add_subdirectory(Client)
 add_subdirectory(Server)
 add_subdirectory(Game)

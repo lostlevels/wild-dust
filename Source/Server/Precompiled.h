@@ -2,6 +2,7 @@
 
 #include "Core/Precompiled.h"
 #include "Physics/Precompiled.h"
+#include "Shared/Precompiled.h"
 
 #include <enet/enet.h>
 

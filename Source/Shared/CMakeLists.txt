@@ -1,0 +1,8 @@
+file(GLOB SOURCES *.cpp)
+file(GLOB HEADERS *.h)
+add_pch(Precompiled.h Precompiled.cpp ${SOURCES})
+add_library(Shared SHARED ${SOURCES} ${HEADERS})
+add_definitions(-DBUILDING_SHARED)
+target_link_libraries(Shared ${BOX2D_LIBS})
+target_link_libraries(Shared ${TINYXML2_LIBS})
+target_link_libraries(Shared Core)

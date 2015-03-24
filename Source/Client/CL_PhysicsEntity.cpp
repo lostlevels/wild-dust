@@ -23,13 +23,12 @@ void CL_PhysicsEntity::readFromStream(const BitStream &stream) {
 
 	float friction = stream.readFloat();
 
-	int width = stream.readU16();
-	int height = stream.readU16();
-
 	PhysicsObject *physObj = getPhysicsObject();
 
-	if (width != physObj->getWidth() || height != physObj->getHeight()) {
-		physObj->setBox(width, height);
+	Recti box = stream.readAny<Recti>();
+
+	if (!(box == physObj->GetBox())) {
+		physObj->setBox(box);
 	}
 
 	physObj->setPosition(position);

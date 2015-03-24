@@ -25,10 +25,27 @@ PhysicsObject::PhysicsObject(Physics *phys, PhysicsObjectType type) {
 	b2World *world = phys->getWorld();
 	mBody = world->CreateBody(&bodyDef);
 
-	mFixture = NULL;
+	b2Vec2 points[4] = {
+		b2Vec2(0.0f, 0.0f),
+		b2Vec2(1.0f, 0.0f),
+		b2Vec2(1.0f, 1.0f),
+		b2Vec2(0.0f, 1.0f),
+	};
 
-	mWidth = 0;
-	mHeight = 0;
+	b2PolygonShape shape;
+	shape.Set(points, 4);
+
+	b2FixtureDef fdef;
+	fdef.shape = &shape;
+	fdef.density = 1.0f;
+	fdef.friction = 1.0f;
+	fdef.userData = this;
+	mFixture = mBody->CreateFixture(&fdef);
+
+	mBox.x = 0;
+	mBox.y = 0;
+	mBox.w = 100;
+	mBox.h = 100;
 
 	mUserData = NULL;
 }
@@ -38,20 +55,26 @@ PhysicsObject::~PhysicsObject() {
 }
 
 void PhysicsObject::setBox(int width, int height) {
-	destroyFixture();
+	setBox({ 0, 0, width, height });
+}
 
-	b2PolygonShape shape;
-	shape.SetAsBox((width / 100.0f) / 2.0f, (height / 100.0f) / 2.0f);
+void PhysicsObject::setBox(const Recti &box) {
+	float left = (float)box.x / 100.0f;
+	float top = (float)box.x / 100.0f;
+	float right = left + (float)box.w / 100.0f;
+	float bottom = top + (float)box.h / 100.0f;
 
-	b2FixtureDef fdef;
-	fdef.shape = &shape;
-	fdef.density = 1.0f;
-	fdef.friction = 1.0f;
-	mFixture = mBody->CreateFixture(&fdef);
-	mFixture->SetUserData(this);
+	b2Vec2 points[4] = {
+		b2Vec2(left, top),
+		b2Vec2(right, top),
+		b2Vec2(right, bottom),
+		b2Vec2(left, bottom),
+	};
 
-	mWidth = width;
-	mHeight = height;
+	b2PolygonShape* shape = (b2PolygonShape*)mFixture->GetShape();
+	shape->Set(points, 4);
+
+	mBox = box;
 }
 
 void PhysicsObject::destroyFixture() {
@@ -63,11 +86,11 @@ void PhysicsObject::destroyFixture() {
 
 Vec2 PhysicsObject::getPosition() const {
 	b2Vec2 pos = mBody->GetPosition();
-	return Vec2((pos.x * 100.0f) - mWidth / 2, (pos.y * 100.0f) - mHeight / 2);
+	return Vec2(pos.x * 100.0f, pos.y * 100.0);
 }
 
 void PhysicsObject::setPosition(const Vec2 &pos) {
-	mBody->SetTransform(b2Vec2((pos.x + mWidth / 2) / 100.0f, (pos.y + mHeight / 2) / 100.0f), 0.0f);
+	mBody->SetTransform(b2Vec2(pos.x / 100.0f, pos.y / 100.0f), 0.0f);
 }
 
 Vec2 PhysicsObject::getVelocity() const {

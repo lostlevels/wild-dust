@@ -24,6 +24,5 @@ void SV_PhysicsEntity::writeToStream(BitStream &stream) {
 	
 	stream.writeFloat(getPhysicsObject()->getFriction());
 
-	stream.writeU16(getPhysicsObject()->getWidth());
-	stream.writeU16(getPhysicsObject()->getHeight());
+	stream.writeAny(getPhysicsObject()->GetBox());
 }

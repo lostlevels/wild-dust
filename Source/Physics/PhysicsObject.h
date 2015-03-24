@@ -16,12 +16,12 @@ public:
 	~PhysicsObject();
 
 	void setBox(int width, int height);
+	void setBox(const Recti &box);
 
 	Vec2 getPosition() const;
 	void setPosition(const Vec2 &pos);
 
-	int getWidth() const { return mWidth; }
-	int getHeight() const { return mHeight; }
+	const Recti &GetBox() const { return mBox; }
 
 	Vec2 getVelocity() const;
 	void setVelocity(const Vec2 &vel);
@@ -41,7 +41,6 @@ private:
 	Physics *mPhys;
 	b2Body *mBody;
 	b2Fixture *mFixture;
-	int mWidth;
-	int mHeight;
+	Recti mBox;
 	void *mUserData;
 };
