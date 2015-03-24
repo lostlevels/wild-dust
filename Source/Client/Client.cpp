@@ -187,6 +187,7 @@ void Client::tick() {
 		mCamera->setTarget(mPlayerEntity);
 	}
 	mCamera->setScreenSize(mWindowWidth, mWindowHeight);
+	mCamera->setWorldSize(mMap->getWidthInPixels(), mMap->getHeightInPixels());
 	mCamera->update();
 
 	mWorld->update(dt);

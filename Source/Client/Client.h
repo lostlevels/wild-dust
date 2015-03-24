@@ -47,6 +47,8 @@ public:
 
 	ClientNetworkState getNetworkState() { return mNetworkState; }
 
+	Config getSettings() const { return mSettings; }
+
 	void addSky();
 	
 private:
