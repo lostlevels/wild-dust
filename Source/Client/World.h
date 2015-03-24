@@ -26,6 +26,8 @@ public:
 
 	void draw();
 
+	void addSky();
+
 private:
 	void addEntity(EntityID id, CL_Entity *entity);
 	void removeEntity(EntityID, CL_Entity *entity);

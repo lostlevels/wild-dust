@@ -2,9 +2,14 @@
 #include "World.h"
 #include "CL_Entity.h"
 #include "Shared/Protocol.h"
+#include "CL_Sky.h"
 
 ClientWorld::ClientWorld(Client *client) {
 	mClient = client;
+}
+
+void ClientWorld::addSky() {
+	addEntity(1000, new CL_Sky(mClient));
 }
 
 ClientWorld::~ClientWorld() {

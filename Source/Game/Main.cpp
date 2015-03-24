@@ -58,6 +58,8 @@ int main(int argc, char *argv[])
 	client->init();
 	client->connectToServer("37.142.124.227", 5000);
 	
+	client->addSky();
+	
 	while (!client->isQuitSignaled())
 	{
 		if (listenServer) {

@@ -58,6 +58,10 @@ Client::~Client() {
 	delete mPhysics;
 }
 
+void Client::addSky() {
+	mWorld->addSky();
+}
+
 bool Client::init() {
 	SDL_Init(SDL_INIT_VIDEO);
 	TTF_Init();

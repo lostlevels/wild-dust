@@ -47,6 +47,8 @@ public:
 
 	ClientNetworkState getNetworkState() { return mNetworkState; }
 
+	void addSky();
+	
 private:
 	void sendPlayerInput();
 	void handleInput(PlayerInput input);
