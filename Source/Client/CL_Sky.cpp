@@ -21,7 +21,7 @@ CL_Sky::CL_Sky(Client *client) : CL_Entity(client) {
 		position.x = rand() % windowWidth;
 		position.y = rand() % windowHeight;
 		mStarPositions[i] = position;
-		mStarScales[i] = Vec2(0, (rand()%100)/100 * 2 + 1.0f);
+		mStarScales[i] = Vec2(0, (rand()%100)/100.0f * 2 + 1.0f);
 	}
 }
 
@@ -74,5 +74,5 @@ void CL_Sky::drawMoon() {
 	source.h = mMoonTexture->getHeight();
 	Renderer *renderer = mClient->getRenderer();
 	SpriteBatcher *batcher = renderer->getSpriteBatcher(mMoonTexture, BLEND_ALPHA);
-	batcher->addSprite(Vec2(500, mClient->getWindowHeight() - size), Vec2(size, size), source, Color(1.0f), FLIP_NONE);
+	batcher->addSprite(Vec2(500, mClient->getWindowHeight() - size * 1.75f), Vec2(size, size), source, Color(1.0f), FLIP_NONE);
 }
