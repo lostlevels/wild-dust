@@ -1,21 +1,21 @@
 <AnimationSheet Texture="Characters/Cowboy.png" FrameWidth="36" FrameHeight="64">
 	<Animation Name="Idle">
-		<Frame Index="0" AABB="0 0 36 64" />
+		<Frame Index="0" AABB="0 18 36 46" />
 	</Animation>
 	<Animation Name="Walk">
-		<Frame Index="6" AABB="0 0 36 64" />
-		<Frame Index="7" AABB="0 0 36 64" />
-		<Frame Index="8" AABB="0 0 36 64" />
-		<Frame Index="9" AABB="0 0 36 64" />
+		<Frame Index="6" AABB="0 18 36 46" />
+		<Frame Index="7" AABB="0 18 36 46" />
+		<Frame Index="8" AABB="0 18 36 46" />
+		<Frame Index="9" AABB="0 18 36 46" />
 	</Animation>
 	<Animation Name="Jump">
-		<Frame Index="5" AABB="0 0 36 64" />
+		<Frame Index="5" AABB="0 18 36 46" />
 	</Animation>
 	<Animation Name="Shoot">
-		<Frame Index="9" AABB="0 0 36 64" />
-		<Frame Index="10" AABB="0 0 36 64" />
-		<Frame Index="11" AABB="0 0 36 64" />
-		<Frame Index="12" AABB="0 0 36 64" />
-		<Frame Index="13" AABB="0 0 36 64" />
+		<Frame Index="9" AABB="0 18 36 46" />
+		<Frame Index="10" AABB="0 18 36 46" />
+		<Frame Index="11" AABB="0 18 36 46" />
+		<Frame Index="12" AABB="0 18 36 46" />
+		<Frame Index="13" AABB="0 18 36 46" />
 	</Animation>
 </AnimationSheet>

@@ -87,13 +87,24 @@ bool ClientMap::loadFromFile(const std::string &mapName) {
 
 	for (int i = 0; i < tmxMap.GetNumObjectGroups(); ++i) {
 		const Tmx::ObjectGroup *tmxGroup = tmxMap.GetObjectGroup(i);
-		for (int j = 0; j < tmxGroup->GetNumObjects(); ++j) {
-			const Tmx::Object *tmxObject = tmxGroup->GetObject(j);
-			createCollider(
-				tmxObject->GetX(),
-				tmxObject->GetY(),
-				tmxObject->GetWidth(),
-				tmxObject->GetHeight());
+		if (stricmp(tmxGroup->GetName().c_str(), "Collision") == 0) {
+			for (int j = 0; j < tmxGroup->GetNumObjects(); ++j) {
+				const Tmx::Object *tmxObject = tmxGroup->GetObject(j);
+				createCollider(
+					tmxObject->GetX(),
+					tmxObject->GetY(),
+					tmxObject->GetWidth(),
+					tmxObject->GetHeight());
+			}
+		}
+		else if (stricmp(tmxGroup->GetName().c_str(), "Objects") == 0) {
+			for (int j = 0; j < tmxGroup->GetNumObjects(); ++j) {
+				const Tmx::Object *tmxObject = tmxGroup->GetObject(j);
+				if (stricmp(tmxObject->GetType().c_str(), "Prop") == 0) {
+					std::string spriteName = tmxObject->GetProperties().GetStringProperty("Sprite");
+
+				}
+			}
 		}
 	}
 

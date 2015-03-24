@@ -1,24 +1,105 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="50" tilewidth="16" tileheight="16" nextobjectid="43">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="50" tilewidth="16" tileheight="16" nextobjectid="67">
  <tileset firstgid="1" name="DesertBlocks" tilewidth="16" tileheight="16">
   <image source="../Textures/Tilesets/DesertBlocks.png" width="16" height="64"/>
  </tileset>
  <layer name="Tile Layer 1" width="100" height="50">
   <data encoding="base64" compression="zlib">
-   eJzt1UEOgjAARUHQ+9/ZPRENmsIrmUn+WumTui7Lsm7GObbnvjfOoUeLHi16tOjRokeLHi16tOjRokeLHi16tOjRokeLHi16tOjRokeLHi16tOjRokeLHi16tOjRokeLHi16tOjRokeLHi137vHYWdmde8z4LHfuMaPZeoy8fwp322w9Rn63wnNf3WPG/9yRru5Rfx/fGfn7ubrHjM6+M799nrvlP5/O75ce3p3/HDlbPcY72uNpZmZmZnbjvQCdAApU
+   eJzt1UEOgjAARUHQ+9/ZlRsSTMAUX3Em+XvKC2VdlmXdjGts3/veuIYeLXq06NGiR4seLXq06NGiR4seLXq06NGiR4seLXq06NGiR4seLXq06NGiR4seLXq06NGiR4seLXq06NGiR4seLXq03K3HY2ezuFuPuz7/rOeZ3Qw9Rt8/pftthh6jn6d03qt7zP6/fRt1hqt7FL+/M0adYYb76p+c6TH7XfNrn97fmR6+ne8cebd6jHe0x9PMzMzM7MZ7AbdYClQ=
   </data>
  </layer>
  <objectgroup name="Collision">
   <object id="1" x="0" y="688" width="1600" height="112"/>
-  <object id="21" x="1152" y="608" width="80" height="32"/>
+  <object id="21" x="1168" y="592" width="80" height="32"/>
   <object id="22" x="1408" y="640" width="64" height="48"/>
-  <object id="25" x="992" y="560" width="80" height="32"/>
-  <object id="27" x="800" y="512" width="96" height="32"/>
-  <object id="28" x="432" y="592" width="96" height="32"/>
-  <object id="29" x="624" y="560" width="80" height="32"/>
+  <object id="25" x="960" y="560" width="80" height="32"/>
+  <object id="27" x="752" y="512" width="96" height="32"/>
+  <object id="28" x="368" y="592" width="96" height="32"/>
+  <object id="29" x="576" y="560" width="80" height="32"/>
   <object id="35" x="128" y="640" width="64" height="48"/>
   <object id="41" x="0" y="0" width="80" height="688"/>
   <object id="42" x="1520" y="0" width="80" height="688"/>
  </objectgroup>
- <objectgroup name="Spawns"/>
+ <objectgroup name="Entities">
+  <object id="45" name="Spawn" type="Spawn" x="144" y="608" width="16" height="16">
+   <properties>
+    <property name="Team" value="Cowboys"/>
+   </properties>
+  </object>
+  <object id="47" name="Spawn" type="Spawn" x="1440" y="608" width="16" height="16">
+   <properties>
+    <property name="Team" value="Bandits"/>
+   </properties>
+  </object>
+  <object id="51" name="Tumbleweed" type="Prop" x="788" y="490" width="24" height="22">
+   <properties>
+    <property name="Sprite" value="Misc/Tumbleweed.png"/>
+   </properties>
+  </object>
+  <object id="53" name="Tumbleweed" type="Prop" x="400" y="672" width="16" height="16">
+   <properties>
+    <property name="Sprite" value="Misc/Tumbleweed.png"/>
+   </properties>
+  </object>
+  <object id="55" name="Cactus" type="Prop" x="1072" y="672" width="16" height="16">
+   <properties>
+    <property name="Sprite" value="Misc/Cactus.png"/>
+   </properties>
+  </object>
+  <object id="56" name="Cactus" type="Prop" x="496" y="616" width="42" height="70">
+   <properties>
+    <property name="Sprite" value="Misc/Cactus.png"/>
+   </properties>
+  </object>
+  <object id="57" name="Cactus" type="Prop" x="402" y="552" width="24" height="38">
+   <properties>
+    <property name="Sprite" value="Misc/Cactus.png"/>
+   </properties>
+  </object>
+  <object id="58" name="Cactus" type="Prop" x="594" y="476" width="46" height="84">
+   <properties>
+    <property name="Sprite" value="Misc/Cactus.png"/>
+   </properties>
+  </object>
+  <object id="59" name="Cactus" type="Prop" x="1004" y="490" width="34" height="68">
+   <properties>
+    <property name="Sprite" value="Misc/Cactus.png"/>
+   </properties>
+  </object>
+  <object id="60" name="Cactus" type="Prop" x="962" y="512" width="34" height="46">
+   <properties>
+    <property name="Sprite" value="Misc/Cactus.png"/>
+   </properties>
+  </object>
+  <object id="61" name="Cactus" type="Prop" x="1190" y="540" width="42" height="50">
+   <properties>
+    <property name="Sprite" value="Misc/Cactus.png"/>
+   </properties>
+  </object>
+  <object id="62" name="Tumbleweed" type="Prop" x="802" y="667" width="24" height="22">
+   <properties>
+    <property name="Sprite" value="Misc/Tumbleweed.png"/>
+   </properties>
+  </object>
+  <object id="63" name="Tumbleweed" type="Prop" x="1484" y="665" width="24" height="22">
+   <properties>
+    <property name="Sprite" value="Misc/Tumbleweed.png"/>
+   </properties>
+  </object>
+  <object id="64" name="Tumbleweed" type="Prop" x="838" y="666" width="24" height="22">
+   <properties>
+    <property name="Sprite" value="Misc/Tumbleweed.png"/>
+   </properties>
+  </object>
+  <object id="65" name="Tumbleweed" type="Prop" x="86" y="665" width="24" height="22">
+   <properties>
+    <property name="Sprite" value="Misc/Tumbleweed.png"/>
+   </properties>
+  </object>
+  <object id="66" name="Cactus" type="Prop" x="692" y="602" width="40" height="84">
+   <properties>
+    <property name="Sprite" value="Misc/Cactus.png"/>
+   </properties>
+  </object>
+ </objectgroup>
 </map>

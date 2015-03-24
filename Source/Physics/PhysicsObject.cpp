@@ -60,7 +60,7 @@ void PhysicsObject::setBox(int width, int height) {
 
 void PhysicsObject::setBox(const Recti &box) {
 	float left = (float)box.x / 100.0f;
-	float top = (float)box.x / 100.0f;
+	float top = (float)box.y / 100.0f;
 	float right = left + (float)box.w / 100.0f;
 	float bottom = top + (float)box.h / 100.0f;
 
