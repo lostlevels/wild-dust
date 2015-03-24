@@ -94,6 +94,7 @@ void Renderer::shutdown() {
 }
 
 void Renderer::beginFrame(Camera *camera) {
+	glClearColor(0.0f, 0.0f, 0.15f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glm::mat4 projMatrix = glm::ortho(0.0f, (float)mContext->getWindowWidth(), (float)mContext->getWindowHeight(), 0.0f, 0.0f, 1.0f);
