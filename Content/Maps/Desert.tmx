@@ -21,12 +21,12 @@
   <object id="42" x="1520" y="0" width="80" height="688"/>
  </objectgroup>
  <objectgroup name="Entities">
-  <object id="45" name="Spawn" type="Spawn" x="144" y="608" width="16" height="16">
+  <object id="45" name="Spawn" type="Spawn" x="148" y="594" width="16" height="16">
    <properties>
     <property name="Team" value="Cowboys"/>
    </properties>
   </object>
-  <object id="47" name="Spawn" type="Spawn" x="1440" y="608" width="16" height="16">
+  <object id="47" name="Spawn" type="Spawn" x="1430" y="592" width="16" height="16">
    <properties>
     <property name="Team" value="Bandits"/>
    </properties>

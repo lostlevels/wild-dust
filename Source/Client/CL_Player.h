@@ -47,4 +47,5 @@ private:
 	PlayerMovement *mMovement;
 
 	Team mTeam;
+	int mHealth;
 };

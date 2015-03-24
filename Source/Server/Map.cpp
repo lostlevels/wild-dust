@@ -14,6 +14,8 @@
 ServerMap::ServerMap(Server *server) {
 	mServer = server;
 	mIsLoaded = false;
+	mCSpawn = Vec2(0.0f, 0.0f);
+	mBSpawn = Vec2(0.0f, 0.0f);
 }
 
 ServerMap::~ServerMap() {
@@ -55,6 +57,17 @@ bool ServerMap::loadFromFile(const std::string &mapName) {
 					prop->mPosition.y = tmxObject->GetY();
 					prop->mSize.x = tmxObject->GetWidth();
 					prop->mSize.y = tmxObject->GetHeight();
+				}
+				else if (stricmp(tmxObject->GetType().c_str(), "Spawn") == 0) {
+					std::string team = tmxObject->GetProperties().GetStringProperty("Team");
+					if (!stricmp(team.c_str(), "Bandits")) {
+						mBSpawn.x = tmxObject->GetX();
+						mBSpawn.y = tmxObject->GetY();
+					}
+					else {
+						mCSpawn.x = tmxObject->GetX();
+						mCSpawn.y = tmxObject->GetY();
+					}
 				}
 			}
 		}

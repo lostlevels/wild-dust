@@ -26,7 +26,11 @@ void SV_Projectile::update(float dt) {
 		if (collider) {
 			if (collider->getEntityType() == ENTITY_PLAYER) {
 				if (collider != mFiredBy) {
-					// TODO: Handle collision with other player
+					SV_Player *otherPlayer = (SV_Player*)collider;
+					if (otherPlayer->getTeam() != mFiredBy->getTeam()) {
+						otherPlayer->inflictDamage(5);
+					}
+
 					shouldDestroy = true;
 					break;
 				}

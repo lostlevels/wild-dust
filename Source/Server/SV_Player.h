@@ -27,6 +27,10 @@ public:
 
 	Team getTeam() const { return mTeam; }
 	void changeTeam(Team newTeam) { mTeam = newTeam; }
+	
+	void inflictDamage(int amount);
+
+	int getHealth() const { return mHealth; }
 
 private:
 	CharacterAnimationSet mCowboyAnimSet;
@@ -40,4 +44,5 @@ protected:
 	Clock mShootTimer;
 	PlayerMovement *mMovement;
 	Team mTeam;
+	int mHealth;
 };

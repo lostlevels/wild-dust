@@ -6,6 +6,7 @@
 #include "Physics/PhysicsObject.h"
 #include "Physics/PlayerMovement.h"
 #include "Shared/AnimationSheet.h"
+#include "Map.h"
 
 #define PLAYER_WIDTH 32
 #define PLAYER_HEIGHT 64
@@ -35,6 +36,7 @@ SV_Player::SV_Player(Server *server) : SV_PhysicsEntity(server, true) {
 	mLookingLeft = true;
 
 	mTeam = TEAM_COWBOYS;
+	mHealth = 0;
 }
 
 SV_Player::~SV_Player() {
@@ -76,6 +78,7 @@ void SV_Player::writeToStream(BitStream &stream) {
 	stream.writeU8(mState);
 	stream.writeBool(mLookingLeft);
 	stream.writeU16(getCurrentAnim()->getCurrentFrameIndex());
+	stream.writeU8(mHealth);
 }
 
 void SV_Player::shoot() {
@@ -127,3 +130,11 @@ Animation *SV_Player::getCurrentAnim() {
 	return NULL;
 }
 
+
+void SV_Player::inflictDamage(int amount) {
+	mHealth -= amount;
+	if (mHealth <= 0) {
+		getPhysicsObject()->setPosition(mTeam == TEAM_BANDITS ? mServer->getMap()->getBSpawn() : mServer->getMap()->getCSpawn());
+		mHealth = 100;
+	}
+}

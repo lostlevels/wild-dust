@@ -12,6 +12,9 @@ public:
 	bool isLoaded() const { return mIsLoaded; }
 	std::string getName() const { return mName; }
 
+	Vec2 getCSpawn() { return mCSpawn; }
+	Vec2 getBSpawn() { return mBSpawn;  }
+
 private:
 	void createCollider(int x, int y, int w, int h);
 	void unload();
@@ -21,4 +24,6 @@ private:
 	bool mIsLoaded;
 	std::string mName;
 	std::vector<PhysicsObject*> mColliders;
+	Vec2 mBSpawn;
+	Vec2 mCSpawn;
 };

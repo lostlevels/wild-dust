@@ -31,6 +31,7 @@ CL_Player::CL_Player(Client *client) : CL_PhysicsEntity(client, true) {
 	mLookingLeft = false;
 
 	mTeam = TEAM_COWBOYS;
+	mHealth = 0;
 }
 
 CL_Player::~CL_Player() {
@@ -52,6 +53,7 @@ void CL_Player::readFromStream(const BitStream &stream) {
 	mState = (PlayerState)stream.readU8();
 	mLookingLeft = stream.readBool();
 	getCurrentAnim()->setCurrentFrameIndex(stream.readU16());
+	mHealth = stream.readU8();
 
 	if (mState != oldState) {
 		if (mState == PLAYER_SHOOTING) {
@@ -82,6 +84,7 @@ CharacterAnimationSet *CL_Player::getCurrentAnimSet() {
 	else if (mTeam == TEAM_BANDITS) {
 		return &mBanditAnimSet;
 	}
+	return NULL;
 }
 
 Animation *CL_Player::getCurrentAnim() {

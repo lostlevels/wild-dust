@@ -5,6 +5,7 @@
 #include "World.h"
 #include "SV_Player.h"
 #include "Physics/PlayerMovement.h"
+#include "Map.h"
 
 ClientConnection::ClientConnection(Server *server, ENetPeer *peer) {
 	mServer = server;
@@ -54,6 +55,12 @@ void ClientConnection::sendPlayerEntityID() {
 void ClientConnection::processChangeTeam(const BitStream &stream) {
 	Team team = (Team)stream.readU8();
 	mPlayer->changeTeam(team);
+	if (team == TEAM_BANDITS) {
+		mPlayer->getPhysicsObject()->setPosition(mServer->getMap()->getBSpawn());
+	}
+	else {
+		mPlayer->getPhysicsObject()->setPosition(mServer->getMap()->getCSpawn());
+	}
 }
 
 void ClientConnection::processPlayerInput(const PlayerInput &input) {
