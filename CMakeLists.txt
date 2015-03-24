@@ -63,7 +63,16 @@ else()
 	set(OPENAL_LIBDIR /usr/local/lib)
 	set(OPENAL_LIBS libopenal.dylib)
 	# TODO(jimmy): add zlib, TinyXMl2 and tmx-parser variables
-
+	set(ZLIB_INCLUDEDIR ${CMAKE_SOURCE_DIR}/ThirdParty/zlib)
+	set(ZLIB_LIBDIR "")
+	set(ZLIB_LIBS zlib)
+	set(TINYXML2_INCLUDEDIR ${CMAKE_SOURCE_DIR}/ThirdParty/TinyXML2)
+	set(TINYXML2_LIBDIR "")
+	set(TINYXML2_LIBS TinyXML2)
+	set(TMXPARSER_INCLUDEDIR ${CMAKE_SOURCE_DIR}/ThirdParty/tmx-parser)
+	set(TMXPARSER_LIBDIR "")
+	set(TMXPARSER_LIBS tmx-parser)
+	
 	set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
 	set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++0x -stdlib=libc++")
 

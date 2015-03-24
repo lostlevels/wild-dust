@@ -55,7 +55,7 @@ bool ClientMap::loadFromFile(const std::string &mapName) {
 	tmxMap.ParseFile(std::string("../Content/Maps/") + mapName);
 
 	if (tmxMap.HasError()) {
-		gLogger.error("Could not load map '%s`: %s\n", mapName.c_str(), tmxMap.GetErrorText());
+		gLogger.error("Could not load map '%s`: %s\n", mapName.c_str(), tmxMap.GetErrorText().c_str());
 		return false;
 	}
 
