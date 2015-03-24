@@ -36,7 +36,7 @@ SV_Player::SV_Player(Server *server) : SV_PhysicsEntity(server, true) {
 	mLookingLeft = true;
 
 	mTeam = TEAM_COWBOYS;
-	mHealth = 0;
+	mHealth = 100;
 }
 
 SV_Player::~SV_Player() {
