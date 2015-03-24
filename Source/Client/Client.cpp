@@ -169,14 +169,15 @@ void Client::tick() {
 		mSendInputClock.reset();
 	}
 
-	const float fixedPhysicsTimestep = 1.0f / 60.0f;
+	processNetworkEvents();
+
+	const float fixedPhysicsTimestep = 1.0f / 128.0f;
 	mPhysicsAccum += dt;
 	while (mPhysicsAccum >= fixedPhysicsTimestep) {
 		mPhysics->step(fixedPhysicsTimestep);
 		mPhysicsAccum -= fixedPhysicsTimestep;
 	}
 
-	processNetworkEvents();
 
 	if (mPlayerEntity) {
 		mCamera->setTarget(mPlayerEntity);
