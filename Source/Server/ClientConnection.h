@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/BitStream.h"
-#include "Shared/Protocol.h"
+#include "Shared/ClientCommand.h"
 
 class Server;
 class SV_Player;
@@ -18,6 +18,7 @@ public:
 	void sendPlayerEntityID();
 
 private:
+	void processChangeTeam(const BitStream &message);
 	void processPlayerInput(const PlayerInput &input);
 
 private:

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Shared/Protocol.h"
+#include "Shared/ClientCommand.h"
 
 class Client;
 

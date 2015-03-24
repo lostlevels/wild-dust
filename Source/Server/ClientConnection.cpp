@@ -20,8 +20,12 @@ ClientConnection::~ClientConnection() {
 void ClientConnection::handleCommand(const BitStream &stream) {
 	uint8_t cmdID = stream.readU8();
 	switch (cmdID) {
-	case NETCMD_CTS_PLAYER_INPUT:
+	case CLIENT_CMD_INPUT:
 		processPlayerInput(stream.readAny<PlayerInput>());
+		break;
+
+	case CLIENT_CMD_CHANGE_TEAM:
+		processChangeTeam(stream);
 		break;
 	}
 }
@@ -45,6 +49,11 @@ void ClientConnection::sendPlayerEntityID() {
 	message.writeU8(NETCMD_STC_PLAYER_IDENTIFY);
 	message.writeAny<EntityID>(mPlayer->getEntityID());
 	sendMessage(message, true);
+}
+
+void ClientConnection::processChangeTeam(const BitStream &stream) {
+	Team team = (Team)stream.readU8();
+	mPlayer->changeTeam(team);
 }
 
 void ClientConnection::processPlayerInput(const PlayerInput &input) {

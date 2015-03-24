@@ -4,6 +4,8 @@
 #include "Core/BitStream.h"
 #include "Core/Config.h"
 #include "Shared/Protocol.h"
+#include "Shared/Teams.h"
+#include "Shared/ClientCommand.h"
 
 class Physics;
 class Renderer;
@@ -34,6 +36,8 @@ public:
 	void connectToServer(const char *hostName, int serverPort);
 	void disconnectFromServer();
 
+	void changeTeam(Team team);
+
 	void tick();
 
 	SDL_Window *getGameWindow() const { return mGameWindow; }
@@ -52,7 +56,9 @@ public:
 	void addSky();
 	
 private:
-	void sendPlayerInput();
+	void addInputCommand();
+	void addChangeTeamCommand(Team team);
+	void sendCommands();
 	void handleInput(PlayerInput input);
 	void processNetworkEvents();
 	void handleConnectEvent();
@@ -88,4 +94,5 @@ private:
 	Clock mSendInputClock;
 	float mPhysicsAccum;
 	CL_Player *mPlayerEntity;
+	std::vector<ClientCommand> mCommandQueue;
 };

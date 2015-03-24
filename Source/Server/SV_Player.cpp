@@ -34,7 +34,7 @@ SV_Player::SV_Player(Server *server) : SV_PhysicsEntity(server, true) {
 	mState = PLAYER_IDLE;
 	mLookingLeft = true;
 
-	mTeam = TEAM_BANDITS;
+	mTeam = TEAM_COWBOYS;
 }
 
 SV_Player::~SV_Player() {

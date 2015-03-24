@@ -155,6 +155,10 @@ void Client::disconnectFromServer() {
 	mPlayerEntity = NULL;
 }
 
+void Client::changeTeam(Team team) {
+	addChangeTeamCommand(team);
+}
+
 void Client::tick() {
 	SDL_Event evt;
 	while (SDL_PollEvent(&evt)) {
@@ -169,7 +173,8 @@ void Client::tick() {
 
 	// TODO: Don't hardcode this..
 	if (mSendInputClock.getElapsedSeconds() >= (1.0f / 128.0f)) {
-		sendPlayerInput();
+		addInputCommand();
+		sendCommands();
 		mSendInputClock.reset();
 	}
 
@@ -197,7 +202,7 @@ void Client::tick() {
 	mAudio->update();
 }
 
-void Client::sendPlayerInput() {
+void Client::addInputCommand() {
 	if (mNetworkState < CLIENT_INGAME) {
 		return;
 	}
@@ -207,10 +212,44 @@ void Client::sendPlayerInput() {
 	// Process input client side for prediction
 	handleInput(input);
 
+	ClientCommand command;
+	command.type = CLIENT_CMD_INPUT;
+	command.input = input;
+	mCommandQueue.push_back(command);
+}
+
+void Client::addChangeTeamCommand(Team desiredTeam) {
+	if (mNetworkState < CLIENT_INGAME) {
+		return;
+	}
+
+	ClientCommand command;
+	command.type = CLIENT_CMD_CHANGE_TEAM;
+	command.desiredTeam = desiredTeam;
+	mCommandQueue.push_back(command);
+}
+
+void Client::sendCommands() {
 	uint8_t messageBuffer[128000];
 	BitStream message(messageBuffer, sizeof(messageBuffer));
-	message.writeU8(NETCMD_CTS_PLAYER_INPUT);
-	message.writeAny<PlayerInput>(input);
+	
+	message.writeU8(mCommandQueue.size());
+
+	for (ClientCommand &cmd : mCommandQueue) {
+		message.writeU8(cmd.type);
+
+		switch (cmd.type) {
+		case CLIENT_CMD_INPUT:
+			message.writeAny(cmd.input);
+			break;
+
+		case CLIENT_CMD_CHANGE_TEAM:
+			message.writeU8(cmd.desiredTeam);
+			break;
+		}
+	}
+
+	mCommandQueue.clear();
 
 	ENetPacket *packet = enet_packet_create(message.getDataBuffer(), message.getSize(), ENET_PACKET_FLAG_RELIABLE | ENET_PACKET_FLAG_NO_ALLOCATE);
 	enet_peer_send(mPeer, 0, packet);
@@ -301,6 +340,12 @@ void Client::handleLoadMapCommand(const BitStream &stream) {
 	mRenderer->freeUnreferencedTextures();
 
 	mNetworkState = CLIENT_INGAME;
+
+	Team desiredTeam = TEAM_COWBOYS;
+	if (stricmp(getSettings().getString("Team").c_str(), "Bandits") == 0) {
+		desiredTeam = TEAM_BANDITS;
+	}
+	changeTeam(desiredTeam);
 }
 
 void Client::renderFrame() {

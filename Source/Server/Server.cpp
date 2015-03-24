@@ -173,7 +173,12 @@ void Server::handleDisconnectEvent(ENetPeer *peer) {
 
 void Server::handleReceiveEvent(ENetPeer *peer, const BitStream &stream) {
 	ClientConnection *conn = reinterpret_cast<ClientConnection*>(peer->data);
-	conn->handleCommand(stream);
+
+	uint8_t numCmds = stream.readU8();
+
+	for (uint8_t i = 0; i < numCmds; ++i) {
+		conn->handleCommand(stream);
+	}
 }
 
 void Server::tick(float dt) {
