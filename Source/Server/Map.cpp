@@ -7,6 +7,10 @@
 #include "World.h"
 #include "SV_Prop.h"
 
+#ifndef stricmp
+#define stricmp strcmp
+#endif
+
 ServerMap::ServerMap(Server *server) {
 	mServer = server;
 	mIsLoaded = false;
