@@ -15,9 +15,11 @@ link_directories(
 
 add_subdirectory(Core)
 add_subdirectory(Network)
+add_subdirectory(Input)
 add_subdirectory(Renderer)
 add_subdirectory(Audio)
-#add_subdirectory(Client)
-#add_subdirectory(Server)
+add_subdirectory(Serialization)
+add_subdirectory(Client)
+add_subdirectory(Server)
 add_subdirectory(Game)
 #add_subdirectory(DedicatedServer)

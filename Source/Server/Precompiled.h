@@ -2,11 +2,16 @@
 
 #include "Core/Precompiled.h"
 
-#include <enet/enet.h>
-#include <Box2D/Box2D.h>
+#include <SDL.h>
 
-#ifdef BUILDING_SERVER
-#define SERVER_API DLLEXPORT
+#include <GL/glew.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <enet/enet.h>
+
+#ifdef BUILDING_CLIENT
+#define CLIENT_API DLLEXPORT
 #else
-#define SERVER_API DLLIMPORT
+#define CLIENT_API DLLIMPORT
 #endif

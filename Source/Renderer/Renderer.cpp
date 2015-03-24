@@ -5,7 +5,7 @@
 #include "SpriteBatcher.h"
 #include "Font.h"
 #include <SDL_ttf.h>
-// #include "GUI.h"
+#include "GUI.h"
 
 static void PumpOpenGLErrors(bool report = true) {
 	while (GLenum error = glGetError()) {

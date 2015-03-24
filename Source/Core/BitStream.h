@@ -43,7 +43,7 @@ public:
 	int getCapacity() const { return mDataBufferSize; }
 	int getSize() const { return mDataBufferPosition; }
 
-	void rewind() { mDataBufferPosition = 0; }
+	void rewind() const { mDataBufferPosition = 0; }
 
 	BitStream(const BitStream&);
 

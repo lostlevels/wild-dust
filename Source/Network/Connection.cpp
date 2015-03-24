@@ -14,13 +14,36 @@ static std::string generateUniqueName() {
 	return "player" + std::to_string(number++);
 }
 
-static uint8_t scrachBuffer[1024];
+static uint8_t scrachBuffer[8096];
 
 static BitStream getTempBistream() {
 	return BitStream(scrachBuffer, sizeof(scrachBuffer));
 }
 
-Connection::Connection() : mHost(nullptr),
+#pragma mark -
+#pragma mark Note
+
+// Only non bitstream events emitted are
+// Server emits
+//    cliententered -> name
+//    clientexit -> name
+//    cliententeredandpinged -> name
+// Client emits
+//    serverdisconnect -> no args
+// Otherwise event name that is sent is the emitted event along with a bitstream
+// The bitstream's first value is always a string that is the name of the event again.
+// Bitstream event handlers should call stream.rewind() first to clear any reads from previous handlers
+// conn.on("customEvent", [](const BitStream &stream) {
+//   stream.rewind();
+//   ... do logic ...
+// })
+//
+
+#pragma mark -
+#pragma mark Connection
+
+Connection::Connection() :
+	mHost(nullptr),
 	mClientToServer(nullptr),
 	mServing(false),
 	mConnected(false),
@@ -40,6 +63,7 @@ void Connection::processClient() {
 	ENetEvent evt;
 	while (enet_host_service(mHost, &evt, 0)) {
 		switch (evt.type) {
+		case ENET_EVENT_TYPE_NONE: break;
 		case ENET_EVENT_TYPE_CONNECT:
 			onConnectedToServer();
 			break;
@@ -53,12 +77,17 @@ void Connection::processClient() {
 			std::string event = stream.readString();
 			stream.rewind();
 			onServerData(stream);
-			emit<const BitStream&>(event, stream);
+			emitStream(event, stream);
 
 			enet_packet_destroy(evt.packet);
 			break;
 		}
 	}
+}
+
+float Connection::getClientPing(const std::string &name) const {
+	auto kv = mNamesToClients.find(name);
+	return kv != mNamesToClients.end() ? kv->second->mPing : 0;
 }
 
 bool Connection::isFullyReady() const {
@@ -90,7 +119,6 @@ void Connection::onServerData(const BitStream &stream) {
 		mPing = stream.readFloat();
 
 		mServerTimeOffset = serverTime + mPing/2.0f - mClock.getElapsedSeconds();
-		printf("Time %f Latency %f\n", stream.readFloat(), stream.readFloat());
 	}
 }
 
@@ -98,6 +126,7 @@ void Connection::processServer() {
 	ENetEvent evt;
 	while (enet_host_service(mHost, &evt, 0)) {
 		switch (evt.type) {
+		case ENET_EVENT_TYPE_NONE: break;
 		case ENET_EVENT_TYPE_CONNECT:
 			onClientConnected(evt.peer);
 			break;
@@ -108,7 +137,11 @@ void Connection::processServer() {
 
 		case ENET_EVENT_TYPE_RECEIVE:
 			BitStream stream(evt.packet->data, evt.packet->dataLength);
+
+			std::string event = stream.readString();
+			stream.rewind();
 			onClientData(stream, evt.peer);
+			emitStream(event, stream);
 
 			enet_packet_destroy(evt.packet);
 			break;
@@ -116,6 +149,10 @@ void Connection::processServer() {
 	}
 
 	updatePings();
+}
+
+void Connection::emitStream(const std::string &event, const BitStream &stream) {
+	emit<const BitStream&>(event, stream);
 }
 
 void Connection::updatePings() {
@@ -153,6 +190,8 @@ void Connection::onClientData(const BitStream &stream, ENetPeer *peer) {
 
 			// Might have to be careful of reliable here in case it messes with time
 			send(latencyStream, true, client->mName);
+
+			emit<const std::string&>("cliententeredandpinged", client->mName);
 		}
 	}
 }
@@ -165,7 +204,7 @@ void Connection::onClientConnected(ENetPeer *peer) {
 	mPeerToClients[peer] = clientData;
 	mNamesToClients[name] = clientData;
 
-	emit<const std::string&>("playerentered", name);
+	emit<const std::string&>("cliententered", name);
 
 	BitStream stream = getTempBistream();
 	stream.writeString("yourname");
@@ -174,7 +213,7 @@ void Connection::onClientConnected(ENetPeer *peer) {
 	send(stream, true, name);
 	pingClient(name);
 
-	gLogger.info("client connected %s\n", name.c_str());
+	// gLogger.info("client connected %s\n", name.c_str());
 }
 
 void Connection::onClientDisconnected(ENetPeer *peer) {
@@ -185,6 +224,8 @@ void Connection::onClientDisconnected(ENetPeer *peer) {
 
 		mPeerToClients.erase(peer);
 		mNamesToClients.erase(name);
+
+		emit<const std::string&>("clientexit", name);
 	}
 }
 
@@ -247,6 +288,7 @@ void Connection::send(const BitStream &stream, bool reliable, const std::string 
 
 void Connection::send(const uint8_t *data, int size, bool reliable, const std::string &receiver) {
 	if (!mHost) return;
+	assert(size < sizeof(scrachBuffer));
 
 	ENetPacket *packet = enet_packet_create(data, size, reliable ? ENET_PACKET_FLAG_RELIABLE : 0);
 

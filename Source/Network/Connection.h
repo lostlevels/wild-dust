@@ -30,6 +30,8 @@ public:
 	const std::string &getName() const { return mPlayerName; }
 	float getPing() const { return mPing; }
 	float getServerTime() const;
+
+	float getClientPing(const std::string &name) const;
 private:
 	Clock mClock;
 	ENetHost *mHost;
@@ -60,8 +62,10 @@ private:
 	void onServerData(const BitStream &stream);
 
 	void sendTo(ENetPacket *packet, ENetPeer *peer);
-	
+
 	void pingClient(const std::string &client);
 	void onPinged(const BitStream &stream);
 	void updatePings();
+	
+	void emitStream(const std::string &event, const BitStream &stream);
 };

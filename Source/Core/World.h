@@ -12,8 +12,18 @@ public:
 
 	virtual void update(float dt);
 
-	void addEntity(const std::string &name, Entity *ent);
+	Entity *addEntity(const std::string &name, Entity *ent);
+	void scheduleDeleteEntity(Entity *ent);
+
+	const std::map<std::string, Entity*> &getEntities() const { return mEntities; }
+	Entity *getEntity(const std::string &name) const;
+
+protected:
+	// id => entity
+	std::map<std::string, Entity*> mEntities;
+
 	void removeEntity(Entity *ent);
 private:
-	std::map<std::string, Entity*> mEntities;
+	World(const World&) = delete;
+	const World& operator = (const World&) = delete;
 };

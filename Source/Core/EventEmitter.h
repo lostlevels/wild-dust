@@ -36,94 +36,86 @@ class EventEmitter
 {
 public:
 
-    EventEmitter();
+	EventEmitter();
 
-    ~EventEmitter();
+	~EventEmitter();
 
-    // LLVM seems to fail with templated on method so add some arguments that we'll be using
-    unsigned int on(const std::string &event_id, std::function<void (const BitStream &)> cb);
-    unsigned int on(const std::string &event_id, std::function<void (const std::string&)> cb);
+	// LLVM seems to fail with templated on method so add some arguments that we'll be using
+	unsigned int on(const std::string &event_id, std::function<void (const BitStream &)> cb);
+	unsigned int on(const std::string &event_id, std::function<void (const std::string&)> cb);
 
-    template <typename... Args>
-    unsigned int on(const std::string &event_id, std::function<void (Args...)> cb);
+	template <typename... Args>
+	unsigned int on(const std::string &event_id, std::function<void (Args...)> cb);
 
-    unsigned int on(const std::string &event_id, std::function<void ()> cb);
+	unsigned int on(const std::string &event_id, std::function<void ()> cb);
 
-    void remove_listener(unsigned int listener_id);
+	void remove_listener(unsigned int listener_id);
 
-    template <typename... Args>
-    void emit(const std::string &event_id, Args... args);
+	template <typename... Args>
+	void emit(const std::string &event_id, Args... args);
 
 private:
-    struct ListenerBase
-    {
-        ListenerBase() {}
+	struct ListenerBase
+	{
+		ListenerBase() {}
 
-        ListenerBase(unsigned int i)
-        : id(i) {}
+		ListenerBase(unsigned int i)
+		: id(i) {}
 
-        virtual ~ListenerBase() {}
+		virtual ~ListenerBase() {}
 
-        unsigned int id;
-    };
+		unsigned int id;
+	};
 
-    template <typename... Args>
-    struct Listener : public ListenerBase
-    {
-        Listener() {}
+	template <typename... Args>
+	struct Listener : public ListenerBase
+	{
+		Listener() {}
 
-        Listener(unsigned int i, std::function<void (Args...)> c)
-        : ListenerBase(i), cb(c) {}
+		Listener(unsigned int i, std::function<void (Args...)> c)
+		: ListenerBase(i), cb(c) {}
 
-        std::function<void (Args...)> cb;
-    };
+		std::function<void (Args...)> cb;
+	};
 
-    std::mutex mutex;
-    unsigned int last_listener;
-    std::multimap<std::string, std::shared_ptr<ListenerBase>> listeners;
+	std::mutex mutex;
+	unsigned int last_listener;
+	std::multimap<std::string, std::shared_ptr<ListenerBase>> listeners;
 
-    EventEmitter(const EventEmitter&) = delete;
-    const EventEmitter& operator = (const EventEmitter&) = delete;
+	EventEmitter(const EventEmitter&) = delete;
+	const EventEmitter& operator = (const EventEmitter&) = delete;
 };
 
 template <typename... Args>
 unsigned int EventEmitter::on(const std::string &event_id, std::function<void (Args...)> cb)
 {
 
-    std::lock_guard<std::mutex> lock(mutex);
+	// std::lock_guard<std::mutex> lock(mutex);
 
-    unsigned int listener_id = ++last_listener;
-    listeners.insert(std::make_pair(event_id, std::make_shared<Listener<Args...>>(listener_id, cb)));
+	unsigned int listener_id = ++last_listener;
+	listeners.insert(std::make_pair(event_id, std::make_shared<Listener<Args...>>(listener_id, cb)));
 
-    return listener_id;
+	return listener_id;
 }
 
 template <typename... Args>
 void EventEmitter::emit(const std::string &event_id, Args... args)
 {
-    std::list<std::shared_ptr<Listener<Args...>>> handlers;
-    {
-        std::lock_guard<std::mutex> lock(mutex);
+	std::list<std::shared_ptr<Listener<Args...>>> handlers;
+	{
+		//std::lock_guard<std::mutex> lock(mutex);
 
-        auto range = listeners.equal_range(event_id);
-        handlers.resize(std::distance(range.first, range.second));
-        std::transform(range.first, range.second, handlers.begin(), [] (std::pair<std::string, std::shared_ptr<ListenerBase>> p) {
-            auto l = std::dynamic_pointer_cast<Listener<Args...>>(p.second);
-            if (l)
-            {
-                return l;
-            }
-            else
-            {
-                throw std::logic_error("EventEmitter::emit: Invalid event signature.");
-            }
-        });
-    }
+		auto range = listeners.equal_range(event_id);
+		handlers.resize(std::distance(range.first, range.second));
+		std::transform(range.first, range.second, handlers.begin(), [] (std::pair<std::string, std::shared_ptr<ListenerBase>> p) {
+			auto l = std::dynamic_pointer_cast<Listener<Args...>>(p.second);
+			if (l) return l;
+			else throw std::logic_error("EventEmitter::emit: Invalid event signature.");
+		});
+	}
 
-    for (auto& h : handlers)
-    {
-        h->cb(args...);
-    }
+	for (auto& h : handlers)
+		h->cb(args...);
 }
 
 #endif

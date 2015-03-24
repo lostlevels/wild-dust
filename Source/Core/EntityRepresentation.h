@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string>
-
+// using const char for POD for quick initialization
 struct EntityRepresentation {
-	std::string mImageFile;
+	const char *imageFile;
+	Recti source;
 };

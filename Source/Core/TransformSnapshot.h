@@ -1,10 +1,9 @@
 #pragma once
 
-
 // Add appropriate state here.
 
 struct TransformSnapshot {
-	float       mTime;
-	Vec3        mPosition;
-	float       mRotation;
+	float       time;
+	Vec3        position;
+	float       rotation;
 };
