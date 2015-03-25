@@ -9,7 +9,7 @@ ClientWorld::ClientWorld(Client *client) {
 }
 
 void ClientWorld::addSky() {
-	addEntity(1000, new CL_Sky(mClient));
+	addEntity(999999, new CL_Sky(mClient));
 }
 
 ClientWorld::~ClientWorld() {

@@ -256,17 +256,7 @@ void Client::sendCommands() {
 }
 
 void Client::handleInput(PlayerInput input) {
-	if (input.buttonMask & BTN_MOVE_LEFT) {
-		mPlayerEntity->getPM()->moveLeft();
-		mPlayerEntity->mLookingLeft = true;
-	}
-	if (input.buttonMask & BTN_MOVE_RIGHT) {
-		mPlayerEntity->getPM()->moveRight();
-		mPlayerEntity->mLookingLeft = false;
-	}
-	if (input.buttonMask & BTN_JUMP) {
-		mPlayerEntity->getPM()->jump();
-	}
+	mPlayerEntity->processInput(input);
 }
 
 void Client::processNetworkEvents() {

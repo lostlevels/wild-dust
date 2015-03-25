@@ -6,6 +6,7 @@
 #include "Shared/PlayerState.h"
 #include "Shared/Teams.h"
 #include "Shared/CharacterAnimationSet.h"
+#include "Shared/PlayerInput.h"
 
 class AnimationSheet;
 class Animation;
@@ -26,6 +27,9 @@ public:
 	virtual Vec2 ICameraTarget_getPosition() const;
 	virtual Vec2 ICameraTarget_getSize() const;
 
+	void processInput(PlayerInput input);
+	void applyInput(PlayerInput input);
+
 	PlayerState getState() const { return mState; }
 
 	PlayerMovement *getPM() const { return mMovement; }
@@ -45,6 +49,8 @@ private:
 	PlayerState mState;
 
 	PlayerMovement *mMovement;
+	std::vector<PlayerInput> mPendingInputs;
+	uint32_t mLastInputSequenceID;
 
 	Team mTeam;
 	int mHealth;

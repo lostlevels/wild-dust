@@ -37,6 +37,8 @@ SV_Player::SV_Player(Server *server) : SV_PhysicsEntity(server, true) {
 
 	mTeam = TEAM_COWBOYS;
 	mHealth = 100;
+
+	mLastProcessedInputSequenceID = 0;
 }
 
 SV_Player::~SV_Player() {
@@ -79,6 +81,7 @@ void SV_Player::writeToStream(BitStream &stream) {
 	stream.writeBool(mLookingLeft);
 	stream.writeU16(getCurrentAnim()->getCurrentFrameIndex());
 	stream.writeU8(mHealth);
+	stream.writeU32(mLastProcessedInputSequenceID);
 }
 
 void SV_Player::shoot() {
@@ -102,6 +105,27 @@ void SV_Player::shoot() {
 	proj->mFiredBy = this;
 }
 
+void SV_Player::processInput(PlayerInput input) {
+	applyInput(input);
+	mLastProcessedInputSequenceID = input.sequenceIndex;
+}
+
+void SV_Player::applyInput(PlayerInput input) {
+	if (input.buttonMask & BTN_MOVE_LEFT) {
+		mMovement->moveLeft();
+		mLookingLeft = true;
+	}
+	if (input.buttonMask & BTN_MOVE_RIGHT) {
+		mMovement->moveRight();
+		mLookingLeft = false;
+	}
+	if (input.buttonMask & BTN_JUMP) {
+		mMovement->jump();
+	}
+	if (input.buttonMask & BTN_ATTACK) {
+		shoot();
+	}
+}
 
 CharacterAnimationSet *SV_Player::getCurrentAnimSet() {
 	if (mTeam == TEAM_COWBOYS) {

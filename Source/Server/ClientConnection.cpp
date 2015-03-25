@@ -64,18 +64,5 @@ void ClientConnection::processChangeTeam(const BitStream &stream) {
 }
 
 void ClientConnection::processPlayerInput(const PlayerInput &input) {
-	if (input.buttonMask & BTN_MOVE_LEFT) {
-		mPlayer->getPM()->moveLeft();
-		mPlayer->mLookingLeft = true;
-	}
-	if (input.buttonMask & BTN_MOVE_RIGHT) {
-		mPlayer->getPM()->moveRight();
-		mPlayer->mLookingLeft = false;
-	}
-	if (input.buttonMask & BTN_JUMP) {
-		mPlayer->getPM()->jump();
-	}
-	if (input.buttonMask & BTN_ATTACK) {
-		mPlayer->shoot();
-	}
+	mPlayer->processInput(input);
 }

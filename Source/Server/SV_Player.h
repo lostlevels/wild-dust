@@ -5,6 +5,7 @@
 #include "Shared/PlayerState.h"
 #include "Shared/Teams.h"
 #include "Shared/CharacterAnimationSet.h"
+#include "Shared/PlayerInput.h"
 
 class PlayerMovement;
 class AnimationSheet;
@@ -20,6 +21,9 @@ public:
 	virtual void writeToStream(BitStream &stream);
 
 	virtual void shoot();
+
+	void processInput(PlayerInput input);
+	void applyInput(PlayerInput input);
 
 	bool mLookingLeft;
 
@@ -45,4 +49,5 @@ protected:
 	PlayerMovement *mMovement;
 	Team mTeam;
 	int mHealth;
+	uint32_t mLastProcessedInputSequenceID;
 };

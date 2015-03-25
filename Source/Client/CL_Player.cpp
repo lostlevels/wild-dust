@@ -26,6 +26,8 @@ CL_Player::CL_Player(Client *client) : CL_PhysicsEntity(client, true) {
 	mBanditAnimSet.mShootAnim = mBanditAnimSet.mAnimSheet->findAnimation("Shoot");
 	mBanditAnimSet.mAnimRenderer = new AnimationRenderer(mBanditAnimSet.mAnimSheet, client->getRenderer());
 
+	mLastInputSequenceID = 0;
+
 	mMovement = new PlayerMovement(getPhysicsObject());
 
 	mLookingLeft = false;
@@ -58,6 +60,20 @@ void CL_Player::readFromStream(const BitStream &stream) {
 	if (mState != oldState) {
 		if (mState == PLAYER_SHOOTING) {
 			getCurrentAnimSet()->mShootAnim->reset();
+		}
+	}
+
+	uint32_t lastProcessedInput = stream.readU32();
+
+	// Reconcile with server
+	for (auto it = mPendingInputs.begin(); it != mPendingInputs.end();) {
+		const PlayerInput &input = *it;
+		if (input.sequenceIndex <= lastProcessedInput) {
+			it = mPendingInputs.erase(it);
+		}
+		else {
+			applyInput(input);
+			++it;
 		}
 	}
 }
@@ -110,4 +126,26 @@ Vec2 CL_Player::ICameraTarget_getPosition() const {
 
 Vec2 CL_Player::ICameraTarget_getSize() const {
 	return Vec2(16, 32);
+}
+
+void CL_Player::applyInput(PlayerInput input) {
+	if (input.buttonMask & BTN_MOVE_LEFT) {
+		mMovement->moveLeft();
+		mLookingLeft = true;
+	}
+	if (input.buttonMask & BTN_MOVE_RIGHT) {
+		mMovement->moveRight();
+		mLookingLeft = false;
+	}
+	if (input.buttonMask & BTN_JUMP) {
+		mMovement->jump();
+	}
+}
+
+void CL_Player::processInput(PlayerInput input) {
+	input.sequenceIndex = ++mLastInputSequenceID;
+
+	applyInput(input);
+
+	mPendingInputs.push_back(input);
 }
