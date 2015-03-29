@@ -1,9 +1,10 @@
 #include "Precompiled.h"
 #include "EntitySerializer.h"
 #include "Core/Entity.h"
-#include "Core/EntityFactory.h"
+#include "Game/EntityFactory.h"
+#include "Game/GameContext.h"
 
-void EntitySerializer::serializeSnapshot(const TransformSnapshot &snapshot, BitStream &stream) {
+void EntitySerializer::serializeTransformSnapshot(const TransformSnapshot &snapshot, BitStream &stream) {
 	auto &position = snapshot.position;
 
 	stream.writeFloat(snapshot.time);
@@ -11,9 +12,10 @@ void EntitySerializer::serializeSnapshot(const TransformSnapshot &snapshot, BitS
 	stream.writeFloat(position.y);
 	stream.writeFloat(position.z);
 	stream.writeFloat(snapshot.rotation);
+	stream.writeU32(snapshot.keys);
 }
 
-TransformSnapshot EntitySerializer::deserializeSnapshot(const BitStream &stream) {
+TransformSnapshot EntitySerializer::deserializeTransformSnapshot(const BitStream &stream) {
 	TransformSnapshot snapshot;
 
 	snapshot.time = stream.readFloat();
@@ -21,6 +23,31 @@ TransformSnapshot EntitySerializer::deserializeSnapshot(const BitStream &stream)
 	snapshot.position.y = stream.readFloat();
 	snapshot.position.z = stream.readFloat();
 	snapshot.rotation = stream.readFloat();
+	snapshot.keys = stream.readU32();
+
+	return snapshot;
+}
+
+void EntitySerializer::serializeCommandSnapshot(const CommandSnapshot &snapshot, BitStream &stream) {
+	stream.writeFloat(snapshot.time);
+	stream.writeString(snapshot.command);
+	stream.writeString(snapshot.owner);
+
+	stream.writeFloat(snapshot.position.x);
+	stream.writeFloat(snapshot.position.y);
+	stream.writeFloat(snapshot.position.z);
+}
+
+CommandSnapshot EntitySerializer::deserializeCommandSnapshot(const BitStream &stream) {
+	CommandSnapshot snapshot;
+
+	snapshot.time = stream.readFloat();
+	snapshot.command = stream.readString();
+	snapshot.owner = stream.readString();
+
+	snapshot.position.x = stream.readFloat();
+	snapshot.position.y = stream.readFloat();
+	snapshot.position.z = stream.readFloat();
 
 	return snapshot;
 }
@@ -52,23 +79,30 @@ PlayerState EntitySerializer::deserializePlayerState(const BitStream &stream) {
 }
 
 void EntitySerializer::serializeExistingEntity(const Entity &ent, BitStream &stream) {
-	auto &snapshots = ent.getSnapshots();
+	auto &transformSnapshots = ent.getTransformSnapshots();
+	auto &commandSnapshots = ent.getCommandSnapshots();
 
 	stream.writeString(ent.getId());
 	stream.writeString(ent.getType());
 	stream.writeString(ent.getOwner());
 	stream.writeU32(ent.getSendMode());
-	stream.writeU32(snapshots.size());
 
-	for (auto &snapshot : snapshots) {
-		EntitySerializer::serializeSnapshot(snapshot, stream);
+	stream.writeU32(transformSnapshots.size());
+	for (auto &snapshot : transformSnapshots) {
+		EntitySerializer::serializeTransformSnapshot(snapshot, stream);
+	}
+
+	stream.writeU32(commandSnapshots.size());
+	for (auto &snapshot : commandSnapshots) {
+		EntitySerializer::serializeCommandSnapshot(snapshot, stream);
 	}
 }
 
 void EntitySerializer::serializeEntities(const std::vector<Entity*> &entities, BitStream &stream) {
 	stream.writeU32(entities.size());
 	for (auto e : entities) {
-		// So World can do a lookup
+		// So World can do a lookup, writes id twice -
+		// once before serializing the entity and once during the entity serialization
 		stream.writeString(e->getId());
 		serializeExistingEntity(*e, stream);
 	}
@@ -79,14 +113,14 @@ void EntitySerializer::serializeInitialEntity(float time, const Entity &ent, Bit
 	stream.writeString(ent.getType());
 	stream.writeString(ent.getOwner());
 	stream.writeU32(ent.getSendMode());
-	stream.writeU32(1); // 1 snapshot
+	stream.writeU32(1); // 1 transform snapshot no command snapshots
 
 	TransformSnapshot snapshot = {
 		time,
 		ent.getPosition(),
 		0
 	};
-	EntitySerializer::serializeSnapshot(snapshot, stream);
+	EntitySerializer::serializeTransformSnapshot(snapshot, stream);
 }
 
 void EntitySerializer::deserializeIntoEntity(Entity *entity, const BitStream &stream) {
@@ -95,23 +129,29 @@ void EntitySerializer::deserializeIntoEntity(Entity *entity, const BitStream &st
 	stream.readString(); // owner
 	entity->setSendMode(stream.readU32());
 
-	uint32_t numPackets = stream.readU32();
-	for (uint32_t i = 0; i < numPackets; ++i) {
-		entity->addSnapshot(EntitySerializer::deserializeSnapshot(stream));
+	uint32_t numTransformSnapshots = stream.readU32();
+	for (uint32_t i = 0; i < numTransformSnapshots; ++i) {
+		entity->addSnapshot(EntitySerializer::deserializeTransformSnapshot(stream));
+	}
+
+	uint32_t numCommandSnapshots = stream.readU32();
+	for (uint32_t i = 0; i < numCommandSnapshots; ++i) {
+		entity->addSnapshot(EntitySerializer::deserializeCommandSnapshot(stream));
 	}
 }
 
-Entity *EntitySerializer::deserializeInitialEntity(const BitStream &stream) {
+Entity *EntitySerializer::deserializeInitialEntity(GameContext *context, const BitStream &stream) {
 	std::string name = stream.readString();
 	std::string type = stream.readString();
 	std::string owner = stream.readString();
 
 	uint32_t sendMode = stream.readU32();
 	uint32_t numSnapshots = stream.readU32();
+	assert(numSnapshots == 1);
 
-	TransformSnapshot snapshot = EntitySerializer::deserializeSnapshot(stream);
+	TransformSnapshot snapshot = EntitySerializer::deserializeTransformSnapshot(stream);
 
-	Entity *e = EntityFactory::createEntity(name, type, owner);
+	Entity *e = EntityFactory::createLocalEntity(context, name, type, owner);
 	e->setPosition(snapshot.position);
 	e->setSendMode(sendMode);
 

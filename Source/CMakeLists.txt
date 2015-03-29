@@ -5,13 +5,16 @@ include_directories(
 	${ENET_INCLUDEDIR}
 	${GLM_INCLUDEDIR}
 	${BOX2D_INCLUDEDIR}
-	${OPENAL_INCLUDEDIR})
-	
+	${OPENAL_INCLUDEDIR}
+	${TINYXML2_INCLUDEDIR}
+	${TMXPARSER_INCLUDEDIR})
 link_directories(
 	${SDL2_LIBDIR}
 	${GLEW_LIBDIR}
 	${ENET_LIBDIR}
-	${OPENAL_LIBDIR})
+	${OPENAL_LIBDIR}
+	${TINYXML2_LIBDIR}
+	${TMXPARSER_LIBDIR})
 
 add_subdirectory(Core)
 add_subdirectory(Network)
@@ -19,7 +22,8 @@ add_subdirectory(Input)
 add_subdirectory(Renderer)
 add_subdirectory(Audio)
 add_subdirectory(Serialization)
+add_subdirectory(Game)
 add_subdirectory(Client)
 add_subdirectory(Server)
-add_subdirectory(Game)
+add_subdirectory(WildDust)
 #add_subdirectory(DedicatedServer)

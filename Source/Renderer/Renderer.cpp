@@ -132,7 +132,8 @@ Texture *Renderer::getTexture(const std::string &filename) {
 		mTextureMap.insert({ filename, texture });
 		return texture;
 	}
-
+	
+	assert(false);
 	return NULL;
 }
 

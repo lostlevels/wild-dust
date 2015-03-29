@@ -3,19 +3,62 @@
 #include "Core/Logger.h"
 #include "Input/Input.h"
 #include "Audio/Audio.h"
-#include "Serialization/EntitySerializer.h"
 #include "Core/Entity.h"
-#include "Core/EntityFactory.h"
-
+#include "Core/TilemapEntity.h"
+#include "Game/EntityFactory.h"
+#include "Game/ProjectileFactory.h"
+#include "Game/PlayerController.h"
+#include "Game/ProjectileController.h"
+#include "Serialization/EntitySerializer.h"
+#include "Core/CommandSnapshot.h"
+#include "Core/GibCollectionEntity.h"
 #include <functional>
+
+// TODO: Read from config
+#define SEND_RATE .04f
+#define TICK_RATE (1/60.0f)
 
 ClientWorld::ClientWorld(InputSystem *input, AudioSystem *audioSystem) :
 	mInput(input),
 	mAudio(audioSystem),
 	mSnapshotTimer(0),
-	mSendTimer(0)
+	mSendTimer(0),
+	mTmxMap(nullptr),
+	mGibs(nullptr)
 {
 	mStream = new BitStream(16 * 1024);
+	addDefaultMap();
+	addGibs();
+}
+
+void ClientWorld::addDefaultMap() {
+	auto map = new TilemapEntity("map", "../Content/Maps/Default.tmx");
+	mTmxMap = &map->getMap();
+	scheduleAddEntity(map);
+}
+
+void ClientWorld::addGibs() {
+	mGibs = new GibCollectionEntity(this, "gibs", {{8, 8}, "../Content/Textures/Misc/Gib.png"});
+	scheduleAddEntity(mGibs);
+}
+
+bool ClientWorld::collides(float x, float y) const {
+	if (!mTmxMap) return;
+	int width = mTmxMap->GetWidth();
+	int height = mTmxMap->GetHeight();
+	int tileWidth = mTmxMap->GetTileWidth();
+	int tileHeight = mTmxMap->GetTileHeight();
+
+	if (!width || !height || !tileWidth || !tileHeight || !mTmxMap->GetNumTileLayers())
+		return false;
+
+	auto layer = mTmxMap->GetTileLayer(0);
+	int tileX = (int)(floorf(x / tileWidth));
+	int tileY = (int)(floorf(y / tileHeight));
+
+	if (tileX < 0 || tileX >= width || tileY < 0 || tileY >= height) return false;
+
+	return layer->GetTileTilesetIndex(tileX, tileY) != -1 && layer->GetTileId(tileX, tileY) != -1;
 }
 
 ClientWorld::~ClientWorld() {
@@ -24,22 +67,58 @@ ClientWorld::~ClientWorld() {
 }
 
 void ClientWorld::update(float dt) {
-	World::update(dt);
-	mConn.processNetworkEvents();
+	update(mConn.getServerTime(), dt);
+
+	// Just testing
+	// static float t = 0;
+	// t += dt;
+	// if (t > 1.5f) {
+	// 	t -= 1.5f;
+	// 	spawnGibs(Vec3(650, 400, 0), 10);
+	// }
+}
+
+std::string ClientWorld::createUniqueEntId() const {
+	static unsigned long long number = 0;
+	return mConn.getName() + "_" + std::to_string(number++);
+}
+
+void ClientWorld::update(float gameTime, float dt) {
 	// Handle game logic ...
 	handlePlayerInput(dt);
 	sendQueuedPackets(dt);
+
+	World::update(gameTime, dt);
+	mConn.processNetworkEvents();
 
 	std::string myName = mConn.getName();
 	float myPing = getPing(myName);
 	for (auto &kv : mEntities) {
 		auto ent = kv.second;
-		bool lerp = ent->getOwner() != myName && ent->getSendMode() == SEND_ALWAYS;
+		bool lerp = ent->getOwner() != myName && ent->isRemote() && ent->getSendMode() == SEND_ALWAYS;
 		if (lerp) {
 			float ping = getPing(ent->getOwner());
-			float viewDelay = std::max(.1f, ping/2 + myPing/2 + .05f*2 + .05f);
-			ent->interpolate(mConn.getServerTime() - viewDelay);
+			float viewDelay = std::max(.125f, ping/2 + myPing/2 + .05f*2 + .05f);
+			ent->setViewDelay(viewDelay);
 		}
+	}
+}
+
+void ClientWorld::spawnProjectile(const std::string &type, const std::string &owner, const Vec3 &position, float rotation) {
+	// Handle informing server ...
+	float speed = 500;
+	float theta = glm::radians(rotation);
+	Vec3 velocity(cosf(theta) * speed, sinf(theta) * speed, 0);
+
+	auto ent = ProjectileFactory::createLocalProjectile(this, createUniqueEntId(), "bullet", owner, velocity);
+	ent->setPosition(position);
+	ent->setFlip(rotation > .000001f ? 1 : 0);
+	scheduleAddEntity(ent);
+
+	// Add a command snapshot if it's us creating the bullet.
+	auto me = getMe();
+	if (me && me->getId() == owner) {
+		me->addSnapshot(CommandSnapshot(mConn.getServerTime(), "spawnprojectile", owner, position));
 	}
 }
 
@@ -47,9 +126,8 @@ void ClientWorld::sendQueuedPackets(float dt) {
 	auto me = getMe();
 	if (!me) return;
 
-	if ((mSendTimer += dt) > .05f) {
-		// Send then remove.
-		mSendTimer -= .05f;
+	if ((mSendTimer += dt) > SEND_RATE) {
+		mSendTimer -= SEND_RATE;
 
 		mStream->rewind();
 		mStream->writeString("playerupdate");
@@ -57,7 +135,10 @@ void ClientWorld::sendQueuedPackets(float dt) {
 		EntitySerializer::serializeExistingEntity(*me, *mStream);
 		mConn.send(*mStream, false);
 
-		me->removeAllSnapshots();
+		// Local entity, dont need to keep snapshots around other than
+		// for informing server so remove snapshots after sending
+		me->removeAllTransformSnapshots();
+		me->removeAllCommandSnapshots();
 	}
 }
 
@@ -70,18 +151,9 @@ void ClientWorld::handlePlayerInput(float dt) {
 	auto me = getMe();
 	if (!me || !mInput) return;
 
-	auto position = me->getPosition();
-	if (mInput->getButtons() & BTN_MOVE_LEFT) {
-		position.x -= 500 * dt;
-	}
-	if (mInput->getButtons() & BTN_MOVE_RIGHT) {
-		position.x += 500 * dt;
-	}
-
-	me->setPosition(position);
-	if ((mSnapshotTimer += dt) >= 1/60.0f) {
-		mSnapshotTimer -= 1/60.0f;
-		me->queueSnapshot(mConn.getServerTime());
+	if ((mSnapshotTimer += dt) >= TICK_RATE) {
+		mSnapshotTimer -= TICK_RATE;
+		me->queueTransformSnapshot(mConn.getServerTime(), mInput->getButtons());
 	}
 }
 
@@ -91,51 +163,69 @@ void ClientWorld::connect(const std::string &hostName, unsigned short port) {
 	mConn.on("you", [&](const BitStream &stream) {
 		stream.rewind();
 		stream.readString(); // Should be name of the event, "you"
-		Entity *e = EntitySerializer::deserializeInitialEntity(stream);
-		addEntity(e->getId(), e);
+		Entity *e = EntitySerializer::deserializeInitialEntity(this, stream);
+		scheduleAddEntity(e->getId(), e);
 		gLogger.info("Added you\n");
 	});
 
-	mConn.on("gamestate", [&](const BitStream &stream) {
-		stream.rewind();
-		std::string evt = stream.readString(); // gamestate
-		assert(evt == "gamestate");
+	mConn.on("gamestate", std::bind(&ClientWorld::onGameState, this, std::placeholders::_1));
+	mConn.on("playerexit", std::bind(&ClientWorld::onPlayerExit, this, std::placeholders::_1));
+	mConn.on("allplayersupdate", std::bind(&ClientWorld::onAllPlayersUpdate, this, std::placeholders::_1));
+}
 
-		uint32_t players = stream.readU32();
-		for (uint32_t i = 0; i < players; ++i) {
-			PlayerState state = EntitySerializer::deserializePlayerState(stream);
-			if (state.name != mConn.getName() && mEntities.find(state.name) == mEntities.end()) {
-				addEntity(state.name, EntityFactory::createEntity(state.name, state.type, state.name));
-				gLogger.info("Added other '%s' '%s'\n", state.name.c_str(), mConn.getName().c_str());
-			}
-			mPlayerStates[state.name] = state;
-			gLogger.info("%f\n", state.ping);
-		}
-	});
+void ClientWorld::onPlayerExit(const BitStream &stream) {
+	stream.rewind();
+	stream.readString();
+	std::string name = stream.readString();
 
-	mConn.on("playerexit", [&](const BitStream &stream) {
-		stream.rewind();
-		stream.readString();
+	scheduleDeleteEntity(name);
+}
+
+void ClientWorld::onAllPlayersUpdate(const BitStream &stream) {
+	stream.rewind();
+	stream.readString(); // "allplayersupdate"
+
+	static Entity emptyEntity;
+	uint32_t numPlayers = stream.readU32();
+	// Kind of sucks, but deserializing here to handle some special logic.
+	for (uint32_t i = 0; i < numPlayers; ++i) {
 		std::string name = stream.readString();
-
-		// Remove player name .... todo:
-	});
-
-	mConn.on("allplayersupdate", [&](const BitStream &stream) {
-		stream.rewind();
-		stream.readString(); // Should be name of the event, "allplayersupdate"
-
-		static Entity emptyEntity;
-		uint32_t numPlayers = stream.readU32();
-		// Kind of sucks, but deserializing here to handle some special logic.
-		for (uint32_t i = 0; i < numPlayers; ++i) {
-			std::string name = stream.readString();
-			auto ent = getEntity(name);
-			ent = ent && name != mConn.getName() ? ent : &emptyEntity;
-			EntitySerializer::deserializeIntoEntity(ent, stream);
+		auto ent = getEntity(name);
+		bool isMe = name == mConn.getName();
+		ent = ent && !isMe ? ent : &emptyEntity;
+		EntitySerializer::deserializeIntoEntity(ent, stream);
+		if (!isMe) {
+			// Process and remove all commands now - hmm will just do in controller maybe ...
+			// auto &snapshots = ent->getCommandSnapshots();
+			// for (auto &snapshot : snapshots) {
+			// 	if (snapshot.command == "spawnprojectile") {
+			// 		float speed = 100;
+			// 		float theta = glm::radians(0.0f);
+			// 		Vec3 velocity(cosf(theta) * speed, sinf(theta) * speed, 0);
+			// 		auto projectile = scheduleAddEntity(ProjectileFactory::createRemoteProjectile(this, createUniqueEntId(), "bullet", snapshot.owner, velocity));
+			// 		projectile->setPosition(snapshot.position);
+			// 	}
+			// }
+			ent->removeAllCommandSnapshots();
 		}
-		emptyEntity.removeAllSnapshots();
-	});
+	}
+	emptyEntity.removeAllSnapshots();
+}
+
+void ClientWorld::onGameState(const BitStream &stream) {
+	stream.rewind();
+	std::string evt = stream.readString(); // gamestate
+
+	uint32_t players = stream.readU32();
+	for (uint32_t i = 0; i < players; ++i) {
+		PlayerState state = EntitySerializer::deserializePlayerState(stream);
+		if (state.name != mConn.getName() && mEntities.find(state.name) == mEntities.end()) {
+			scheduleAddEntity(state.name, EntityFactory::createRemoteEntity(this, state.name, state.type, state.name));
+			gLogger.info("Added other player '%s'\n", state.name.c_str());
+		}
+		mPlayerStates[state.name] = state;
+		gLogger.info("%f\n", state.ping);
+	}
 }
 
 Entity *ClientWorld::getMe() {

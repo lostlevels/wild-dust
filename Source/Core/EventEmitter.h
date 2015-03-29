@@ -32,12 +32,10 @@
 #include <algorithm>
 #include "Core/Bitstream.h"
 
-class EventEmitter
-{
+class EventEmitter {
 public:
 
 	EventEmitter();
-
 	~EventEmitter();
 
 	// LLVM seems to fail with templated on method so add some arguments that we'll be using
@@ -55,8 +53,7 @@ public:
 	void emit(const std::string &event_id, Args... args);
 
 private:
-	struct ListenerBase
-	{
+	struct ListenerBase {
 		ListenerBase() {}
 
 		ListenerBase(unsigned int i)
@@ -68,8 +65,7 @@ private:
 	};
 
 	template <typename... Args>
-	struct Listener : public ListenerBase
-	{
+	struct Listener : public ListenerBase {
 		Listener() {}
 
 		Listener(unsigned int i, std::function<void (Args...)> c)
@@ -87,9 +83,7 @@ private:
 };
 
 template <typename... Args>
-unsigned int EventEmitter::on(const std::string &event_id, std::function<void (Args...)> cb)
-{
-
+unsigned int EventEmitter::on(const std::string &event_id, std::function<void (Args...)> cb) {
 	// std::lock_guard<std::mutex> lock(mutex);
 
 	unsigned int listener_id = ++last_listener;
@@ -99,8 +93,7 @@ unsigned int EventEmitter::on(const std::string &event_id, std::function<void (A
 }
 
 template <typename... Args>
-void EventEmitter::emit(const std::string &event_id, Args... args)
-{
+void EventEmitter::emit(const std::string &event_id, Args... args) {
 	std::list<std::shared_ptr<Listener<Args...>>> handlers;
 	{
 		//std::lock_guard<std::mutex> lock(mutex);

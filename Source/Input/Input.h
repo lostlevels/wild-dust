@@ -1,23 +1,17 @@
 #pragma once
 
-enum {
-	BTN_MOVE_LEFT = (1<<0),
-	BTN_MOVE_RIGHT = (1<<1),
-	BTN_JUMP = (1<<2),
-	BTN_ATTACK = (1<<3)
-};
+#include "Core/InputBase.h"
 
-//
-// TODO: Make this base class, and sdl version inherit from
-//
-
-class InputSystem {
+class InputSystem : public InputBase {
 public:
 	InputSystem();
-	int32_t getButtons() const { return mButtons; }
+
+	virtual int32_t getButtons() const { return mButtons; }
+	virtual int32_t getNewButtons() const { return mButtons ^ (mButtons & mLastButtons); }
 
 	virtual void update(float dt);
 
 private:
 	int32_t mButtons;
+	int32_t mLastButtons;
 };

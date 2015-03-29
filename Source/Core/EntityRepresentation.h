@@ -1,7 +1,13 @@
 #pragma once
 
-// using const char for POD for quick initialization
+#include <map>
+#include <string>
+#include "SpriteAnimation.h"
+
 struct EntityRepresentation {
-	const char *imageFile;
+	Vec2  size;
+	std::string imageFile;
 	Recti source;
+
+	std::map<std::string, SpriteAnimation> animations;
 };

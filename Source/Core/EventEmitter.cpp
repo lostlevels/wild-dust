@@ -28,49 +28,41 @@ EventEmitter::EventEmitter() {}
 
 EventEmitter::~EventEmitter() {}
 
-unsigned int EventEmitter::on(const std::string &event_id, std::function<void ()> cb)
-{
+unsigned int EventEmitter::on(const std::string &event_id, std::function<void ()> cb) {
 	// std::lock_guard<std::mutex> lock(mutex);
-	
+
 	unsigned int listener_id = ++last_listener;
 	listeners.insert(std::make_pair(event_id, std::make_shared<Listener<>>(listener_id, cb)));
-	
+
 	return listener_id;
 }
 
-unsigned int EventEmitter::on(const std::string &event_id, std::function<void(const BitStream&)> cb)
-{
+unsigned int EventEmitter::on(const std::string &event_id, std::function<void(const BitStream&)> cb) {
 	// std::lock_guard<std::mutex> lock(mutex);
-	
+
 	unsigned int listener_id = ++last_listener;
 	listeners.insert(std::make_pair(event_id, std::make_shared<Listener<const BitStream&>>(listener_id, cb)));
-	
+
 	return listener_id;
 }
 
 unsigned int EventEmitter::on(const std::string &event_id, std::function<void (const std::string&)> cb) {
 	std::lock_guard<std::mutex> lock(mutex);
-	
+
 	unsigned int listener_id = ++last_listener;
 	listeners.insert(std::make_pair(event_id, std::make_shared<Listener<const std::string&>>(listener_id, cb)));
-	
+
 	return listener_id;
 }
 
-
-void EventEmitter::remove_listener(unsigned int listener_id)
-{
+void EventEmitter::remove_listener(unsigned int listener_id) {
 	// std::lock_guard<std::mutex> lock(mutex);
-	
+
 	auto i = std::find_if(listeners.begin(), listeners.end(), [&] (std::pair<std::string, std::shared_ptr<ListenerBase>> p) {
 		return p.second->id == listener_id;
 	});
 	if (i != listeners.end())
-	{
 		listeners.erase(i);
-	}
 	else
-	{
 		throw std::invalid_argument("EventEmitter::remove_listener: Invalid listener id.");
-	}
 }

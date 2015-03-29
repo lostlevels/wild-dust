@@ -9,7 +9,7 @@
 
 #define MIN_PACKETS_NEEDED_FOR_PING 10
 
-static std::string generateUniqueName() {
+static std::string generateUniqueClientName() {
 	static unsigned long long number = 0;
 	return "player" + std::to_string(number++);
 }
@@ -197,7 +197,7 @@ void Connection::onClientData(const BitStream &stream, ENetPeer *peer) {
 }
 
 void Connection::onClientConnected(ENetPeer *peer) {
-	std::string name = generateUniqueName();
+	std::string name = generateUniqueClientName();
 
 	auto clientData = new ClientConnectionData(name, peer);
 

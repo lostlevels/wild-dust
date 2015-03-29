@@ -1,12 +1,14 @@
 #include "Precompiled.h"
 #include "ServerWorld.h"
-#include "Core/EntityFactory.h"
+#include "Game/EntityFactory.h"
 #include "Core/Entity.h"
 #include "Core/Logger.h"
 #include "Serialization/EntitySerializer.h"
 #include <functional>
 #include "Core/PlayerState.h"
 
+// TODO: Read from config
+#define SEND_RATE .04f
 
 ServerWorld::ServerWorld() :
 	mStateSendTimer(0) {
@@ -20,9 +22,14 @@ ServerWorld::~ServerWorld() {
 }
 
 void ServerWorld::update(float dt) {
-	World::update(dt);
-	mConn.processNetworkEvents();
+	update(mConn.getServerTime(), dt);
+}
+
+void ServerWorld::update(float gameTime, float dt) {
 	handleStateUpdates(dt);
+
+	World::update(gameTime, dt);
+	mConn.processNetworkEvents();
 }
 
 void ServerWorld::sendGameState() {
@@ -40,8 +47,8 @@ void ServerWorld::sendGameState() {
 
 void ServerWorld::handleStateUpdates(float dt) {
 	mStateSendTimer += dt;
-	if (mStateSendTimer > .05f) {
-		mStateSendTimer -= .05f;
+	if (mStateSendTimer > SEND_RATE) {
+		mStateSendTimer -= SEND_RATE;
 
 		mEntsToSend.clear();
 		for (auto &kv : mEntities) {
@@ -87,36 +94,50 @@ void ServerWorld::serve(unsigned short ip) {
 		mStream->writeString(playerName);
 	});
 
-	mConn.on("playerupdate", [&](const BitStream &stream) {
-		stream.rewind();
-		stream.readString();
+	mConn.on("playerupdate", std::bind(&ServerWorld::onPlayerUpdate, this, std::placeholders::_1));
+}
 
-		std::string player = stream.readString();
-		Entity *e = getEntity(player);
-		if (!e) return;
+void ServerWorld::onPlayerUpdate(const BitStream &stream) {
+	stream.rewind();
+	stream.readString();
 
-		EntitySerializer::deserializeIntoEntity(e, stream);
-	});
+	std::string player = stream.readString();
+	Entity *e = getEntity(player);
+	if (!e) return;
+
+	EntitySerializer::deserializeIntoEntity(e, stream);
+
+	// TODO, only handle new commands since playerupdate may be called multiple times before clearing
+	auto &snapshots = e->getCommandSnapshots();
+	for (auto &snapshot : snapshots) {
+		processCommand(snapshot);
+	}
+}
+
+void ServerWorld::processCommand(const CommandSnapshot &snapshot) {
+
 }
 
 void ServerWorld::onClientEntered(const std::string &playerName) {
 	// Add to list of players.
 	// Notify all (existing and new player) of new player.
 	// Send list of players with state to player.
-	gLogger.info("onPlayerEnter ::Player entered :: %s\n", playerName.c_str());
+	gLogger.info("Player entered: %s\n", playerName.c_str());
 
 	std::string type = "cowboy";
+
 	PlayerState playerState;
 	playerState.name = playerName;
 	playerState.type = type;
 	playerState.ping = mConn.getClientPing(playerName);
 	mPlayerStates[playerName] = playerState;
-	gLogger.info("Ping sent is %f\n", playerState.ping);
 
-	Entity *e = EntityFactory::createEntity(playerName, type, playerName, SEND_ALWAYS);
+	Entity *e = EntityFactory::createRemoteEntity(nullptr, playerName, type, playerName);
+	// No entities on server are local.
+	e->setLocal(false);
 	Vec3 startingPosition(100, 100, 0);
 	e->setPosition(startingPosition);
-	addEntity(playerName, e);
+	scheduleAddEntity(playerName, e);
 
 	mStream->rewind();
 	mStream->writeString("you");

@@ -6,6 +6,7 @@ class BitStream {
 public:
 	BitStream(uint8_t *dataBuffer, int dataBufferSize, bool dataBufferAllocated = false);
 	BitStream(int dataBufferSize);
+	BitStream(const BitStream&);
 	~BitStream();
 
 	void writeI8(int8_t x);
@@ -44,8 +45,6 @@ public:
 	int getSize() const { return mDataBufferPosition; }
 
 	void rewind() const { mDataBufferPosition = 0; }
-
-	BitStream(const BitStream&);
 
 private:
 	uint8_t *mDataBuffer;

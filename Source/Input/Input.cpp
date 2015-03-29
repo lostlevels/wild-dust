@@ -1,11 +1,12 @@
 #include "Precompiled.h"
 #include "Input.h"
 
-InputSystem::InputSystem() : mButtons(0) {
+InputSystem::InputSystem() : mButtons(0), mLastButtons(0) {
 
 }
 
 void InputSystem::update(float) {
+	mLastButtons = mButtons;
 	mButtons = 0;
 
 	const Uint8 *keyboardState = SDL_GetKeyboardState(NULL);
@@ -19,7 +20,7 @@ void InputSystem::update(float) {
 	if (keyboardState[SDL_SCANCODE_W]) {
 		mButtons |= BTN_JUMP;
 	}
-	if (keyboardState[SDL_SCANCODE_X]) {
+	if (keyboardState[SDL_SCANCODE_J]) {
 		mButtons |= BTN_ATTACK;
 	}
 }
