@@ -29,6 +29,7 @@ EventEmitter::EventEmitter() {}
 
 EventEmitter::~EventEmitter() {}
 
+
 unsigned int EventEmitter::on(const std::string &event_id, std::function<void ()> cb) {
 	// std::lock_guard<std::mutex> lock(mutex);
 
