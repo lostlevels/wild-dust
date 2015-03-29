@@ -7,7 +7,7 @@ class AudioSource;
 class Music;
 class SoundEffect;
 
-class AudioSystem {
+class AUDIO_API AudioSystem {
 public:
 	AudioSystem();
 

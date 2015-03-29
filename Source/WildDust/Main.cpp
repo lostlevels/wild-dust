@@ -1,9 +1,10 @@
 #include "Core/Precompiled.h"
 #include "Core/Core.h"
 #include "Core/Config.h"
-#include <enet/enet.h>
-
 #include "Core/EventEmitter.h"
+#include "Core/Entity.h"
+
+#include "Network/Precompiled.h"
 #include "Network/Connection.h"
 
 #include "Renderer/Precompiled.h"
@@ -12,12 +13,22 @@
 #include "Renderer/RenderGather.h"
 #include "Renderer/GUI.h"
 
+#include "Client/Precompiled.h"
 #include "Client/ClientWorld.h"
+
+#include "Server/Precompiled.h"
 #include "Server/ServerWorld.h"
 
+#include "Input/Precompiled.h"
 #include "Input/Input.h"
+
+#include "Game/Precompiled.h"
 #include "Game/EntityFactory.h"
-#include "Core/Entity.h"
+
+
+
+#include <enet/enet.h>
+
 
 #ifndef _WIN32
 bool ArgvContains(char *argv[], int argc, const char *what) {

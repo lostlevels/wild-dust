@@ -8,7 +8,7 @@
 class Entity;
 class GameContext;
 
-class EntitySerializer {
+class SERIALIZATION_API EntitySerializer {
 public:
 	static void serializeExistingEntity(const Entity &ent, BitStream &stream);
 	static void deserializeIntoEntity(Entity *entity, const BitStream &stream);

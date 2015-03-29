@@ -2,7 +2,7 @@
 
 #include <al.h>
 
-class AudioSource {
+class AUDIO_API AudioSource {
 public:
 	AudioSource();
 	virtual ~AudioSource();

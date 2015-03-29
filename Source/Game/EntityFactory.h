@@ -5,7 +5,7 @@
 
 class GameContext;
 
-class EntityFactory {
+class GAME_API EntityFactory {
 public:
 	static Entity *createLocalEntity(GameContext *context, const std::string &id, const std::string &type,
 		const std::string &owner);

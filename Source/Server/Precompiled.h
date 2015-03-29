@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Core/Precompiled.h"
+#include "Game/Precompiled.h"
+#include "Serialization/Precompiled.h"
+#include "Network/Precompiled.h"
 
 #include <SDL.h>
 

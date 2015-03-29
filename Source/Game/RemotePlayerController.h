@@ -4,7 +4,7 @@
 
 class GameContext;
 
-class RemotePlayerController : public Controller {
+class GAME_API RemotePlayerController : public Controller {
 public:
 	RemotePlayerController(GameContext *context);
 	virtual ~RemotePlayerController(){}

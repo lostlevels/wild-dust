@@ -16,7 +16,7 @@
 
 class AudioSystem;
 
-class ClientWorld : public World, public ProjectileSpawner, public GameContext, public WorldCollision, public GibSpawner {
+class CLIENT_API ClientWorld : public World, public ProjectileSpawner, public GameContext, public WorldCollision, public GibSpawner {
 public:
 	ClientWorld(InputSystem *input, AudioSystem *audioSystem);
 	virtual ~ClientWorld();

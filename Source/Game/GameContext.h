@@ -7,7 +7,7 @@ class World;
 class WorldCollision;
 class GibSpawner;
 
-class GameContext {
+class GAME_API GameContext {
 public:
 	virtual InputBase *getInput() = 0;
 	virtual ProjectileSpawner *getProjectileSpawner() = 0;
