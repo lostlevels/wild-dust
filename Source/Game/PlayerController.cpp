@@ -140,8 +140,15 @@ void PlayerController::control(Entity *e, float gameTime, float dt) {
 		e->setFlip(0);
 	}
 
-	if (buttons & BTN_JUMP && isTouchingGround(e, collider, position)) {
+	// cheap hack fix
+	static bool jumping = false;
+	bool touchingGround = isTouchingGround(e, collider, position);
+	if (buttons & BTN_JUMP && touchingGround && !jumping) {
 		velocity.y += -700.0f;
+		jumping = true;
+	}
+	else if (touchingGround && velocity.y > -.00001f) {
+		jumping = false;
 	}
 
 	if (buttons & (BTN_MOVE_RIGHT | BTN_MOVE_LEFT) && !shooting && (e->getAnimation() != "walk" || !e->isAnimating())) {
