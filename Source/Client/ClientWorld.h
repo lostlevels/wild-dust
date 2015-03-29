@@ -24,6 +24,7 @@ public:
 	virtual ~ClientWorld();
 
 	void connect(const std::string &hostName, unsigned short port);
+	void disconnect() { mConn.disconnect(); }
 	void update(float dt);
 
 	virtual void spawnProjectile(const std::string &type, const std::string &owner, const Vec3 &position, float rotation);

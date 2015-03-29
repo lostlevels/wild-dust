@@ -321,6 +321,9 @@ void Connection::send(const uint8_t *data, int size, bool reliable, const std::s
 void Connection::disconnect() {
 	if (mHost) {
 		enet_host_destroy(mHost);
+		if (mClientToServer)
+			enet_peer_disconnect_now(mClientToServer, 0);
+
 		mHost = nullptr;
 	}
 }

@@ -121,6 +121,7 @@ int main(int argc, char *argv[])
 		renderGather.drawWorld(clientWorld, &renderer, &gui, data);
 	}
 
+	clientWorld->disconnect();
 	delete clientWorld;
 	delete serverWorld;
 
