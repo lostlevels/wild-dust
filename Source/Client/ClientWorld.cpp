@@ -179,7 +179,17 @@ std::string ClientWorld::createUniqueEntId() const {
 }
 
 void ClientWorld::update(float gameTime, float dt) {
-	// Handle game logic ...
+	std::string myName = mConn.getName();
+	float myPing = getPing(myName);
+	for (auto &kv : mEntities) {
+		auto ent = kv.second;
+		bool lerp = ent->getOwner() != myName && ent->isRemote() && ent->getSendMode() == SEND_ALWAYS;
+		if (lerp) {
+			float ping = getPing(ent->getOwner());
+			float viewDelay = std::max(.125f, ping + myPing + SEND_RATE * 2.1f);
+			ent->setViewDelay(viewDelay);
+		}
+	}
 
 	float timestep = 1 / 60.0f;
 	while (dt > 0.000001f) {
@@ -194,18 +204,6 @@ void ClientWorld::update(float gameTime, float dt) {
 	}
 
 	mConn.processNetworkEvents();
-
-	std::string myName = mConn.getName();
-	float myPing = getPing(myName);
-	for (auto &kv : mEntities) {
-		auto ent = kv.second;
-		bool lerp = ent->getOwner() != myName && ent->isRemote() && ent->getSendMode() == SEND_ALWAYS;
-		if (lerp) {
-			float ping = getPing(ent->getOwner());
-			float viewDelay = std::max(.125f, ping*.60f + myPing*.60f + SEND_RATE * 2.1f);
-			ent->setViewDelay(viewDelay);
-		}
-	}
 }
 
 void ClientWorld::spawnProjectile(const std::string &type, const std::string &owner, const Vec3 &position, float rotation) {
