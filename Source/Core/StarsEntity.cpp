@@ -22,7 +22,7 @@ void StarsEntity::update(float gameTime, float dt) {
 	float baseSize = 8;
 	float maxExtraSize = 4;
 	for (auto &star : mStars) {
-		star.scaleSpeed.x += dt * star.scaleSpeed.y;
+		star.scaleSpeed.x += dt * star.scaleSpeed.y * .15f;
 		float extraSize = sinf(star.scaleSpeed.x * 3.1419265f) * maxExtraSize;
 		star.size = Vec2(baseSize + extraSize);
 	}

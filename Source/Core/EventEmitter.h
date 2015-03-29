@@ -39,13 +39,14 @@ public:
 	~EventEmitter();
 
 	// LLVM seems to fail with templated on method so add some arguments that we'll be using
-	unsigned int on(const std::string &event_id, std::function<void (const BitStream &)> cb);
-	unsigned int on(const std::string &event_id, std::function<void (const std::string&)> cb);
+	// Fix for vs2013
+	unsigned int onBitStream(const std::string &event_id, std::function<void (const BitStream &)> cb);
+	unsigned int onString(const std::string &event_id, std::function<void (const std::string&)> cb);
 
-	template <typename... Args>
-	unsigned int on(const std::string &event_id, std::function<void (Args...)> cb);
+	// template <typename... Args>
+	// unsigned int on(const std::string &event_id, std::function<void (Args...)> cb);
 
-	unsigned int on(const std::string &event_id, std::function<void ()> cb);
+	// unsigned int on(const std::string &event_id, std::function<void ()> cb);
 
 	void remove_listener(unsigned int listener_id);
 
@@ -82,15 +83,15 @@ private:
 	const EventEmitter& operator = (const EventEmitter&) = delete;
 };
 
-template <typename... Args>
-unsigned int EventEmitter::on(const std::string &event_id, std::function<void (Args...)> cb) {
-	// std::lock_guard<std::mutex> lock(mutex);
+// template <typename... Args>
+// unsigned int EventEmitter::on(const std::string &event_id, std::function<void (Args...)> cb) {
+// 	// std::lock_guard<std::mutex> lock(mutex);
 
-	unsigned int listener_id = ++last_listener;
-	listeners.insert(std::make_pair(event_id, std::make_shared<Listener<Args...>>(listener_id, cb)));
+// 	unsigned int listener_id = ++last_listener;
+// 	listeners.insert(std::make_pair(event_id, std::make_shared<Listener<Args...>>(listener_id, cb)));
 
-	return listener_id;
-}
+// 	return listener_id;
+// }
 
 template <typename... Args>
 void EventEmitter::emit(const std::string &event_id, Args... args) {

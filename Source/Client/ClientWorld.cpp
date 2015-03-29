@@ -35,11 +35,12 @@ ClientWorld::ClientWorld(InputSystem *input, AudioSystem *audioSystem) :
 }
 
 void ClientWorld::addDefaultMap() {
-	auto map = new TilemapEntity("map", "../Content/Maps/Default.tmx");
+	auto map = new TilemapEntity("01map", "../Content/Maps/Default.tmx");
 	mTmxMap = &map->getMap();
 	scheduleAddEntity(map);
-
-	auto stars = new StarsEntity("stars", {{8, 8}, "../Content/Textures/Misc/Star.png"});
+	
+	// Note 00stars is a hack to make stars drawn first, similar thing with 01map
+	auto stars = new StarsEntity("00stars", {{8, 8}, "../Content/Textures/Misc/Star.png"});
 	scheduleAddEntity(stars);
 }
 
@@ -184,7 +185,7 @@ void ClientWorld::handlePlayerInput(float dt) {
 void ClientWorld::connect(const std::string &hostName, unsigned short port) {
 	mConn.connect(hostName, port);
 
-	mConn.on("you", [&](const BitStream &stream) {
+	mConn.onBitStream("you", [&](const BitStream &stream) {
 		stream.rewind();
 		stream.readString(); // Should be name of the event, "you"
 		Entity *e = EntitySerializer::deserializeInitialEntity(this, stream);
@@ -192,9 +193,9 @@ void ClientWorld::connect(const std::string &hostName, unsigned short port) {
 		gLogger.info("Added you\n");
 	});
 
-	mConn.on("gamestate", std::bind(&ClientWorld::onGameState, this, std::placeholders::_1));
-	mConn.on("playerexit", std::bind(&ClientWorld::onPlayerExit, this, std::placeholders::_1));
-	mConn.on("allplayersupdate", std::bind(&ClientWorld::onAllPlayersUpdate, this, std::placeholders::_1));
+	mConn.onBitStream("gamestate", std::bind(&ClientWorld::onGameState, this, std::placeholders::_1));
+	mConn.onBitStream("playerexit", std::bind(&ClientWorld::onPlayerExit, this, std::placeholders::_1));
+	mConn.onBitStream("allplayersupdate", std::bind(&ClientWorld::onAllPlayersUpdate, this, std::placeholders::_1));
 }
 
 void ClientWorld::onPlayerExit(const BitStream &stream) {
