@@ -158,7 +158,7 @@ void Connection::emitStream(const std::string &event, const BitStream &stream) {
 
 void Connection::updatePings() {
 	#define PING_INTERVAL .10f
-	if (mPingClock.getElapsedSeconds() > 2.0f + PING_INTERVAL * MIN_PACKETS_NEEDED_FOR_PING) {
+	if (mPingClock.getElapsedSeconds() > 5.0f + PING_INTERVAL * MIN_PACKETS_NEEDED_FOR_PING) {
 		mPingClock.reset();
 		// Clear all pings
 		for (auto &kv : mPeerToClients) {
