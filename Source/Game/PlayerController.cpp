@@ -140,7 +140,7 @@ void PlayerController::control(Entity *e, float gameTime, float dt) {
 		e->setFlip(0);
 	}
 
-	if (newButtons & BTN_JUMP && isTouchingGround(e, collider, position)) {
+	if (buttons & BTN_JUMP && isTouchingGround(e, collider, position)) {
 		velocity.y += -700.0f;
 	}
 
@@ -151,7 +151,7 @@ void PlayerController::control(Entity *e, float gameTime, float dt) {
 		e->stopAnimating();
 	}
 
-	if (mContext->getProjectileSpawner() && newButtons & BTN_ATTACK && !shooting) {
+	if (mContext->getProjectileSpawner() && buttons & BTN_ATTACK && !shooting) {
 		mContext->getProjectileSpawner()->spawnProjectile("bullet", e->getOwner(), e->getCenteredPosition(), e->getFlip() > 0 ? 180 : 0);
 		e->animate("shoot", 1);
 	}
