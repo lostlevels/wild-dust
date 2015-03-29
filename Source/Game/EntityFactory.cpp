@@ -28,6 +28,33 @@ static std::map<std::string, Entity> entityMap = {
 			{"shoot", {8, 9, 9, .25f}},
 		}
 	})},
+
+	{"barista", Entity("", "barista", "", SEND_ALWAYS, {{11*2, 32*2}, "../Content/Textures/Characters/Barista.png", {0, 0, 11, 32},
+		{
+			// Anims
+			{"walk", {1, 3, 3,.25f}},
+			{"jump", {0, 0, 0, 1}},
+			{"shoot", {4, 5, 5, .25f}},
+		}
+	})},
+
+	{"cop", Entity("", "cop", "", SEND_ALWAYS, {{15*2, 32*2}, "../Content/Textures/Characters/Cop.png", {0, 0, 15, 32},
+		{
+			// Anims
+			{"walk", {1, 3, 3,.25f}},
+			{"jump", {0, 0, 0, 1}},
+			{"shoot", {4, 5, 5, .25f}},
+		}
+	})},
+
+	{"doc", Entity("", "doc", "", SEND_ALWAYS, {{10*2, 32*2}, "../Content/Textures/Characters/Doc.png", {0, 0, 10, 32},
+		{
+			// Anims
+			{"walk", {1, 3, 3,.25f}},
+			{"jump", {0, 0, 0, 1}},
+			{"shoot", {4, 5, 5, .25f}},
+		}
+	})}
 };
 
 
@@ -60,4 +87,3 @@ Entity *EntityFactory::createEntity(GameContext *context, const std::string &id,
 
 	return e;
 }
-

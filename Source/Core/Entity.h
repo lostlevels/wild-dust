@@ -99,6 +99,9 @@ public:
 
 	virtual std::string getRenderType() const { return "sprite"; }
 
+	bool getActive() const { return mActive; }
+	void setActive(bool active) { mActive = active; }
+
 private:
 	Controller      *mController;
 	SpriteAnimator  mAnimator;
@@ -106,6 +109,7 @@ private:
 	std::string     mId;
 	std::string     mType;
 	std::string     mOwner;
+	bool            mActive;
 
 	float           mViewDelay;
 	int             mSendMode;

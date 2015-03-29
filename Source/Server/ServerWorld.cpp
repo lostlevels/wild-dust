@@ -146,7 +146,7 @@ void ServerWorld::processCommand(const CommandSnapshot &snapshot) {
 	if (snapshot.command == "damage") {
 		auto receiverState = getPlayerState(snapshot.receiver);
 		auto shooterState = getPlayerState(snapshot.owner);
-		
+
 		if (!receiverState || !shooterState) return;
 		receiverState->health -= 1.0f;
 		if (receiverState->health < .0001f) {
@@ -204,8 +204,12 @@ void ServerWorld::onClientEntered(const std::string &playerName) {
 	// Send list of players with state to player.
 	gLogger.info("Player entered: %s\n", playerName.c_str());
 
-	std::string type = mLastCharacter == "cowboy" ? "bandit" : "cowboy";
-	mLastCharacter = type;
+	std::vector<std::string> types = {"cowboy", "bandit", "doc", "barista", "dop"};
+	auto find = std::find(types.begin(), types.end(), mLastCharacter);
+	if (find == types.end()) find = types.begin();
+	else if (++find == types.end()) find = types.begin();
+	std::string type = (*find);
+	mLastCharacter = (*find);
 
 	PlayerState playerState;
 	playerState.name = playerName;

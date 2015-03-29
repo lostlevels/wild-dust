@@ -22,7 +22,8 @@ Entity::Entity(const std::string &id, const std::string &type, const std::string
 	mPosition(0.0f),
 	mFlip(0),
 	mVelocity(0.0f),
-	mAccel(0.0f) {
+	mAccel(0.0f),
+	mActive(true) {
 
 	mTransformSnaps.reserve(128);
 }

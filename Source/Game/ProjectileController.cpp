@@ -34,7 +34,8 @@ void ProjectileController::control(Entity *e, float gameTime, float dt) {
 		const auto &type = other->getType();
 
 		// TODO: Make less terrible
-		if (other != e && other->getOwner() != e->getOwner() && type != "bullet" && type != "gibs" && type != "stars") {
+		if (other != e && other->getOwner() != e->getOwner() &&
+			type != "bullet" && type != "gibs" && type != "stars" && type != "gui") {
 			float time = Collision::collidesBullet(e, other, position, nextPosition);
 			if (time >= 0 && time <= 1.0f && (time < nearestTime || !collidedWith)) {
 				nearestTime = time;

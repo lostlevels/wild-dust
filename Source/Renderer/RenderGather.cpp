@@ -27,6 +27,8 @@ void RenderGather::drawWorld(World *world, Renderer *renderer, GUI *gui, const s
 	auto entities = world->getEntities();
 	for (auto &kv : entities) {
 		auto ent = kv.second;
+		if (!ent->getActive()) continue;
+
 		auto renderType = ent->getRenderType();
 		if (renderType == "sprite")
 			drawSprite(ent, renderer);

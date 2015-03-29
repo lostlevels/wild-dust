@@ -47,6 +47,7 @@ ClientWorld::ClientWorld(InputSystem *input, AudioSystem *audioSystem) :
 	mStream = new BitStream(16 * 1024);
 	addDefaultMap();
 	addGibs();
+	addHearts();
 }
 
 void ClientWorld::addDefaultMap() {
@@ -62,6 +63,27 @@ void ClientWorld::addDefaultMap() {
 void ClientWorld::addGibs() {
 	mGibs = new GibCollectionEntity(this, "gibs", {{8, 8}, "../Content/Textures/Misc/Gib.png"});
 	scheduleAddEntity(mGibs);
+}
+
+void ClientWorld::setHeartsDisplay(float health) {
+	auto numHearts = std::min((std::size_t)health, mHearts.size());
+	for (std::size_t i = 0; i < numHearts; ++i)
+		mHearts[i]->setActive(true);
+	for (std::size_t i = numHearts; i < mHearts.size(); ++i)
+		mHearts[i]->setActive(false);
+}
+
+void ClientWorld::addHearts() {
+	if (!mHearts.empty()) return;
+
+	#define MAX_VISIBLE_HEARTS 4
+	mHearts.resize(MAX_VISIBLE_HEARTS);
+	for (int i = 0; i < MAX_VISIBLE_HEARTS; ++i) {
+		auto heart = new Entity("z" + createUniqueEntId(), "gui", "", SEND_NEVER, {{32, 32}, "../Content/Textures/Misc/Heart.png", {0, 0, 16, 16}});
+		heart->setPosition(Vec3(16 + 36 * i, 8, 0));
+		mHearts[i] = heart;
+		scheduleAddEntity(heart);
+	}
 }
 
 bool ClientWorld::collides(float x, float y) const {
@@ -104,7 +126,7 @@ ClientWorld::~ClientWorld() {
 }
 
 void ClientWorld::fillGUIData(int screenWidth, int screenHeight, std::vector<GUIData> &data) {
-	int startingY = 20;
+	int startingY = 40;
 	int y = startingY;
 	int x = 20;
 	int verticalSpacing = 20;
@@ -347,6 +369,11 @@ void ClientWorld::onAllPlayersUpdate(const BitStream &stream) {
 	emptyEntity.removeAllSnapshots();
 }
 
+PlayerState *ClientWorld::getPlayerState(const std::string &id) {
+	if (mPlayerStates.find(id) == mPlayerStates.end()) return nullptr;
+	return &mPlayerStates[id];
+}
+
 void ClientWorld::onGameState(const BitStream &stream) {
 	stream.rewind();
 	std::string evt = stream.readString(); // gamestate
@@ -362,6 +389,11 @@ void ClientWorld::onGameState(const BitStream &stream) {
 		mPlayerStates[state.name] = state;
 		// gLogger.info("%f\n", state.ping);
 	}
+	
+	auto state = getPlayerState(mConn.getName());
+	if (!state) return;
+
+	setHeartsDisplay(state->health);
 }
 
 Entity *ClientWorld::getMe() {

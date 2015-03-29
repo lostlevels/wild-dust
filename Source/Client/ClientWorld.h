@@ -48,6 +48,8 @@ private:
 	GibCollectionEntity *mGibs;
 	std::map<std::string, PlayerState> mPlayerStates;
 
+	std::vector<Entity*> mHearts;
+
 	Connection     mConn;
 	BitStream      *mStream;
 
@@ -82,6 +84,11 @@ private:
 
 	void addDefaultMap();
 	void addGibs();
+	void addHearts();
+	
+	void setHeartsDisplay(float health);
+	
+	PlayerState *getPlayerState(const std::string &id);
 
 	// Make derived update method private so we can use serverTime as gameTime
 	virtual void update(float gameTime, float dt);
