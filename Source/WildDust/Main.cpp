@@ -68,10 +68,14 @@ int main(int argc, char *argv[])
 
 	AudioSystem audio;
 	audio.init();
-	auto music = audio.createMusic();
-	music->openOggVorbisStream("../Content/Music/Texas.ogg");
-	music->mLoops = -1;
-	music->play();
+	Music *music = nullptr;
+
+	if (settings.getBool("Music", true)) {
+		music = audio.createMusic();
+		music->openOggVorbisStream("../Content/Music/Texas.ogg");
+		music->mLoops = -1;
+		music->play();
+	}
 
 	ClientWorld *clientWorld = new ClientWorld(&input, &audio);
 	ServerWorld *serverWorld = nullptr;
@@ -111,14 +115,16 @@ int main(int argc, char *argv[])
 		clientWorld->fillGUIData(context.getWindowWidth(), context.getWindowHeight(), data);
 		renderGather.drawWorld(clientWorld, &renderer, &gui, data);
 	}
-		
+
 	delete clientWorld;
 	delete serverWorld;
 
 	gui.shutdown();
 	renderer.shutdown();
 
-	audio.destroyMusic(music);
+	if (music)
+		audio.destroyMusic(music);
+
 	audio.shutdown();
 	gCore.shutdown();
 
