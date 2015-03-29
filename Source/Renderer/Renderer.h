@@ -8,7 +8,7 @@ class Texture;
 class SpriteBatcher;
 
 // Would subclass from IRenderer / RendererBase but no time for now, more refactor later.
-class Renderer {
+class RENDERER_API Renderer {
 public:
 	Renderer(SDLContext *context);
 

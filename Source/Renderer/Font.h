@@ -17,7 +17,7 @@ struct FontAtlasGlyph {
 	int advanceX;
 };
 
-class Font {
+class RENDERER_API Font {
 public:
 	Font(Renderer *renderer);
 	~Font();

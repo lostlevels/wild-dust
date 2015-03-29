@@ -32,7 +32,7 @@
 #include <algorithm>
 #include "Core/Bitstream.h"
 
-class EventEmitter {
+class CORE_API EventEmitter {
 public:
 
 	EventEmitter();

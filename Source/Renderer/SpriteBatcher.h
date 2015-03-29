@@ -21,7 +21,7 @@ struct SpriteVertex {
 	float a;
 };
 
-class SpriteBatcher {
+class RENDERER_API SpriteBatcher {
 public:
 	SpriteBatcher(Texture *texture, SpriteBlendMode blendMode);
 	~SpriteBatcher();

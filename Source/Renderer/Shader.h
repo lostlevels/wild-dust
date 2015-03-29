@@ -1,6 +1,6 @@
 #pragma once
 
-class Shader {
+class RENDERER_API Shader {
 public:
 	Shader();
 	~Shader();

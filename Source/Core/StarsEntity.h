@@ -11,7 +11,7 @@ struct Star {
 	Vec2 scaleSpeed;
 };
 
-class StarsEntity : public Entity {
+class CORE_API StarsEntity : public Entity {
 public:
 	StarsEntity(const std::string &id, const EntityRepresentation &rep);
 	virtual ~StarsEntity() {}

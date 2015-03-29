@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/Precompiled.h"
+#include "Renderer/Precompiled.h"
 
 #include <SDL.h>
 
