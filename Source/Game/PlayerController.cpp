@@ -187,13 +187,6 @@ void PlayerController::control(Entity *e, float gameTime, float dt) {
 		velocity.y = 0;
 	}
 
-	// static float t = 0;
-	// t += dt;
-	// if (t > 1) {
-	// 	printf("%f %f %f\n", position.x, position.y, velocity.y);
-	// 	t -= 1.0f;
-	// }
-
 	e->setVelocity(velocity);
 	e->setPosition(position);
 }
