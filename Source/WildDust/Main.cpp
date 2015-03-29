@@ -76,6 +76,7 @@ int main(int argc, char *argv[])
 		music->openOggVorbisStream("../Content/Music/Texas.ogg");
 		music->mLoops = -1;
 		music->play();
+		music->setVolume(0.15f);
 	}
 
 	ClientWorld *clientWorld = new ClientWorld(&input, &audio);
