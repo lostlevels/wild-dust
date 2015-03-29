@@ -79,7 +79,17 @@ void ClientWorld::addHearts() {
 	#define MAX_VISIBLE_HEARTS 4
 	mHearts.resize(MAX_VISIBLE_HEARTS);
 	for (int i = 0; i < MAX_VISIBLE_HEARTS; ++i) {
-		auto heart = new Entity("z" + createUniqueEntId(), "gui", "", SEND_NEVER, {{32, 32}, "../Content/Textures/Misc/Heart.png", {0, 0, 16, 16}});
+		EntityRepresentation rep;
+		rep.source = { 0, 0, 16, 16 };
+		rep.size = Vec2(32, 32);
+		rep.imageFile = "../Content/Textures/Misc/Heart.png";
+
+		Entity *heart = new Entity(
+			std::string("z") + createUniqueEntId(),
+			"gui",
+			"",
+			SEND_NEVER,
+			rep);
 		heart->setPosition(Vec3(16 + 36 * i, 8, 0));
 		mHearts[i] = heart;
 		scheduleAddEntity(heart);
