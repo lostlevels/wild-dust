@@ -118,6 +118,7 @@ void ServerWorld::serve(unsigned short port) {
 		}
 
 		sendPlayerLeft(playerName);
+		gLogger.info("Player left: %s\n", playerName.c_str());
 	});
 
 	mConn.onBitStream("playerupdate", std::bind(&ServerWorld::onPlayerUpdate, this, std::placeholders::_1));
