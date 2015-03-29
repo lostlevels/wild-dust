@@ -28,7 +28,7 @@ void ProjectileController::control(Entity *e, float gameTime, float dt) {
 	auto &entities = mContext->getWorld()->getEntities();
 
 	float nearestTime = 1000.0f;
-	Entity *collider = nullptr;
+	Entity *collidedWith = nullptr;
 	for (auto &kv : entities) {
 		auto other = kv.second;
 		const auto &type = other->getType();
@@ -36,19 +36,21 @@ void ProjectileController::control(Entity *e, float gameTime, float dt) {
 		// TODO: Make less terrible
 		if (other != e && other->getOwner() != e->getOwner() && type != "bullet" && type != "gibs" && type != "stars") {
 			float time = Collision::collidesBullet(e, other, position, nextPosition);
-			if (time >= 0 && time <= 1.0f && (time < nearestTime || !collider)) {
+			if (time >= 0 && time <= 1.0f && (time < nearestTime || !collidedWith)) {
 				nearestTime = time;
-				collider = other;
+				collidedWith = other;
 			}
 		}
 	}
 
-	if (collider) {
-		position = collider->getCenteredPosition();
+	if (collidedWith) {
+		position = collidedWith->getCenteredPosition();
 		mContext->getWorld()->scheduleDeleteEntity(e);
 		auto gibSpawner = mContext->getGibSpawner();
 		if (gibSpawner)
 			gibSpawner->spawnGibs(position, 15);
+
+		onEnemyHit(collidedWith);
 	}
 	else if (mContext->getCollision() && mContext->getCollision()->collides(nextPosition.x, nextPosition.y)) {
 		mContext->getWorld()->scheduleDeleteEntity(e);

@@ -135,6 +135,7 @@ void ServerWorld::onClientEntered(const std::string &playerName) {
 	PlayerState playerState;
 	playerState.name = playerName;
 	playerState.type = type;
+	playerState.health = 4;
 	playerState.ping = mConn.getClientPing(playerName);
 	mPlayerStates[playerName] = playerState;
 
