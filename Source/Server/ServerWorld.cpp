@@ -14,7 +14,8 @@
 ServerWorld::ServerWorld() :
 	mStateSendTimer(0),
 	mLastCharacter(""),
-	mGameStateSendTimer(0) {
+	mGameStateSendTimer(0),
+	mSimulationAccumulator(0.0f) {
 	mStream = new BitStream(16 * 1024);
 	mEntsToSend.reserve(256);
 }
