@@ -33,7 +33,7 @@ void RemotePlayerController::control(Entity *e, float gameTime, float dt) {
 	
 	if (buttons & BTN_ATTACK && !shooting) {
 		e->animate("shoot", 1);
-		if (mContext->getProjectileSpawner())
+		if (mContext && mContext->getProjectileSpawner())
 			mContext->getProjectileSpawner()->spawnProjectile("bullet", e->getOwner(), e->getCenteredPosition(), e->getFlip() > 0 ? 180 : 0);
 	}
 }

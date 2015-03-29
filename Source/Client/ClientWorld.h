@@ -11,6 +11,7 @@
 #include "Input/Input.h"
 #include "Core/GibCollectionEntity.h"
 #include "Game/GibSpawner.h"
+#include "Renderer/GUIData.h"
 #include <Tmx.h>
 
 class AudioSystem;
@@ -36,6 +37,8 @@ public:
 	virtual GibSpawner *getGibSpawner() { return this; }
 	virtual void spawnGibs(const Vec3 &position, int amount) { if (mGibs) mGibs->spawnGibs(position, amount); }
 
+	void fillGUIData(int screenWidth, int screenHeight, std::vector<GUIData> &data);
+
 private:
 	GibCollectionEntity *mGibs;
 	std::map<std::string, PlayerState> mPlayerStates;
@@ -46,10 +49,10 @@ private:
 	InputSystem    *mInput;
 	AudioSystem    *mAudio;
 
-	float           mSnapshotTimer;
-	float           mSendTimer;
+	float          mSnapshotTimer;
+	float          mSendTimer;
 
-	Tmx::Map        *mTmxMap;
+	Tmx::Map       *mTmxMap;
 
 	Entity *getMe();
 	void handlePlayerInput(float dt);

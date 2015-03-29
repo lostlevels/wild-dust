@@ -126,6 +126,18 @@ CommandSnapshot Entity::getClosestCommandSnapshot(float time) {
 	return mCommandSnaps[0];
 }
 
+float Entity::getLatestCommandTime() const {
+	if (mCommandSnaps.empty()) return 0;
+	return mCommandSnaps.back().time;
+}
+
+void Entity::getCommandSnapshotsAfter(float time, std::vector<CommandSnapshot> &outSnapshots) const {
+	for (auto &snapshot : mCommandSnaps) {
+		if (snapshot.time > time)
+			outSnapshots.push_back(time);
+	}
+}
+
 TransformSnapshot Entity::getSnapshot(float time) {
 	if (mTransformSnaps.empty() || time < mTransformSnaps[0].time || time > mTransformSnaps.back().time)
 		return TransformSnapshot();

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "GUIData.h"
+#include <vector>
 class Renderer;
 class Font;
 
@@ -11,7 +13,7 @@ public:
 	bool init();
 	void shutdown();
 
-	void render();
+	void render(const std::vector<GUIData> &datas);
 
 private:
 	Renderer *mRenderer;

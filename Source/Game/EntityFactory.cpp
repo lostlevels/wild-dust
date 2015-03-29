@@ -23,9 +23,9 @@ static std::map<std::string, Entity> entityMap = {
 	{"bandit", Entity("", "bandit", "", SEND_ALWAYS, {{24, 64}, "../Content/Textures/Characters/Bandit.png", {0, 0, 24, 64},
 		{
 			// Anims
-			{"walk", {6, 9, 2}},
-			{"jump", {5, 5, 1}},
-			{"shoot", {5, 5, 1}},
+			{"walk", {5, 7, 7,.25f}},
+			{"jump", {4, 4, 4, 1}},
+			{"shoot", {8, 9, 9, .25f}},
 		}
 	})},
 };

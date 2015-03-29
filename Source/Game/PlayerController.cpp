@@ -105,7 +105,7 @@ static bool isTouchingGround(Entity *e, WorldCollision *collider, const Vec3 &po
 	};
 
 	for (Vec2 &offset : bottomOffsets) {
-		if (collider->collides(position.x + offset.x, position.y + offset.y + 1))
+		if (collider->collides(position.x + offset.x, position.y + offset.y + 2))
 			return true;
 	}
 

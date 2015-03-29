@@ -10,6 +10,7 @@
 #include "Renderer/SDLContext.h"
 #include "Renderer/Renderer.h"
 #include "Renderer/RenderGather.h"
+#include "Renderer/GUI.h"
 
 #include "Client/ClientWorld.h"
 #include "Server/ServerWorld.h"
@@ -50,6 +51,8 @@ int main(int argc, char *argv[])
 	RenderGather renderGather;
 	Renderer renderer(&context);
 	renderer.init();
+	GUI gui(&renderer);
+	gui.init();
 
 	InputSystem input;
 
@@ -80,8 +83,12 @@ int main(int argc, char *argv[])
 		// Update input last
 		input.update(dt);
 
-		renderGather.drawWorld(&clientWorld, &renderer);
+		std::vector<GUIData> data;
+		clientWorld.fillGUIData(context.getWindowWidth(), context.getWindowHeight(), data);
+		renderGather.drawWorld(&clientWorld, &renderer, &gui, data);
 	}
+
+	gui.shutdown();
 
 	delete serverWorld;
 	gCore.shutdown();

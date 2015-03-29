@@ -9,6 +9,7 @@
 #include "Core/Entity.h"
 #include "Core/TilemapEntity.h"
 #include "Core/GibCollectionEntity.h"
+#include "Core/StarsEntity.h"
 #include "Core/World.h"
 #include <Tmx.h>
 
@@ -20,7 +21,7 @@ static std::string getObjectImagePath(const Tmx::Object *object) {
 	return std::string("../Content/Textures/") + object->GetProperties().GetStringProperty("sprite");
 }
 
-void RenderGather::drawWorld(World *world, Renderer *renderer) {
+void RenderGather::drawWorld(World *world, Renderer *renderer, GUI *gui, const std::vector<GUIData> &data) {
 	renderer->beginFrame();
 
 	auto entities = world->getEntities();
@@ -33,18 +34,37 @@ void RenderGather::drawWorld(World *world, Renderer *renderer) {
 			drawTilemap(ent, renderer);
 		else if (renderType == "gibs")
 			drawGibs(ent, renderer);
+		else if (renderType == "stars")
+			drawStars(ent, renderer);
 	}
+
+	if (gui) gui->render(data);
 
 	renderer->endFrame();
 }
 
-void RenderGather::drawGibs(Entity *ent, Renderer *renderer) {
+void RenderGather::drawStars(Entity *ent, Renderer *renderer) {
+	auto starEnt = static_cast<StarsEntity*>(ent);
+	auto &stars = starEnt->getStars();
+
 	auto &rep = ent->getRepresentation();
+	auto texture = renderer->getTexture(rep.imageFile);
+	auto batcher = renderer->getSpriteBatcher(texture, BLEND_ALPHA);
+	Recti source = {0, 0, texture->getWidth(), texture->getHeight()};
+
+	for (auto &star : stars) {
+		Vec2 position(star.centerPosition.x - star.size.x/2, star.centerPosition.y - star.size.y/2);
+		batcher->addSprite(position, star.size, source, Color(1.0f), 0);
+	}
+}
+
+void RenderGather::drawGibs(Entity *ent, Renderer *renderer) {
 	auto gibCollection = static_cast<GibCollectionEntity*>(ent);
 	int numGibs = gibCollection->getNumGibs();
 	const int *gibIndices = gibCollection->getGibIndices();
 	const Gib *gibs = gibCollection->getGibs();
 
+	auto &rep = ent->getRepresentation();
 	auto texture = renderer->getTexture(rep.imageFile);
 	auto batcher = renderer->getSpriteBatcher(texture, BLEND_ALPHA);
 	Recti source = {0, 0, texture->getWidth(), texture->getHeight()};

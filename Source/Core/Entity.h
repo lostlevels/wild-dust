@@ -58,6 +58,9 @@ public:
 	void addSnapshots(const std::vector<TransformSnapshot> &snapshots);
 	void queueTransformSnapshot(float time, uint32_t keys);
 
+	float getLatestCommandTime() const;
+	void getCommandSnapshotsAfter(float time, std::vector<CommandSnapshot> &outSnapshots) const;
+
 	TransformSnapshot getSnapshot(float time);
 	CommandSnapshot getClosestCommandSnapshot(float time);
 

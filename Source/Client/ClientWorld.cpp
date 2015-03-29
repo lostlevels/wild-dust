@@ -12,6 +12,9 @@
 #include "Serialization/EntitySerializer.h"
 #include "Core/CommandSnapshot.h"
 #include "Core/GibCollectionEntity.h"
+#include "Core/StarsEntity.h"
+#include "Renderer/Renderer.h"
+#include "Renderer/GUI.h"
 #include <functional>
 
 // TODO: Read from config
@@ -22,9 +25,9 @@ ClientWorld::ClientWorld(InputSystem *input, AudioSystem *audioSystem) :
 	mInput(input),
 	mAudio(audioSystem),
 	mSnapshotTimer(0),
+	mGibs(nullptr),
 	mSendTimer(0),
-	mTmxMap(nullptr),
-	mGibs(nullptr)
+	mTmxMap(nullptr)
 {
 	mStream = new BitStream(16 * 1024);
 	addDefaultMap();
@@ -35,6 +38,9 @@ void ClientWorld::addDefaultMap() {
 	auto map = new TilemapEntity("map", "../Content/Maps/Default.tmx");
 	mTmxMap = &map->getMap();
 	scheduleAddEntity(map);
+
+	auto stars = new StarsEntity("stars", {{8, 8}, "../Content/Textures/Misc/Star.png"});
+	scheduleAddEntity(stars);
 }
 
 void ClientWorld::addGibs() {
@@ -43,7 +49,7 @@ void ClientWorld::addGibs() {
 }
 
 bool ClientWorld::collides(float x, float y) const {
-	if (!mTmxMap) return;
+	if (!mTmxMap) return false;
 	int width = mTmxMap->GetWidth();
 	int height = mTmxMap->GetHeight();
 	int tileWidth = mTmxMap->GetTileWidth();
@@ -66,16 +72,34 @@ ClientWorld::~ClientWorld() {
 	mStream = nullptr;
 }
 
+void ClientWorld::fillGUIData(int screenWidth, int screenHeight, std::vector<GUIData> &data) {
+	int y = 20;
+	int x = 20;
+	int verticalSpacing = 20;
+	char buffer[256];
+
+	if (mInput && mInput->getButtons() & BTN_INFO) {
+		snprintf(buffer, sizeof(buffer) - 1, "%10s%10s%10s", "Name:", "Kills:", "Deaths:");
+		data.push_back({x, y, buffer});
+		y += verticalSpacing;
+
+		for (auto &kv : mPlayerStates) {
+			std::string name = kv.first;
+			if (name == mConn.getName()) name = "you";
+
+			snprintf(buffer, sizeof(buffer) - 1, "%10s%10d", name.c_str(), kv.second.kills);
+			data.push_back({x, y, buffer});
+			y += verticalSpacing;
+		}
+	}
+	else {
+		data.push_back({x, y, "Tab for stats"});
+		y += verticalSpacing;
+	}
+}
+
 void ClientWorld::update(float dt) {
 	update(mConn.getServerTime(), dt);
-
-	// Just testing
-	// static float t = 0;
-	// t += dt;
-	// if (t > 1.5f) {
-	// 	t -= 1.5f;
-	// 	spawnGibs(Vec3(650, 400, 0), 10);
-	// }
 }
 
 std::string ClientWorld::createUniqueEntId() const {
@@ -106,7 +130,7 @@ void ClientWorld::update(float gameTime, float dt) {
 
 void ClientWorld::spawnProjectile(const std::string &type, const std::string &owner, const Vec3 &position, float rotation) {
 	// Handle informing server ...
-	float speed = 500;
+	float speed = 2500;
 	float theta = glm::radians(rotation);
 	Vec3 velocity(cosf(theta) * speed, sinf(theta) * speed, 0);
 

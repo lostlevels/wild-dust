@@ -21,7 +21,10 @@ void GUI::shutdown() {
 	delete mVera;
 }
 
-void GUI::render() {
+void GUI::render(const std::vector<GUIData> &datas) {
+	for (auto &data : datas) {
+		mVera->drawText(data.text, data.x, data.y);
+	}
 	// ClientNetworkState state = mClient->getNetworkState();
 	// const char *status;
 	// switch (state) {

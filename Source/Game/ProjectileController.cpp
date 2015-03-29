@@ -5,6 +5,7 @@
 #include "GameContext.h"
 #include "Core/World.h"
 #include "Core/Collision.h"
+#include "Core/WorldCollision.h"
 #include "GibSpawner.h"
 
 // TODO Put projectile stats somewhere else
@@ -31,7 +32,9 @@ void ProjectileController::control(Entity *e, float gameTime, float dt) {
 	for (auto &kv : entities) {
 		auto other = kv.second;
 		const auto &type = other->getType();
-		if (other != e && other->getOwner() != e->getOwner() && type != "bullet" && type != "gibs") {
+
+		// TODO: Make less terrible
+		if (other != e && other->getOwner() != e->getOwner() && type != "bullet" && type != "gibs" && type != "stars") {
 			float time = Collision::collidesBullet(e, other, position, nextPosition);
 			if (time >= 0 && time <= 1.0f && (time < nearestTime || !collider)) {
 				nearestTime = time;
@@ -46,6 +49,9 @@ void ProjectileController::control(Entity *e, float gameTime, float dt) {
 		auto gibSpawner = mContext->getGibSpawner();
 		if (gibSpawner)
 			gibSpawner->spawnGibs(position, 15);
+	}
+	else if (mContext->getCollision() && mContext->getCollision()->collides(nextPosition.x, nextPosition.y)) {
+		mContext->getWorld()->scheduleDeleteEntity(e);
 	}
 	else {
 		position = nextPosition;

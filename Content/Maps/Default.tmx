@@ -44,5 +44,35 @@
     <property name="sprite" value="Misc/Cactus.png"/>
    </properties>
   </object>
+  <object name="weed" x="832.305" y="637.598" width="32" height="32">
+   <properties>
+    <property name="sprite" value="Misc/WeedA.png"/>
+   </properties>
+  </object>
+  <object name="weed" x="861.1" y="641.711" width="32" height="32">
+   <properties>
+    <property name="sprite" value="Misc/WeedA.png"/>
+   </properties>
+  </object>
+  <object name="weed" x="885.781" y="636.227" width="32" height="32">
+   <properties>
+    <property name="sprite" value="Misc/WeedA.png"/>
+   </properties>
+  </object>
+  <object name="weed" x="38.393" y="242.698" width="32" height="32">
+   <properties>
+    <property name="sprite" value="Misc/WeedA.png"/>
+   </properties>
+  </object>
+  <object name="weed" x="71.3012" y="238.585" width="32" height="32">
+   <properties>
+    <property name="sprite" value="Misc/WeedA.png"/>
+   </properties>
+  </object>
+  <object name="weed" x="101.467" y="245.441" width="32" height="32">
+   <properties>
+    <property name="sprite" value="Misc/WeedA.png"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

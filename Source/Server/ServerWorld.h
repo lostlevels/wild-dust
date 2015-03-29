@@ -23,6 +23,8 @@ private:
 	float                         mStateSendTimer;
 	std::vector<Entity*>          mEntsToSend;
 
+	std::string                   mLastCharacter;
+
 	void onClientEntered(const std::string &playerName);
 	void onPlayerUpdate(const BitStream &stream);
 

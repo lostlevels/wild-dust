@@ -11,7 +11,8 @@
 #define SEND_RATE .04f
 
 ServerWorld::ServerWorld() :
-	mStateSendTimer(0) {
+	mStateSendTimer(0),
+	mLastCharacter("") {
 	mStream = new BitStream(16 * 1024);
 	mEntsToSend.reserve(256);
 }
@@ -105,11 +106,15 @@ void ServerWorld::onPlayerUpdate(const BitStream &stream) {
 	Entity *e = getEntity(player);
 	if (!e) return;
 
+	// Get time before adding new commands
+	float latestCommandTime = e->getLatestCommandTime();
 	EntitySerializer::deserializeIntoEntity(e, stream);
 
 	// TODO, only handle new commands since playerupdate may be called multiple times before clearing
-	auto &snapshots = e->getCommandSnapshots();
-	for (auto &snapshot : snapshots) {
+
+	std::vector<CommandSnapshot> commands;
+	e->getCommandSnapshotsAfter(latestCommandTime, commands);
+	for (auto &snapshot : commands) {
 		processCommand(snapshot);
 	}
 }
@@ -124,7 +129,8 @@ void ServerWorld::onClientEntered(const std::string &playerName) {
 	// Send list of players with state to player.
 	gLogger.info("Player entered: %s\n", playerName.c_str());
 
-	std::string type = "cowboy";
+	std::string type = mLastCharacter == "cowboy" ? "bandit" : "cowboy";
+	mLastCharacter = type;
 
 	PlayerState playerState;
 	playerState.name = playerName;
@@ -132,6 +138,7 @@ void ServerWorld::onClientEntered(const std::string &playerName) {
 	playerState.ping = mConn.getClientPing(playerName);
 	mPlayerStates[playerName] = playerState;
 
+	// No context needed on server side since that's mostly visual / audio type stuff
 	Entity *e = EntityFactory::createRemoteEntity(nullptr, playerName, type, playerName);
 	// No entities on server are local.
 	e->setLocal(false);

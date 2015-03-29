@@ -23,4 +23,7 @@ void InputSystem::update(float) {
 	if (keyboardState[SDL_SCANCODE_J]) {
 		mButtons |= BTN_ATTACK;
 	}
+	if (keyboardState[SDL_SCANCODE_TAB]) {
+		mButtons |= BTN_INFO;
+	}
 }
