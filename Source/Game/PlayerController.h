@@ -4,7 +4,7 @@
 
 class GameContext;
 
-class PlayerController : public Controller {
+class GAME_API PlayerController : public Controller {
 public:
 	PlayerController(GameContext *context);
 	virtual ~PlayerController(){}

@@ -2,6 +2,11 @@
 
 #include "Core/Precompiled.h"
 #include "Renderer/Precompiled.h"
+#include "Audio/Precompiled.h"
+#include "Game/Precompiled.h"
+#include "Serialization/Precompiled.h"
+#include "Network/Precompiled.h"
+#include "Input/Precompiled.h"
 
 #include <SDL.h>
 

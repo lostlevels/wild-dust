@@ -5,7 +5,7 @@
 class Renderer;
 class Font;
 
-class GUI {
+class RENDERER_API GUI {
 public:
 	GUI(Renderer *renderer);
 	~GUI();

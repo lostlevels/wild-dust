@@ -39,6 +39,10 @@ typedef Vec4 Color;
 #define CORE_API DLLIMPORT
 #endif
 
+#ifdef _WIN32
+#define snprintf _snprintf
+#endif
+
 #include "Logger.h"
 #include "Rect.h"
 #include "EventEmitter.h"

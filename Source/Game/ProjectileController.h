@@ -4,7 +4,7 @@
 
 class GameContext;
 
-class ProjectileController : public Controller {
+class GAME_API ProjectileController : public Controller {
 public:
 	ProjectileController(GameContext *context);
 	virtual ~ProjectileController(){}

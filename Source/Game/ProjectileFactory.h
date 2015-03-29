@@ -5,7 +5,7 @@
 
 class GameContext;
 
-class ProjectileFactory {
+class GAME_API ProjectileFactory{
 public:
 	static Entity *createRemoteProjectile(GameContext *context, const std::string &id, const std::string &type, const std::string &owner, const Vec3 &velocity);
 	static Entity *createLocalProjectile(GameContext *context, const std::string &id, const std::string &type, const std::string &owner, const Vec3 &velocity);

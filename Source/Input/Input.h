@@ -2,7 +2,7 @@
 
 #include "Core/InputBase.h"
 
-class InputSystem : public InputBase {
+class INPUT_API InputSystem : public InputBase {
 public:
 	InputSystem();
 

@@ -7,7 +7,7 @@
 #define MUS_BUF_COUNT 3
 #define MUS_DECODE_BUF_SIZE (44100)
 
-class Music : public AudioSource {
+class AUDIO_API Music : public AudioSource {
 public:
 	Music();
 	~Music();

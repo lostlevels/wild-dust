@@ -2,7 +2,7 @@
 
 #include "AudioSource.h"
 
-class SoundEffect : public AudioSource {
+class AUDIO_API SoundEffect : public AudioSource {
 public:
 	SoundEffect();
 	~SoundEffect();

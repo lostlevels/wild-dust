@@ -7,7 +7,7 @@
 #include "Core/Clock.h"
 #include "Network/ClientConnectionData.h"
 
-class Connection : public EventEmitter {
+class NETWORK_API Connection : public EventEmitter {
 public:
 	Connection();
 

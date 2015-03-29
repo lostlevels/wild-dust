@@ -47,7 +47,7 @@ unsigned int EventEmitter::onBitStream(const std::string &event_id, std::functio
 	return listener_id;
 }
 
-unsigned int EventEmitter::onString(const std::string &event_id, std::function<void (const std::string&)> cb) {
+unsigned int EventEmitter::onString(const std::string &event_id, std::function<void(const std::string&)> cb) {
 	std::lock_guard<std::mutex> lock(mutex);
 
 	unsigned int listener_id = ++last_listener;
@@ -59,7 +59,7 @@ unsigned int EventEmitter::onString(const std::string &event_id, std::function<v
 void EventEmitter::remove_listener(unsigned int listener_id) {
 	// std::lock_guard<std::mutex> lock(mutex);
 
-	auto i = std::find_if(listeners.begin(), listeners.end(), [&] (std::pair<std::string, std::shared_ptr<ListenerBase>> p) {
+	auto i = std::find_if(listeners.begin(), listeners.end(), [&](std::pair<std::string, std::shared_ptr<ListenerBase>> p) {
 		return p.second->id == listener_id;
 	});
 	if (i != listeners.end())

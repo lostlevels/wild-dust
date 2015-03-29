@@ -2,7 +2,7 @@
 
 class Entity;
 
-class Controller {
+class CORE_API Controller {
 public:
 	Controller(){}
 	virtual ~Controller(){}
