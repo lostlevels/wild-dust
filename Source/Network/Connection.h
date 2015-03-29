@@ -34,6 +34,7 @@ public:
 	float getClientPing(const std::string &name) const;
 private:
 	Clock mClock;
+	Clock mPingClock;
 	ENetHost *mHost;
 	ENetPeer *mClientToServer;
 

@@ -205,7 +205,7 @@ void ServerWorld::onClientEntered(const std::string &playerName) {
 	// Send list of players with state to player.
 	gLogger.info("Player entered: %s\n", playerName.c_str());
 
-	std::vector<std::string> types = {"cowboy", "bandit", "doc", "barista", "dop"};
+	std::vector<std::string> types = {"cowboy", "bandit", "doc", "barista", "cop"};
 	auto find = std::find(types.begin(), types.end(), mLastCharacter);
 	if (find == types.end()) find = types.begin();
 	else if (++find == types.end()) find = types.begin();

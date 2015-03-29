@@ -88,6 +88,7 @@ void Connection::processClient() {
 float Connection::getClientPing(const std::string &name) const {
 	auto kv = mNamesToClients.find(name);
 	return kv != mNamesToClients.end() ? kv->second->mPing : 0;
+	// return kv != mNamesToClients.end() ? kv->second->mPeer->roundTripTime / 1000.0f : 0;
 }
 
 bool Connection::isFullyReady() const {
@@ -156,11 +157,22 @@ void Connection::emitStream(const std::string &event, const BitStream &stream) {
 }
 
 void Connection::updatePings() {
+	#define PING_INTERVAL .10f
+	if (mPingClock.getElapsedSeconds() > 2.0f + PING_INTERVAL * MIN_PACKETS_NEEDED_FOR_PING) {
+		mPingClock.reset();
+		// Clear all pings
+		for (auto &kv : mPeerToClients) {
+			auto client = kv.second;
+			client->mPings.clear();
+		}
+		gLogger.info("Repinging\n");
+	}
+
 	for (auto &kv : mPeerToClients) {
 		auto client = kv.second;
 
 		// Ping every .10 seconds.
-		if (client->mPingClock.getElapsedSeconds() > .10f && client->mPings.size() < MIN_PACKETS_NEEDED_FOR_PING) {
+		if (client->mPings.size() < MIN_PACKETS_NEEDED_FOR_PING && client->mPingClock.getElapsedSeconds() > PING_INTERVAL) {
 			client->mPingClock.reset();
 			pingClient(client->mName);
 		}
