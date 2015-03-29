@@ -67,12 +67,13 @@ int main(int argc, char *argv[])
 	InputSystem input;
 
 	AudioSystem audio;
+	audio.init();
 	auto music = audio.createMusic();
 	music->openOggVorbisStream("../Content/Music/Texas.ogg");
 	music->mLoops = -1;
 	music->play();
 
-	ClientWorld clientWorld(&input, nullptr);
+	ClientWorld *clientWorld = new ClientWorld(&input, &audio);
 	ServerWorld *serverWorld = nullptr;
 
 #ifdef _WIN32
@@ -82,11 +83,11 @@ int main(int argc, char *argv[])
 #endif
 		serverWorld = new ServerWorld();
 		serverWorld->serve(5000);
-		clientWorld.connect("127.0.0.1", 5000);
+		clientWorld->connect("127.0.0.1", 5000);
 	}
 	else {
-		//clientWorld.connect("37.142.124.227", 5000);
-		clientWorld.connect("127.0.0.1", 5000);
+		//clientWorld->connect("37.142.124.227", 5000);
+		clientWorld->connect("127.0.0.1", 5000);
 	}
 
 	Clock clock;
@@ -96,21 +97,29 @@ int main(int argc, char *argv[])
 		float dt = clock.getElapsedSeconds();
 		clock.reset();
 
-		clientWorld.update(dt);
+		clientWorld->update(dt);
 		if (serverWorld)
 			serverWorld->update(dt);
+
+		if (music)
+			music->update();
 
 		// Update input last
 		input.update(dt);
 
 		std::vector<GUIData> data;
-		clientWorld.fillGUIData(context.getWindowWidth(), context.getWindowHeight(), data);
-		renderGather.drawWorld(&clientWorld, &renderer, &gui, data);
+		clientWorld->fillGUIData(context.getWindowWidth(), context.getWindowHeight(), data);
+		renderGather.drawWorld(clientWorld, &renderer, &gui, data);
 	}
+		
+	delete clientWorld;
+	delete serverWorld;
 
 	gui.shutdown();
+	renderer.shutdown();
 
-	delete serverWorld;
+	audio.destroyMusic(music);
+	audio.shutdown();
 	gCore.shutdown();
 
 	enet_deinitialize();

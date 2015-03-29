@@ -16,6 +16,7 @@
 #include <Tmx.h>
 
 class AudioSystem;
+class SoundEffect;
 
 class CLIENT_API ClientWorld : public World, public ProjectileSpawner, public GameContext, public WorldCollision, public GibSpawner, public Damager {
 public:
@@ -36,7 +37,7 @@ public:
 	virtual bool collides(float x, float y) const;
 
 	virtual GibSpawner *getGibSpawner() { return this; }
-	virtual void spawnGibs(const Vec3 &position, int amount) { if (mGibs) mGibs->spawnGibs(position, amount); }
+	virtual void spawnGibs(const Vec3 &position, int amount);
 
 	virtual Damager *getDamager() { return this; }
 	virtual void applyDamage(const std::string &entId, float amount);
@@ -52,6 +53,9 @@ private:
 
 	InputSystem    *mInput;
 	AudioSystem    *mAudio;
+	SoundEffect    *mShotSound;
+	SoundEffect    *mDeathSound;
+	SoundEffect    *mHitSound;
 
 	float          mSnapshotTimer;
 	float          mSendTimer;

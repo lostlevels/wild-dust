@@ -3,6 +3,7 @@
 #include "Core/Logger.h"
 #include "Input/Input.h"
 #include "Audio/Audio.h"
+#include "Audio/SoundEffect.h"
 #include "Core/Entity.h"
 #include "Core/TilemapEntity.h"
 #include "Game/EntityFactory.h"
@@ -24,11 +25,25 @@
 ClientWorld::ClientWorld(InputSystem *input, AudioSystem *audioSystem) :
 	mInput(input),
 	mAudio(audioSystem),
+	mShotSound(nullptr),
+	mDeathSound(nullptr),
+	mHitSound(nullptr),
 	mSnapshotTimer(0),
 	mGibs(nullptr),
 	mSendTimer(0),
 	mTmxMap(nullptr)
 {
+	if (mAudio) {
+		mShotSound = mAudio->createSoundEffect();
+		mShotSound->loadWave("../Content/SFX/shot.wav");
+
+		mDeathSound = mAudio->createSoundEffect();
+		mDeathSound->loadWave("../Content/SFX/ech_death.wav");
+
+		mHitSound = mAudio->createSoundEffect();
+		mHitSound->loadWave("../Content/SFX/ech.wav");
+	}
+
 	mStream = new BitStream(16 * 1024);
 	addDefaultMap();
 	addGibs();
@@ -77,6 +92,13 @@ void ClientWorld::applyDamage(const std::string &entId, float amount) {
 }
 
 ClientWorld::~ClientWorld() {
+	if (mAudio) {
+		if (mHitSound) mAudio->destroySoundEffect(mHitSound);
+		if (mDeathSound) mAudio->destroySoundEffect(mDeathSound);
+		if (mShotSound) mAudio->destroySoundEffect(mShotSound);
+		// We dont own audio or sound so dont delete them
+	}
+
 	delete mStream;
 	mStream = nullptr;
 }
@@ -173,6 +195,13 @@ void ClientWorld::spawnProjectile(const std::string &type, const std::string &ow
 	// if (me && me->getId() == owner) {
 	// 	me->addSnapshot(CommandSnapshot(mConn.getServerTime(), "spawnprojectile", owner, "", position));
 	// }
+
+	if (mShotSound) mShotSound->play();
+}
+
+void ClientWorld::spawnGibs(const Vec3 &position, int amount) {
+	if (mGibs) mGibs->spawnGibs(position, amount);
+	if (mHitSound) mHitSound->play();
 }
 
 void ClientWorld::sendQueuedPackets(float dt) {
