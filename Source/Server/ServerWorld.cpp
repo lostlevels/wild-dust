@@ -186,7 +186,7 @@ void ServerWorld::sendDeathMessage(const std::string &dyingEntId) {
 	mStream->rewind();
 	mStream->writeString("death");
 	mStream->writeString(dyingEntId);
-	Vec3 newPosition(500, 0, 0);
+	Vec3 newPosition(1280/2, -15, 0);
 	mStream->writeFloat(newPosition.x);
 	mStream->writeFloat(newPosition.y);
 	mStream->writeFloat(newPosition.z);
