@@ -25,7 +25,7 @@ Entity::Entity(const std::string &id, const std::string &type, const std::string
 	mAccel(0.0f),
 	mActive(true) {
 
-	mTransformSnaps.reserve(128);
+	mTransformSnaps.reserve(MIN_SNAPSHOT_HISTORY);
 }
 
 Entity::Entity() : Entity("", "", "", SEND_ALWAYS) {
