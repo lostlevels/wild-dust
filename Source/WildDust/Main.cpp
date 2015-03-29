@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 	if (ArgvContains(argv, argc, "-server")) {
 #endif
 		Config cfg;
-		cfg.loadFromFile("Config/Listen.cfg.cfg");
+		cfg.loadFromFile("Config/Listen.cfg");
 		serverWorld = new ServerWorld();
 		serverWorld->serve(cfg.getInt("PortNumber", 5000));
 		clientWorld->connect("127.0.0.1", cfg.getInt("PortNumber", 5000));
