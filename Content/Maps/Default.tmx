@@ -5,7 +5,7 @@
  </tileset>
  <layer name="Tile Layer 1" width="80" height="45">
   <data encoding="base64" compression="zlib">
-   eJztmUEKhEAMBNf1/3/2oiw7oEhqMIlUQZ9tSgwhrh+Jsu6RGPpj6I+hP4b+GPpjzPb3DabL80Zm+1uC6fK8Ef0xnH8M/TH0x9AfQ38M/TH09yOyhx/+svb3SkT2yMNf1v5ZCf09j/OPoT+G/hj6Y+iPoT+G/hgz/GX/g8jsMcNf9g09s4f+GM4/hv4Y+mPoj3F1O5V/zjxVu/FVvX1n7xd36dqrS8+qvcY89d3cnSfVe2W997f26tKzaq8uPav2MsbUzwaZgAP9
+   eJztmUEKwzAQxNrm/3/upabQU7Jy7Nkiwd4HhdjD+nhIleMzUkN/DP0xUvy9irObFH/P4uwmxV9X9MfQH0N/DP0xZvtb3UN2957Z/lb3kN29R38Mzz+G/hj6Y+iPoT+G/hjDX7e92x1Uevjw123vdgeVHqm/L8Sf1NAfQ38M/TH0x9AfY4a/pHfv1Vlm+Et6916dRX8Mzz+G/hj6YyT667Q7G7uXpJ1fyu7nbP/ZfWf+0iVHSue4+j1X/Rdd/P1rri45U3N1yZmay3Gc/HkDN/kEIg==
   </data>
  </layer>
  <objectgroup name="Object Layer 1">
@@ -29,12 +29,12 @@
     <property name="sprite" value="Misc/Cactus.png"/>
    </properties>
   </object>
-  <object name="cactus" x="813.108" y="374.332" width="56.2183" height="56.2183">
+  <object name="cactus" x="830.144" y="400.66" width="56.2183" height="56.2183">
    <properties>
     <property name="sprite" value="Misc/Cactus.png"/>
    </properties>
   </object>
-  <object name="cactus" x="926.916" y="378.445" width="56.2183" height="56.2183">
+  <object name="cactus" x="943.952" y="404.773" width="56.2183" height="56.2183">
    <properties>
     <property name="sprite" value="Misc/Cactus.png"/>
    </properties>
@@ -59,17 +59,17 @@
     <property name="sprite" value="Misc/WeedA.png"/>
    </properties>
   </object>
-  <object name="weed" x="38.393" y="242.698" width="32" height="32">
+  <object name="weed" x="43.0391" y="267.477" width="32" height="32">
    <properties>
     <property name="sprite" value="Misc/WeedA.png"/>
    </properties>
   </object>
-  <object name="weed" x="71.3012" y="238.585" width="32" height="32">
+  <object name="weed" x="75.9473" y="263.364" width="32" height="32">
    <properties>
     <property name="sprite" value="Misc/WeedA.png"/>
    </properties>
   </object>
-  <object name="weed" x="101.467" y="245.441" width="32" height="32">
+  <object name="weed" x="106.113" y="270.22" width="32" height="32">
    <properties>
     <property name="sprite" value="Misc/WeedA.png"/>
    </properties>
