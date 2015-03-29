@@ -57,6 +57,7 @@ void EntitySerializer::serializePlayerState(const PlayerState &state, BitStream 
 	stream.writeString(state.type);
 
 	stream.writeFloat(state.ping);
+	stream.writeFloat(state.health);
 
 	stream.writeU32(state.kills);
 	stream.writeU32(state.deaths);
@@ -70,6 +71,7 @@ PlayerState EntitySerializer::deserializePlayerState(const BitStream &stream) {
 	state.type = stream.readString();
 
 	state.ping = stream.readFloat();
+	state.health = stream.readFloat();
 
 	state.kills = stream.readU32();
 	state.deaths = stream.readU32();

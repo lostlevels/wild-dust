@@ -135,7 +135,10 @@ void ClientWorld::spawnProjectile(const std::string &type, const std::string &ow
 	float theta = glm::radians(rotation);
 	Vec3 velocity(cosf(theta) * speed, sinf(theta) * speed, 0);
 
-	auto ent = ProjectileFactory::createLocalProjectile(this, createUniqueEntId(), "bullet", owner, velocity);
+	auto ownerEnt = getEntity(owner);
+	bool local = ownerEnt ? ownerEnt->isLocal() : false;
+	auto ent = local ? ProjectileFactory::createLocalProjectile(this, createUniqueEntId(), "bullet", owner, velocity) : 
+		ProjectileFactory::createRemoteProjectile(this, createUniqueEntId(), "bullet", owner, velocity)
 	ent->setPosition(position);
 	ent->setFlip(rotation > .000001f ? 1 : 0);
 	scheduleAddEntity(ent);
