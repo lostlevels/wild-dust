@@ -24,12 +24,12 @@
     <property name="sprite" value="Misc/Cactus.png"/>
    </properties>
   </object>
-  <object name="cactus" x="601.947" y="427.807" width="68.5589" height="131.633">
+  <object name="cactus" x="595.385" y="428.744" width="68.5589" height="131.633">
    <properties>
     <property name="sprite" value="Misc/Cactus.png"/>
    </properties>
   </object>
-  <object name="cactus" x="830.144" y="400.66" width="56.2183" height="56.2183">
+  <object name="cactus" x="834.79" y="406.855" width="56.2183" height="56.2183">
    <properties>
     <property name="sprite" value="Misc/Cactus.png"/>
    </properties>
@@ -39,7 +39,7 @@
     <property name="sprite" value="Misc/Cactus.png"/>
    </properties>
   </object>
-  <object name="cactus" x="813.286" y="124.539" width="56.2183" height="56.2183">
+  <object name="cactus" x="811.737" y="118.344" width="56.2183" height="56.2183">
    <properties>
     <property name="sprite" value="Misc/Cactus.png"/>
    </properties>
@@ -59,17 +59,17 @@
     <property name="sprite" value="Misc/WeedA.png"/>
    </properties>
   </object>
-  <object name="weed" x="43.0391" y="289.159" width="32" height="32">
+  <object name="weed" x="36.8443" y="286.061" width="32" height="32">
    <properties>
     <property name="sprite" value="Misc/WeedA.png"/>
    </properties>
   </object>
-  <object name="weed" x="75.9473" y="285.046" width="32" height="32">
+  <object name="weed" x="75.9473" y="286.595" width="32" height="32">
    <properties>
     <property name="sprite" value="Misc/WeedA.png"/>
    </properties>
   </object>
-  <object name="weed" x="106.113" y="291.902" width="32" height="32">
+  <object name="weed" x="110.759" y="287.256" width="32" height="32">
    <properties>
     <property name="sprite" value="Misc/WeedA.png"/>
    </properties>
