@@ -2,7 +2,7 @@
 
 #include "ProjectileController.h"
 
-class LocalProjectileController : public ProjectileController {
+class GAME_API LocalProjectileController : public ProjectileController {
 public:
 	LocalProjectileController(GameContext *context);
 	virtual ~LocalProjectileController(){}
