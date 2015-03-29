@@ -11,12 +11,13 @@
 #include "Input/Input.h"
 #include "Core/GibCollectionEntity.h"
 #include "Game/GibSpawner.h"
+#include "Game/Damager.h"
 #include "Renderer/GUIData.h"
 #include <Tmx.h>
 
 class AudioSystem;
 
-class ClientWorld : public World, public ProjectileSpawner, public GameContext, public WorldCollision, public GibSpawner {
+class ClientWorld : public World, public ProjectileSpawner, public GameContext, public WorldCollision, public GibSpawner, public Damager {
 public:
 	ClientWorld(InputSystem *input, AudioSystem *audioSystem);
 	virtual ~ClientWorld();
@@ -37,6 +38,9 @@ public:
 	virtual GibSpawner *getGibSpawner() { return this; }
 	virtual void spawnGibs(const Vec3 &position, int amount) { if (mGibs) mGibs->spawnGibs(position, amount); }
 
+	virtual Damager *getDamager() { return this; }
+	virtual void applyDamage(const std::string &entId, float amount);
+
 	void fillGUIData(int screenWidth, int screenHeight, std::vector<GUIData> &data);
 
 private:
@@ -54,6 +58,8 @@ private:
 
 	Tmx::Map       *mTmxMap;
 
+	std::vector<std::string> mGameMessages;
+
 	Entity *getMe();
 	void handlePlayerInput(float dt);
 	void sendQueuedPackets(float dt);
@@ -61,6 +67,10 @@ private:
 	std::string    createUniqueEntId() const;
 
 	float getPing(const std::string &name) const;
+
+	void addGameMessage(const char *format, ...);
+	void addGameMessage(const std::string &message);
+	void trimGameMessages();
 
 	void onGameState(const BitStream &stream);
 	void onPlayerExit(const BitStream &stream);

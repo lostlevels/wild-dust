@@ -25,11 +25,19 @@ private:
 
 	std::string                   mLastCharacter;
 
+	float                         mGameStateSendTimer;
+	PlayerState *getPlayerState(const std::string &id);
+
 	void onClientEntered(const std::string &playerName);
 	void onPlayerUpdate(const BitStream &stream);
 
 	void handleStateUpdates(float dt);
 	void sendGameState();
+
+	void sendDeathMessage(const std::string &dyingEntId);
+	void sendGameMessage(const char *format, ...);
+	void sendPlayerLeft(const std::string &id);
+	void handleSendGameStates(float dt);
 
 	void processCommand(const CommandSnapshot &snapshot);
 

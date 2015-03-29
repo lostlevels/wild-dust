@@ -55,7 +55,9 @@ bool Renderer::init() {
 	SDL_GL_MakeCurrent(mContext->getGameWindow(), mGLContext);
 
 	glewExperimental = 1;
-	if (glewInit() != GLEW_OK)
+	auto res = glewInit();
+	assert(res == GLEW_OK);
+	if (res != GLEW_OK)
 		return false;
 
 	PumpOpenGLErrors(false);

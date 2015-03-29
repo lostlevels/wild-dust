@@ -32,10 +32,13 @@ void EntitySerializer::serializeCommandSnapshot(const CommandSnapshot &snapshot,
 	stream.writeFloat(snapshot.time);
 	stream.writeString(snapshot.command);
 	stream.writeString(snapshot.owner);
+	stream.writeString(snapshot.receiver);
 
 	stream.writeFloat(snapshot.position.x);
 	stream.writeFloat(snapshot.position.y);
 	stream.writeFloat(snapshot.position.z);
+	
+	stream.writeU32(snapshot.flags);
 }
 
 CommandSnapshot EntitySerializer::deserializeCommandSnapshot(const BitStream &stream) {
@@ -44,11 +47,13 @@ CommandSnapshot EntitySerializer::deserializeCommandSnapshot(const BitStream &st
 	snapshot.time = stream.readFloat();
 	snapshot.command = stream.readString();
 	snapshot.owner = stream.readString();
+	snapshot.receiver = stream.readString();
 
 	snapshot.position.x = stream.readFloat();
 	snapshot.position.y = stream.readFloat();
 	snapshot.position.z = stream.readFloat();
 
+	snapshot.flags = stream.readU32();
 	return snapshot;
 }
 
@@ -138,7 +143,8 @@ void EntitySerializer::deserializeIntoEntity(Entity *entity, const BitStream &st
 
 	uint32_t numCommandSnapshots = stream.readU32();
 	for (uint32_t i = 0; i < numCommandSnapshots; ++i) {
-		entity->addSnapshot(EntitySerializer::deserializeCommandSnapshot(stream));
+		auto snap = EntitySerializer::deserializeCommandSnapshot(stream);
+		entity->addSnapshot(snap);
 	}
 }
 

@@ -134,13 +134,14 @@ float Entity::getLatestCommandTime() const {
 void Entity::getCommandSnapshotsAfter(float time, std::vector<CommandSnapshot> &outSnapshots) const {
 	for (auto &snapshot : mCommandSnaps) {
 		if (snapshot.time > time)
-			outSnapshots.push_back(time);
+			outSnapshots.push_back(snapshot);
 	}
 }
 
 TransformSnapshot Entity::getSnapshot(float time) {
-	if (mTransformSnaps.empty() || time < mTransformSnaps[0].time || time > mTransformSnaps.back().time)
-		return TransformSnapshot();
+	if (mTransformSnaps.empty()) return {0, Vec3(-100, -100, 0)}; // negative so offscreen
+	if (time < mTransformSnaps[0].time || time > mTransformSnaps.back().time)
+		return mTransformSnaps.back();
 
 	for (int i = (int)mTransformSnaps.size() - 2; i > -1; --i) {
 		auto &snapshot = mTransformSnaps[i];

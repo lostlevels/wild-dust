@@ -12,7 +12,7 @@ public:
 	virtual void control(Entity *e, float gameTime, float dt);
 	virtual void onAttached(Entity *e);
 
-private:
+protected:
 	GameContext *mContext;
 	Vec3        mInitialPosition;
 	bool        mPositionSet;

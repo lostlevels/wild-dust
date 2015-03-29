@@ -2,13 +2,14 @@
 #include "LocalProjectileController.h"
 #include "Core/Entity.h"
 #include "GameContext.h"
-
-// TODO Put projectile stats somewhere else
+#include "Damager.h"
 
 LocalProjectileController::LocalProjectileController(GameContext *context) : ProjectileController(context) {
 
 }
 
 void LocalProjectileController::onEnemyHit(Entity *hit) {
-	// Send message that someone was hit
+	if (!mContext || !mContext->getDamager()) return;
+
+	mContext->getDamager()->applyDamage(hit->getId(), 1);
 }

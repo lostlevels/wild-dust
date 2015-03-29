@@ -9,9 +9,11 @@
 
 // TODO: Read from config
 #define SEND_RATE .04f
+#define STARTING_HEALTH 4
 
 ServerWorld::ServerWorld() :
 	mStateSendTimer(0),
+	mGameStateSendTimer(0),
 	mLastCharacter("") {
 	mStream = new BitStream(16 * 1024);
 	mEntsToSend.reserve(256);
@@ -28,9 +30,18 @@ void ServerWorld::update(float dt) {
 
 void ServerWorld::update(float gameTime, float dt) {
 	handleStateUpdates(dt);
+	handleSendGameStates(dt);
 
 	World::update(gameTime, dt);
 	mConn.processNetworkEvents();
+}
+
+void ServerWorld::handleSendGameStates(float dt) {
+	mGameStateSendTimer += dt;
+	if (mGameStateSendTimer > 1.0f) {
+		mGameStateSendTimer -= 1.0f;
+		sendGameState();
+	}
 }
 
 void ServerWorld::sendGameState() {
@@ -86,13 +97,11 @@ void ServerWorld::serve(unsigned short ip) {
 
 		for (auto &kv : mEntities) {
 			if (kv.second->getOwner() == playerName) {
-				// schedule a delete.
+				scheduleDeleteEntity(kv.second);
 			}
 		}
 
-		mStream->rewind();
-		mStream->writeString("playerexit");
-		mStream->writeString(playerName);
+		sendPlayerLeft(playerName);
 	});
 
 	mConn.onBitStream("playerupdate", std::bind(&ServerWorld::onPlayerUpdate, this, std::placeholders::_1));
@@ -110,8 +119,6 @@ void ServerWorld::onPlayerUpdate(const BitStream &stream) {
 	float latestCommandTime = e->getLatestCommandTime();
 	EntitySerializer::deserializeIntoEntity(e, stream);
 
-	// TODO, only handle new commands since playerupdate may be called multiple times before clearing
-
 	std::vector<CommandSnapshot> commands;
 	e->getCommandSnapshotsAfter(latestCommandTime, commands);
 	for (auto &snapshot : commands) {
@@ -120,7 +127,59 @@ void ServerWorld::onPlayerUpdate(const BitStream &stream) {
 }
 
 void ServerWorld::processCommand(const CommandSnapshot &snapshot) {
+	if (snapshot.command == "damage") {
+		auto receiverState = getPlayerState(snapshot.receiver);
+		auto shooterState = getPlayerState(snapshot.owner);
+		
+		if (!receiverState || !shooterState) return;
+		receiverState->health -= 1.0f;
+		if (receiverState->health < .0001f) {
+			receiverState->health = STARTING_HEALTH;
+			receiverState->deaths++;
+			shooterState->kills++;
+			sendDeathMessage(snapshot.receiver);
+			sendGameMessage("%s killed %s", snapshot.owner.c_str(), snapshot.receiver.c_str());
+		}
+		// Force send next update
+		mGameStateSendTimer = 1.0f;
+	}
+}
 
+void ServerWorld::sendPlayerLeft(const std::string &id) {
+	mStream->rewind();
+	mStream->writeString("playerexit");
+	mStream->writeString(id);
+	mConn.send(*mStream, true);
+}
+
+void ServerWorld::sendGameMessage(const char *format, ...) {
+	va_list args;
+	va_start(args, format);
+	char message[1024] = {0};
+	vsprintf(message, format, args);
+	va_end(args);
+
+	mStream->rewind();
+	mStream->writeString("gamemessage");
+	mStream->writeString(message);
+
+	mConn.send(*mStream, true);
+}
+
+void ServerWorld::sendDeathMessage(const std::string &dyingEntId) {
+	mStream->rewind();
+	mStream->writeString("death");
+	mStream->writeString(dyingEntId);
+	Vec3 newPosition(500, 0, 0);
+	mStream->writeFloat(newPosition.x);
+	mStream->writeFloat(newPosition.y);
+	mStream->writeFloat(newPosition.z);
+	mConn.send(*mStream, true);
+}
+
+PlayerState *ServerWorld::getPlayerState(const std::string &id) {
+	if (mPlayerStates.find(id) == mPlayerStates.end()) return nullptr;
+	return &mPlayerStates[id];
 }
 
 void ServerWorld::onClientEntered(const std::string &playerName) {
@@ -135,7 +194,7 @@ void ServerWorld::onClientEntered(const std::string &playerName) {
 	PlayerState playerState;
 	playerState.name = playerName;
 	playerState.type = type;
-	playerState.health = 4;
+	playerState.health = STARTING_HEALTH;
 	playerState.ping = mConn.getClientPing(playerName);
 	mPlayerStates[playerName] = playerState;
 

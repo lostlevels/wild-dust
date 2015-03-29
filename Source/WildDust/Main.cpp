@@ -65,9 +65,15 @@ int main(int argc, char *argv[])
 	if (ArgvContains(argv, argc, "-server")) {
 #endif
 		serverWorld = new ServerWorld();
-		serverWorld->serve(1336);
+		serverWorld->serve(5000);
+		
+		clientWorld.connect("127.0.0.1", 5000);
 	}
-	clientWorld.connect("127.0.0.1", 1336);
+	else {
+		//clientWorld.connect("37.142.124.227", 5000);
+		clientWorld.connect("127.0.0.1", 5000);
+	}
+
 
 	Clock clock;
 	while (!context.isQuitSignaled()) {

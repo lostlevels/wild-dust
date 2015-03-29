@@ -6,6 +6,7 @@ class ProjectileSpawner;
 class World;
 class WorldCollision;
 class GibSpawner;
+class Damager;
 
 class GameContext {
 public:
@@ -14,4 +15,5 @@ public:
 	virtual GibSpawner *getGibSpawner() = 0;
 	virtual World *getWorld() = 0;
 	virtual WorldCollision *getCollision() = 0;
+	virtual Damager *getDamager() = 0;
 };

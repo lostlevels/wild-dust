@@ -38,7 +38,7 @@ void ClientWorld::addDefaultMap() {
 	auto map = new TilemapEntity("01map", "../Content/Maps/Default.tmx");
 	mTmxMap = &map->getMap();
 	scheduleAddEntity(map);
-	
+
 	// Note 00stars is a hack to make stars drawn first, similar thing with 01map
 	auto stars = new StarsEntity("00stars", {{8, 8}, "../Content/Textures/Misc/Star.png"});
 	scheduleAddEntity(stars);
@@ -68,13 +68,22 @@ bool ClientWorld::collides(float x, float y) const {
 	return layer->GetTileTilesetIndex(tileX, tileY) != -1 && layer->GetTileId(tileX, tileY) != -1;
 }
 
+void ClientWorld::applyDamage(const std::string &entId, float amount) {
+	auto me = getMe();
+	auto ent = getEntity(entId);
+	if (me && ent) {
+		me->addSnapshot(CommandSnapshot(mConn.getServerTime(), "damage", me->getId(), entId));
+	}
+}
+
 ClientWorld::~ClientWorld() {
 	delete mStream;
 	mStream = nullptr;
 }
 
 void ClientWorld::fillGUIData(int screenWidth, int screenHeight, std::vector<GUIData> &data) {
-	int y = 20;
+	int startingY = 20;
+	int y = startingY;
 	int x = 20;
 	int verticalSpacing = 20;
 	char buffer[256];
@@ -88,13 +97,20 @@ void ClientWorld::fillGUIData(int screenWidth, int screenHeight, std::vector<GUI
 			std::string name = kv.first;
 			if (name == mConn.getName()) name = "you";
 
-			snprintf(buffer, sizeof(buffer) - 1, "%10s%10d", name.c_str(), kv.second.kills);
+			snprintf(buffer, sizeof(buffer) - 1, "%10s%10d%10d", name.c_str(), kv.second.kills, kv.second.deaths);
 			data.push_back({x, y, buffer});
 			y += verticalSpacing;
 		}
 	}
 	else {
 		data.push_back({x, y, "Tab for stats"});
+		y += verticalSpacing;
+	}
+
+	y = startingY;
+	x = screenWidth - 350;
+	for (auto &message : mGameMessages) {
+		data.push_back({x, y, message});
 		y += verticalSpacing;
 	}
 }
@@ -144,10 +160,10 @@ void ClientWorld::spawnProjectile(const std::string &type, const std::string &ow
 	scheduleAddEntity(ent);
 
 	// Add a command snapshot if it's us creating the bullet.
-	auto me = getMe();
-	if (me && me->getId() == owner) {
-		me->addSnapshot(CommandSnapshot(mConn.getServerTime(), "spawnprojectile", owner, position));
-	}
+	// auto me = getMe();
+	// if (me && me->getId() == owner) {
+	// 	me->addSnapshot(CommandSnapshot(mConn.getServerTime(), "spawnprojectile", owner, "", position));
+	// }
 }
 
 void ClientWorld::sendQueuedPackets(float dt) {
@@ -196,6 +212,35 @@ void ClientWorld::connect(const std::string &hostName, unsigned short port) {
 		gLogger.info("Added you\n");
 	});
 
+	mConn.onBitStream("gamemessage", [&](const BitStream &stream) {
+		stream.rewind();
+		stream.readString();
+		std::string message = stream.readString();
+		auto namePos = message.find(mConn.getName());
+		if (namePos != std::string::npos) {
+			message.replace(namePos, mConn.getName().length(), "you");
+		}
+		addGameMessage(message);
+	});
+
+	mConn.onBitStream("death", [&](const BitStream &stream) {
+		stream.rewind();
+		stream.readString();
+		std::string dyer = stream.readString();
+		Vec3 newPosition;
+		newPosition.x = stream.readFloat();
+		newPosition.y = stream.readFloat();
+		newPosition.z = stream.readFloat();
+		auto ent = getEntity(dyer);
+		if (ent) {
+			ent->setPosition(newPosition);
+			ent->removeAllTransformSnapshots(); // DONT remove command snapshots in case it is ourself
+			if (ent != getMe()) {
+				ent->addSnapshot({mConn.getServerTime(), newPosition, 0, 0});
+			}
+		}
+	});
+
 	mConn.onBitStream("gamestate", std::bind(&ClientWorld::onGameState, this, std::placeholders::_1));
 	mConn.onBitStream("playerexit", std::bind(&ClientWorld::onPlayerExit, this, std::placeholders::_1));
 	mConn.onBitStream("allplayersupdate", std::bind(&ClientWorld::onAllPlayersUpdate, this, std::placeholders::_1));
@@ -206,7 +251,31 @@ void ClientWorld::onPlayerExit(const BitStream &stream) {
 	stream.readString();
 	std::string name = stream.readString();
 
+	mPlayerStates.erase(name);
 	scheduleDeleteEntity(name);
+
+	addGameMessage("%s left", name.c_str());
+}
+
+void ClientWorld::addGameMessage(const char *format, ...) {
+	va_list args;
+	va_start(args, format);
+	char message[1024] = {0};
+	vsprintf(message, format, args);
+	va_end(args);
+
+	mGameMessages.push_back(message);
+	trimGameMessages();
+}
+
+void ClientWorld::addGameMessage(const std::string &message) {
+	mGameMessages.push_back(message);
+	trimGameMessages();
+}
+
+void ClientWorld::trimGameMessages() {
+	if (mGameMessages.size() > 10)
+		mGameMessages.erase(mGameMessages.begin(), mGameMessages.begin() + mGameMessages.size() - 10);
 }
 
 void ClientWorld::onAllPlayersUpdate(const BitStream &stream) {
@@ -249,10 +318,11 @@ void ClientWorld::onGameState(const BitStream &stream) {
 		PlayerState state = EntitySerializer::deserializePlayerState(stream);
 		if (state.name != mConn.getName() && mEntities.find(state.name) == mEntities.end()) {
 			scheduleAddEntity(state.name, EntityFactory::createRemoteEntity(this, state.name, state.type, state.name));
-			gLogger.info("Added other player '%s'\n", state.name.c_str());
+			// gLogger.info("Added other player '%s'\n", state.name.c_str());
+			addGameMessage("%s entered", state.name.c_str());
 		}
 		mPlayerStates[state.name] = state;
-		gLogger.info("%f\n", state.ping);
+		// gLogger.info("%f\n", state.ping);
 	}
 }
 
