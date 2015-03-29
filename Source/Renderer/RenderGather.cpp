@@ -40,9 +40,9 @@ void RenderGather::drawWorld(World *world, Renderer *renderer, GUI *gui, const s
 			drawStars(ent, renderer);
 	}
 
-	if (gui) gui->render(data);
+	if (gui) gui->setGUIData(data);
 
-	renderer->endFrame();
+	renderer->endFrame(gui);
 }
 
 void RenderGather::drawStars(Entity *ent, Renderer *renderer) {

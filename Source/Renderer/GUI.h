@@ -13,9 +13,13 @@ public:
 	bool init();
 	void shutdown();
 
-	void render(const std::vector<GUIData> &datas);
+	void render(const std::vector<GUIData> &data);
+	void render();
+
+	void setGUIData(const std::vector<GUIData> &data) { mData = data; }
 
 private:
 	Renderer *mRenderer;
 	Font *mVera;
+	std::vector<GUIData> mData;
 };

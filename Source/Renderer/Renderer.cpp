@@ -110,12 +110,12 @@ void Renderer::beginFrame() {
 	}
 }
 
-void Renderer::endFrame() {
+void Renderer::endFrame(GUI *gui) {
 	for (SpriteBatcher *batcher : mSpriteBatchers) {
 		batcher->submit();
 	}
 
-	// mContext->getGUI()->render();
+	if (gui) gui->render();
 
 	SDL_GL_SwapWindow(mContext->getGameWindow());
 

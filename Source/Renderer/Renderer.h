@@ -6,6 +6,7 @@
 class Shader;
 class Texture;
 class SpriteBatcher;
+class GUI;
 
 // Would subclass from IRenderer / RendererBase but no time for now, more refactor later.
 class RENDERER_API Renderer {
@@ -16,7 +17,7 @@ public:
 	void shutdown();
 
 	void beginFrame();
-	void endFrame();
+	void endFrame(GUI *gui);
 
 	Texture *getTexture(const std::string &filename);
 	void freeUnreferencedTextures();

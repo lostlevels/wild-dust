@@ -21,6 +21,10 @@ void GUI::shutdown() {
 	delete mVera;
 }
 
+void GUI::render() {
+	render(mData);
+}
+
 void GUI::render(const std::vector<GUIData> &datas) {
 	for (auto &data : datas) {
 		mVera->drawText(data.text, data.x, data.y);
