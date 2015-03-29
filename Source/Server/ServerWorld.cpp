@@ -76,10 +76,10 @@ void ServerWorld::serve(unsigned short ip) {
 
 	auto clientEntered = std::bind(&ServerWorld::onClientEntered, this, std::placeholders::_1);
 	// mConn.on("cliententered", clientEntered);
-	mConn.on("cliententeredandpinged", clientEntered);
+	mConn.onString("cliententeredandpinged", clientEntered);
 
 	// Getting lazy so just put the handler as a lambda
-	mConn.on("clientexit", [&](const std::string &playerName) {
+	mConn.onString("clientexit", [&](const std::string &playerName) {
 		if (mPlayerStates.find(playerName) == mPlayerStates.end()) return;
 
 		mPlayerStates.erase(playerName);
@@ -95,7 +95,7 @@ void ServerWorld::serve(unsigned short ip) {
 		mStream->writeString(playerName);
 	});
 
-	mConn.on("playerupdate", std::bind(&ServerWorld::onPlayerUpdate, this, std::placeholders::_1));
+	mConn.onBitStream("playerupdate", std::bind(&ServerWorld::onPlayerUpdate, this, std::placeholders::_1));
 }
 
 void ServerWorld::onPlayerUpdate(const BitStream &stream) {

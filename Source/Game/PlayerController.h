@@ -6,7 +6,6 @@ class GameContext;
 
 class PlayerController : public Controller {
 public:
-	// Later on PlayerController(world / collision map / )
 	PlayerController(GameContext *context);
 	virtual ~PlayerController(){}
 

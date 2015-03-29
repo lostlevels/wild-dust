@@ -28,16 +28,16 @@ EventEmitter::EventEmitter() {}
 
 EventEmitter::~EventEmitter() {}
 
-unsigned int EventEmitter::on(const std::string &event_id, std::function<void ()> cb) {
-	// std::lock_guard<std::mutex> lock(mutex);
+// unsigned int EventEmitter::on(const std::string &event_id, std::function<void ()> cb) {
+// 	// std::lock_guard<std::mutex> lock(mutex);
 
-	unsigned int listener_id = ++last_listener;
-	listeners.insert(std::make_pair(event_id, std::make_shared<Listener<>>(listener_id, cb)));
+// 	unsigned int listener_id = ++last_listener;
+// 	listeners.insert(std::make_pair(event_id, std::make_shared<Listener<>>(listener_id, cb)));
 
-	return listener_id;
-}
+// 	return listener_id;
+// }
 
-unsigned int EventEmitter::on(const std::string &event_id, std::function<void(const BitStream&)> cb) {
+unsigned int EventEmitter::onBitStream(const std::string &event_id, std::function<void(const BitStream&)> cb) {
 	// std::lock_guard<std::mutex> lock(mutex);
 
 	unsigned int listener_id = ++last_listener;
@@ -46,7 +46,7 @@ unsigned int EventEmitter::on(const std::string &event_id, std::function<void(co
 	return listener_id;
 }
 
-unsigned int EventEmitter::on(const std::string &event_id, std::function<void (const std::string&)> cb) {
+unsigned int EventEmitter::onString(const std::string &event_id, std::function<void (const std::string&)> cb) {
 	std::lock_guard<std::mutex> lock(mutex);
 
 	unsigned int listener_id = ++last_listener;
