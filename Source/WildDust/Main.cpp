@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 	}
 	else {
 		//clientWorld->connect("37.142.124.227", settings.getInt("PortNumber", 5000));
-		clientWorld->connect("127.0.0.1", settings.getInt("PortNumber", 5000));
+		clientWorld->connect(settings.getString("ServerIP", "127.0.0.1"), settings.getInt("PortNumber", 5000));
 	}
 
 	Clock clock;
