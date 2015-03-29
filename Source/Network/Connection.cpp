@@ -193,6 +193,7 @@ void Connection::onClientData(const BitStream &stream, ENetPeer *peer) {
 		client->mPings.push_back(time);
 
 		if (client->mPings.size() >= MIN_PACKETS_NEEDED_FOR_PING) {
+			bool pingedBefore = client->mPing >= 1;
 			std::sort(client->mPings.begin(), client->mPings.end());
 			client->mPing = client->mPings[client->mPings.size() / 2];
 			// gLogger.info("Client ping median is %f\n", client->mPing);
@@ -203,7 +204,8 @@ void Connection::onClientData(const BitStream &stream, ENetPeer *peer) {
 			// Might have to be careful of reliable here in case it messes with time
 			send(latencyStream, true, client->mName);
 
-			emit<const std::string&>("cliententeredandpinged", client->mName);
+			if (!pingedBefore)
+				emit<const std::string&>("cliententeredandpinged", client->mName);
 		}
 	}
 }
