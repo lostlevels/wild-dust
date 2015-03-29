@@ -1,6 +1,7 @@
 #include "Precompiled.h"
 #include "World.h"
 #include "SV_Entity.h"
+#include "Server.h"
 
 ServerWorld::ServerWorld(Server *server) {
 	mServer = server;
@@ -18,6 +19,7 @@ void ServerWorld::registerEntityType(EntityType type, CreateServerEntityFunc fun
 }
 
 void ServerWorld::writeToSnapshot(BitStream &snapshot) {
+	snapshot.writeFloat(mServer->getGameClock().getElapsedSeconds());
 	snapshot.writeU32(mEntities.size());
 	for (SV_Entity *entity : mEntities) {
 		snapshot.writeAny<EntityID>(entity->mID);

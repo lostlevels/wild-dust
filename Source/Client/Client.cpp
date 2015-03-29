@@ -180,14 +180,6 @@ void Client::tick() {
 
 	processNetworkEvents();
 
-	const float fixedPhysicsTimestep = 1.0f / 128.0f;
-	mPhysicsAccum += dt;
-	while (mPhysicsAccum >= fixedPhysicsTimestep) {
-		mPhysics->step(fixedPhysicsTimestep);
-		mPhysicsAccum -= fixedPhysicsTimestep;
-	}
-
-
 	if (mPlayerEntity) {
 		mCamera->setTarget(mPlayerEntity);
 	}
@@ -308,6 +300,7 @@ void Client::handleReceiveEvent(const BitStream &stream) {
 		break;
 
 	case NETCMD_STC_WORLD_SNAPSHOT:
+		mServerTime = stream.readFloat();
 		mWorld->readFromSnapshot(stream);
 		break;
 	}

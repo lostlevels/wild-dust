@@ -2,8 +2,6 @@
 
 #include "CL_Entity.h"
 
-class PhysicsObject;
-
 class CL_PhysicsEntity : public CL_Entity {
 public:
 	CL_PhysicsEntity(Client *client, bool canMove);
@@ -11,8 +9,8 @@ public:
 
 	virtual void readFromStream(const BitStream &stream);
 
-	PhysicsObject *getPhysicsObject() const { return mPhysObject; }
-
-private:
-	PhysicsObject *mPhysObject;
+protected:
+	Vec2 mPosition;
+	Vec2 mVelocity;
+	bool mCanJump;
 };

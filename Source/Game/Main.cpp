@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 	Client *client = new Client();
 	client->init();
 	if (listenServer) {
-		client->connectToServer("127.0.0.1", 5000);
+		client->connectToServer("127.0.0.1", 5001);
 	}
 	else {
 		client->connectToServer(

@@ -5,33 +5,18 @@
 #include "Physics/PhysicsObject.h"
 
 CL_PhysicsEntity::CL_PhysicsEntity(Client *client, bool canMove) : CL_Entity(client) {
-	mPhysObject = client->getPhysics()->createObject(canMove ? PHYSICS_DYNAMIC : PHYSICS_STATIC);
+	mPosition = Vec2(0.0f, 0.0f);
+	mVelocity = Vec2(0.0f, 0.0f);
+	mCanJump = false;
 }
 
 CL_PhysicsEntity::~CL_PhysicsEntity() {
-	delete mPhysObject;
 }
 
 void CL_PhysicsEntity::readFromStream(const BitStream &stream) {
-	Vec2 position;
-	position.x = stream.readFloat();
-	position.y = stream.readFloat();
-
-	Vec2 velocity;
-	velocity.x = stream.readFloat();
-	velocity.y = stream.readFloat();
-
-	float friction = stream.readFloat();
-
-	PhysicsObject *physObj = getPhysicsObject();
-
-	Recti box = stream.readAny<Recti>();
-
-	if (!(box == physObj->GetBox())) {
-		physObj->setBox(box);
-	}
-
-	physObj->setPosition(position);
-	physObj->setVelocity(velocity);
-	physObj->setFriction(friction);
+	mPosition.x = stream.readFloat();
+	mPosition.y = stream.readFloat();
+	mVelocity.x = stream.readFloat();
+	mVelocity.y = stream.readFloat();
+	mCanJump = stream.readBool();
 }

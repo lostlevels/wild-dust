@@ -53,6 +53,8 @@ public:
 
 	Config getSettings() const { return mSettings; }
 
+	float getServerTime() const { return mServerTime; }
+
 	void addSky();
 	
 private:
@@ -93,6 +95,7 @@ private:
 	Clock mConnectionClock;
 	Clock mSendInputClock;
 	float mPhysicsAccum;
+	float mServerTime;
 	CL_Player *mPlayerEntity;
 	std::vector<ClientCommand> mCommandQueue;
 };

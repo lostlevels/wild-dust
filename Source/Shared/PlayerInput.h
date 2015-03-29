@@ -9,6 +9,7 @@ enum {
 
 #pragma pack(1)
 struct PlayerInput {
+	float serverTime;
 	uint32_t sequenceIndex;
 	uint8_t buttonMask; // combination of BTN_*
 };

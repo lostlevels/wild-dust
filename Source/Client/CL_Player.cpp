@@ -28,8 +28,6 @@ CL_Player::CL_Player(Client *client) : CL_PhysicsEntity(client, true) {
 
 	mLastInputSequenceID = 0;
 
-	mMovement = new PlayerMovement(getPhysicsObject());
-
 	mLookingLeft = false;
 
 	mTeam = TEAM_COWBOYS;
@@ -37,8 +35,6 @@ CL_Player::CL_Player(Client *client) : CL_PhysicsEntity(client, true) {
 }
 
 CL_Player::~CL_Player() {
-	delete mMovement;
-	
 	freeCharacterAnimationSet(&mBanditAnimSet);
 	delete mBanditAnimSet.mAnimRenderer;
 
@@ -88,7 +84,7 @@ void CL_Player::draw() {
 	currAnim->setFlipX(mLookingLeft);
 	getCurrentAnimSet()->mAnimRenderer->render(
 		currAnim,
-		getPhysicsObject()->getPosition(),
+		mPosition,
 		Vec2(currAnimSheet->getFrameWidth(), currAnimSheet->getFrameHeight()),
 		Color(1.0f));
 }
@@ -121,7 +117,7 @@ Animation *CL_Player::getCurrentAnim() {
 }
 
 Vec2 CL_Player::ICameraTarget_getPosition() const {
-	return getPhysicsObject()->getPosition();
+	return mPosition;
 }
 
 Vec2 CL_Player::ICameraTarget_getSize() const {
@@ -130,16 +126,19 @@ Vec2 CL_Player::ICameraTarget_getSize() const {
 
 void CL_Player::applyInput(PlayerInput input) {
 	if (input.buttonMask & BTN_MOVE_LEFT) {
-		mMovement->moveLeft();
+		mVelocity.x = -300;
 		mLookingLeft = true;
 	}
 	if (input.buttonMask & BTN_MOVE_RIGHT) {
-		mMovement->moveRight();
+		mVelocity.x = 300;
 		mLookingLeft = false;
 	}
 	if (input.buttonMask & BTN_JUMP) {
-		mMovement->jump();
+		if (mCanJump) {
+			mVelocity.y = -375;
+		}
 	}
+	mPosition += mVelocity * 1.0f/128.0f;
 }
 
 void CL_Player::processInput(PlayerInput input) {

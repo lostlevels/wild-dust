@@ -21,8 +21,17 @@ void SV_PhysicsEntity::writeToStream(BitStream &stream) {
 	Vec2 vel = getPhysicsObject()->getVelocity();
 	stream.writeFloat(vel.x);
 	stream.writeFloat(vel.y);
-	
-	stream.writeFloat(getPhysicsObject()->getFriction());
 
-	stream.writeAny(getPhysicsObject()->GetBox());
+	bool canJump = false;
+
+	std::vector<PhysicsCollision> cols = getPhysicsObject()->getCollisions();
+
+	for (PhysicsCollision &col : cols) {
+		if (col.edgeNormal.y == -1) {
+			canJump = true;
+			break;
+		}
+	}
+
+	stream.writeBool(canJump);
 }

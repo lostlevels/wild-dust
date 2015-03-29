@@ -32,6 +32,8 @@ public:
 
 	int getNumConnectedPlayers() const { return mConnections.size(); }
 
+	Clock getGameClock() const { return mGameClock; }
+
 private:
 	void tick(float dt);
 	void sendWorldUpdates();
@@ -43,6 +45,8 @@ private:
 	void handleReceiveEvent(ENetPeer *peer, const BitStream &stream);
 
 private:
+	Clock mGameClock;
+
 	int mPortNumber;
 	int mTickRate;
 	int mSendRate;
