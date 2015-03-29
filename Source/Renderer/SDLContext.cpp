@@ -21,6 +21,8 @@ bool SDLContext::init(const Config &settings) {
 		mWindowHeight,
 		windowFlags);
 
+	mQuitSignaled = false;
+
 	return mGameWindow != nullptr;
 }
 
