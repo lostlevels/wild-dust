@@ -82,7 +82,6 @@ int main(int argc, char *argv[])
 		clientWorld.connect("127.0.0.1", 5000);
 	}
 
-
 	Clock clock;
 	while (!context.isQuitSignaled()) {
 		context.tick();

@@ -89,15 +89,15 @@ void ClientWorld::fillGUIData(int screenWidth, int screenHeight, std::vector<GUI
 	char buffer[256];
 
 	if (mInput && mInput->getButtons() & BTN_INFO) {
-		snprintf(buffer, sizeof(buffer) - 1, "%10s%10s%10s", "Name:", "Kills:", "Deaths:");
+		snprintf(buffer, sizeof(buffer) - 1, "%10s%10s%10s%10s", "Name", "Kills", "Deaths", "Ping");
 		data.push_back({x, y, buffer});
 		y += verticalSpacing;
 
 		for (auto &kv : mPlayerStates) {
 			std::string name = kv.first;
 			if (name == mConn.getName()) name = "you";
-
-			snprintf(buffer, sizeof(buffer) - 1, "%10s%10d%10d", name.c_str(), kv.second.kills, kv.second.deaths);
+			auto &state = kv.second;
+			snprintf(buffer, sizeof(buffer) - 1, "%10s%10d%10d%10d", name.c_str(), state.kills, state.deaths, (int)(state.ping * 1000));
 			data.push_back({x, y, buffer});
 			y += verticalSpacing;
 		}
