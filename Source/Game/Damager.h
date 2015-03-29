@@ -2,7 +2,7 @@
 
 #include "Core/Precompiled.h"
 
-class Damager {
+class GAME_API Damager {
 public:
 	virtual void applyDamage(const std::string &id, float amount) = 0;
 };
