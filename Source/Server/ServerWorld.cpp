@@ -38,16 +38,19 @@ void ServerWorld::update(float dt) {
 
 void ServerWorld::update(float gameTime, float dt) {
 
-	float timestep = 1 / 60.0f;
-	//while (dt > 0.000001f) {
-		float delta = dt >= timestep ? timestep : dt;
-		delta = dt;
-		handleStateUpdates(delta);
-		handleSendGameStates(delta);
-		World::update(gameTime, delta);
+	mSimulationAccumulator += dt;
 
-		dt -= delta;
-	// }
+	float timestep = 1.0f / 60.0f;
+
+	while (mSimulationAccumulator >= timestep) {
+		handleStateUpdates(timestep);
+		handleSendGameStates(timestep);
+
+		World::update(gameTime, timestep);
+
+		mSimulationAccumulator -= timestep;
+	}
+
 	mConn.processNetworkEvents();
 }
 

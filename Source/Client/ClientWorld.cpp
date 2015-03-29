@@ -31,6 +31,7 @@ ClientWorld::ClientWorld(InputSystem *input, AudioSystem *audioSystem) :
 	mSnapshotTimer(0),
 	mGibs(nullptr),
 	mSendTimer(0),
+	mSimulationAccumulator(0.0f),
 	mTmxMap(nullptr)
 {
 	if (mAudio) {
@@ -191,17 +192,17 @@ void ClientWorld::update(float gameTime, float dt) {
 		}
 	}
 
-	float timestep = 1 / 60.0f;
-	// while (dt > 0.000001f) {
-		float delta = dt >= timestep ? timestep : dt;
-		delta = dt;
-		handlePlayerInput(delta);
-		sendQueuedPackets(delta);
+	mSimulationAccumulator += dt;
 
-		World::update(gameTime, delta);
+	float timestep = 1.0f / 60.0f;
+	while (mSimulationAccumulator >= timestep) {
+		handlePlayerInput(timestep);
+		sendQueuedPackets(timestep);
 
-		dt -= delta;
-	// }
+		World::update(gameTime, timestep);
+
+		mSimulationAccumulator -= timestep;
+	}
 
 	mConn.processNetworkEvents();
 }

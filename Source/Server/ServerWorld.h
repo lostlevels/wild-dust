@@ -34,6 +34,7 @@ private:
 	std::string                   mLastCharacter;
 
 	float                         mGameStateSendTimer;
+	float                         mSimulationAccumulator;
 
 	PlayerState *getPlayerState(const std::string &id);
 	void onClientEntered(const std::string &playerName);

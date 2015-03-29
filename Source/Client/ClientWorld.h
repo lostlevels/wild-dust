@@ -61,6 +61,7 @@ private:
 
 	float          mSnapshotTimer;
 	float          mSendTimer;
+	float          mSimulationAccumulator;
 
 	Tmx::Map       *mTmxMap;
 
