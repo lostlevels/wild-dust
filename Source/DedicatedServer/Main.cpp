@@ -27,6 +27,12 @@ void UpdateConsoleTitle(ServerWorld *server) {
 #endif
 }
 
+#ifdef _WIN32
+#ifdef main
+#undef main
+#endif
+#endif
+
 int main(int argc, char *argv[])
 {
 #ifdef _WIN32

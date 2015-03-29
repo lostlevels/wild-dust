@@ -1,11 +1,11 @@
 #pragma once
 
-#define STB_VORBIS_HEADER_ONLY
-#include <stb_vorbis.c>
 #include "AudioSource.h"
 
 #define MUS_BUF_COUNT 3
 #define MUS_DECODE_BUF_SIZE (44100)
+
+typedef struct stb_vorbis stb_vorbis;
 
 class AUDIO_API Music : public AudioSource {
 public:
