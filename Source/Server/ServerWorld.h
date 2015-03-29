@@ -12,13 +12,21 @@ public:
 	virtual ~ServerWorld();
 
 	void update(float dt);
-	void serve(unsigned short ip);
+	void serve(unsigned short port);
+
+	int getPort() const { return mPort; }
+	int getNumPlayers() const { return mPlayerStates.size(); }
+	int getMaxPlayers() const { return -1; }
+	int getTickRate() const;
+	int getSendRate() const;
+
 private:
 	// Each connected player is in here - not each entity controlled by player (which can include bullets)
 	// Client NEVER sends PlayerState to server, only server sends to clients
 	std::map<std::string, PlayerState> mPlayerStates;
 	BitStream                     *mStream;
 	Connection                    mConn;
+	unsigned short                mPort;
 
 	float                         mStateSendTimer;
 	std::vector<Entity*>          mEntsToSend;
@@ -26,8 +34,8 @@ private:
 	std::string                   mLastCharacter;
 
 	float                         mGameStateSendTimer;
-	PlayerState *getPlayerState(const std::string &id);
 
+	PlayerState *getPlayerState(const std::string &id);
 	void onClientEntered(const std::string &playerName);
 	void onPlayerUpdate(const BitStream &stream);
 

@@ -126,10 +126,19 @@ std::string ClientWorld::createUniqueEntId() const {
 
 void ClientWorld::update(float gameTime, float dt) {
 	// Handle game logic ...
-	handlePlayerInput(dt);
-	sendQueuedPackets(dt);
 
-	World::update(gameTime, dt);
+	float timestep = 1 / 60.0f;
+	while (dt > 0.000001f) {
+		float delta = dt >= timestep ? timestep : dt;
+
+		handlePlayerInput(delta);
+		sendQueuedPackets(delta);
+
+		World::update(gameTime, delta);
+
+		dt -= delta;
+	}
+
 	mConn.processNetworkEvents();
 
 	std::string myName = mConn.getName();

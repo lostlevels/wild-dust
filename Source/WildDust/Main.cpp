@@ -1,7 +1,6 @@
 #include "Core/Precompiled.h"
 #include "Core/Core.h"
 #include "Core/Config.h"
-#include "Core/EventEmitter.h"
 #include "Core/Entity.h"
 
 #include "Network/Precompiled.h"
@@ -22,11 +21,13 @@
 #include "Input/Precompiled.h"
 #include "Input/Input.h"
 
+#include "Audio/Audio.h"
+#include "Audio/Music.h"
+
 #include "Game/Precompiled.h"
 #include "Game/EntityFactory.h"
 
 #include <enet/enet.h>
-
 
 #ifndef _WIN32
 bool ArgvContains(char *argv[], int argc, const char *what) {
@@ -64,6 +65,12 @@ int main(int argc, char *argv[])
 	gui.init();
 
 	InputSystem input;
+
+	AudioSystem audio;
+	auto music = audio.createMusic();
+	music->openOggVorbisStream("../Content/Music/Texas.ogg");
+	music->mLoops = -1;
+	music->play();
 
 	ClientWorld clientWorld(&input, nullptr);
 	ServerWorld *serverWorld = nullptr;

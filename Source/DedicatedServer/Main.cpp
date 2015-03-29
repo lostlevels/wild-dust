@@ -1,16 +1,24 @@
 #include "Core/Precompiled.h"
 #include "Core/Core.h"
 #include "Core/Config.h"
-#include "Core/Clock.h"
+#include "Core/Entity.h"
+
+#include "Network/Precompiled.h"
+#include "Network/Connection.h"
+
 #include "Server/Precompiled.h"
-#include "Server/Server.h"
+#include "Server/ServerWorld.h"
+
+#include "Game/Precompiled.h"
+#include "Game/EntityFactory.h"
+
 #include <enet/enet.h>
 
-void UpdateConsoleTitle(Server *server) {
+void UpdateConsoleTitle(ServerWorld *server) {
 	char title[512];
 	sprintf(title, "Dedicated Server (port %d) - [%d/%d] players - (tick: %d, send: %d)",
-		server->getPortNumber(),
-		server->getNumConnectedPlayers(),
+		server->getPort(),
+		server->getNumPlayers(),
 		server->getMaxPlayers(),
 		server->getTickRate(),
 		server->getSendRate());
@@ -27,8 +35,6 @@ int main(int argc, char *argv[])
 	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
 #endif
 #endif
-
-	enet_initialize();
 	
 	gCore.init();
 	gLogger.useStdio();
@@ -36,30 +42,27 @@ int main(int argc, char *argv[])
 	Config cfg;
 	cfg.loadFromFile("Config/Dedicated.cfg");
 	
-	Server *server = new Server();
-	if (!server->init(
-			cfg.getInt("PortNumber", 5000),
-			cfg.getInt("TickRate", 64),
-			cfg.getInt("SendRate", 64),
-			cfg.getInt("MaxPlayers", 64)
-			))
-	{
-		return EXIT_FAILURE;
-	}
+	ServerWorld *serverWorld = new ServerWorld();
+	serverWorld->serve(cfg.getInt("PortNumber", 5000));
+	// TODO: the rest
+//			cfg.getInt("TickRate", 64),
+//			cfg.getInt("SendRate", 64),
+//			cfg.getInt("MaxPlayers", 64)
 
 	Clock titleUpdateTimer;
-	
+	Clock clock;
 	while (true) {
-		server->update();
+		float dt = clock.getElapsedSeconds();
+		clock.reset();
+		serverWorld->update(dt);
 
 		if (titleUpdateTimer.getElapsedSeconds() >= (1.0f / 25.0f)) {
-			UpdateConsoleTitle(server);
+			UpdateConsoleTitle(serverWorld);
 			titleUpdateTimer.reset();
 		}
 	}
 
-	server->shutdown();
-	delete server;
+	delete serverWorld;
 
 	gCore.shutdown();
 

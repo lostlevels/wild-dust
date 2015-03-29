@@ -13,8 +13,8 @@
 
 ServerWorld::ServerWorld() :
 	mStateSendTimer(0),
-	mGameStateSendTimer(0),
-	mLastCharacter("") {
+	mLastCharacter(""),
+	mGameStateSendTimer(0) {
 	mStream = new BitStream(16 * 1024);
 	mEntsToSend.reserve(256);
 }
@@ -24,15 +24,30 @@ ServerWorld::~ServerWorld() {
 	mStream = nullptr;
 }
 
+int ServerWorld::getTickRate() const {
+	return 60;
+}
+
+int ServerWorld::getSendRate() const {
+	return (int)(1.0f / SEND_RATE);
+}
+
 void ServerWorld::update(float dt) {
 	update(mConn.getServerTime(), dt);
 }
 
 void ServerWorld::update(float gameTime, float dt) {
-	handleStateUpdates(dt);
-	handleSendGameStates(dt);
 
-	World::update(gameTime, dt);
+	float timestep = 1 / 60.0f;
+	while (dt > 0.000001f) {
+		float delta = dt >= timestep ? timestep : dt;
+
+		handleStateUpdates(delta);
+		handleSendGameStates(delta);
+		World::update(gameTime, delta);
+
+		dt -= delta;
+	}
 	mConn.processNetworkEvents();
 }
 
@@ -82,8 +97,9 @@ void ServerWorld::handleStateUpdates(float dt) {
 	}
 }
 
-void ServerWorld::serve(unsigned short ip) {
-	mConn.serve(ip);
+void ServerWorld::serve(unsigned short port) {
+	mPort = port;
+	mConn.serve(port);
 
 	auto clientEntered = std::bind(&ServerWorld::onClientEntered, this, std::placeholders::_1);
 	// mConn.on("cliententered", clientEntered);
