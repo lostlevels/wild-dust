@@ -39,15 +39,15 @@ void ServerWorld::update(float dt) {
 void ServerWorld::update(float gameTime, float dt) {
 
 	float timestep = 1 / 60.0f;
-	while (dt > 0.000001f) {
+	//while (dt > 0.000001f) {
 		float delta = dt >= timestep ? timestep : dt;
-
+		delta = dt;
 		handleStateUpdates(delta);
 		handleSendGameStates(delta);
 		World::update(gameTime, delta);
 
 		dt -= delta;
-	}
+	// }
 	mConn.processNetworkEvents();
 }
 
