@@ -4,7 +4,7 @@
 #include <string>
 #include "SpriteAnimation.h"
 
-struct EntityRepresentation {
+struct CORE_API EntityRepresentation {
 	Vec2  size;
 	std::string imageFile;
 	Recti source;

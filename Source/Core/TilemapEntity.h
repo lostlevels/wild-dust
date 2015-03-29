@@ -3,7 +3,7 @@
 #include "Entity.h"
 #include <Tmx.h>
 
-class TilemapEntity : public Entity {
+class CORE_API TilemapEntity : public Entity {
 public:
 	TilemapEntity(const std::string &id, const std::string &filename);
 	virtual ~TilemapEntity();

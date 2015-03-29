@@ -21,7 +21,7 @@ class Controller;
 // Should probably use ECS next time since this class is getting bulky with lerp and animation
 //
 
-class Entity {
+class CORE_API Entity {
 public:
 	Entity();
 	Entity(const std::string &id, const std::string &type = "", const std::string &owner = "", int sendMode = SEND_ALWAYS);

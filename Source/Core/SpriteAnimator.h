@@ -3,7 +3,7 @@
 #include <algorithm>
 #include "SpriteAnimation.h"
 
-class SpriteAnimator {
+class CORE_API SpriteAnimator {
 public:
 	SpriteAnimator();
 

@@ -11,8 +11,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <enet/enet.h>
 
-#ifdef BUILDING_CLIENT
-#define CLIENT_API DLLEXPORT
+#ifdef BUILDING_RENDERER
+#define RENDERER_API DLLEXPORT
 #else
-#define CLIENT_API DLLIMPORT
+#define RENDERER_API DLLIMPORT
 #endif

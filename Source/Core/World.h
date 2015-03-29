@@ -5,7 +5,7 @@
 
 class Entity;
 
-class World {
+class CORE_API World {
 public:
 	World();
 	virtual ~World();

@@ -20,7 +20,7 @@ struct Gib {
 
 class WorldCollision;
 
-class GibCollectionEntity : public Entity {
+class CORE_API GibCollectionEntity : public Entity {
 public:
 	GibCollectionEntity(WorldCollision *collider, const std::string &id, const EntityRepresentation &rep);
 	virtual ~GibCollectionEntity();

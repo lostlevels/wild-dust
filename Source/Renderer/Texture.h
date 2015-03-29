@@ -1,6 +1,6 @@
 #pragma once
 
-class Texture {
+class RENDERER_API Texture {
 public:
 	Texture();
 	~Texture();

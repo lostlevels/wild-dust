@@ -20,6 +20,7 @@
 // SOFTWARE.
 //
 
+#include "Precompiled.h"
 #include "EventEmitter.h"
 
 #include <stdexcept>

@@ -10,7 +10,7 @@ class Entity;
 
 // This gathers entities from World and prepares it for Renderer since not the responsibility of the renderer to
 // gather
-class RenderGather {
+class RENDERER_API RenderGather {
 public:
 	void drawWorld(World *world, Renderer *renderer, GUI *gui, const std::vector<GUIData> &data);
 
