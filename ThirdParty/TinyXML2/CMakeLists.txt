@@ -1,0 +1,1 @@
+add_library(TinyXML2 STATIC tinyxml2.cpp tinyxml2.h)

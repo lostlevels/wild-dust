@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="80" height="45" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="Desert" tilewidth="16" tileheight="16">
+  <image source="../Textures/Tilesets/DesertBlocks.png" width="16" height="64"/>
+ </tileset>
+ <layer name="Tile Layer 1" width="80" height="45">
+  <data encoding="base64" compression="zlib">
+   eJztmUEKhEAMBNf1/3/2oiw7oEhqMIlUQZ9tSgwhrh+Jsu6RGPpj6I+hP4b+GPpjzPb3DabL80Zm+1uC6fK8Ef0xnH8M/TH0x9AfQ38M/TH09yOyhx/+svb3SkT2yMNf1v5ZCf09j/OPoT+G/hj6Y+iPoT+G/hgz/GX/g8jsMcNf9g09s4f+GM4/hv4Y+mPoj3F1O5V/zjxVu/FVvX1n7xd36dqrS8+qvcY89d3cnSfVe2W997f26tKzaq8uPav2MsbUzwaZgAP9
+  </data>
+ </layer>
+ <objectgroup name="Object Layer 1">
+  <object name="cactus" x="300.288" y="603.318" width="50.7336" height="67.1877">
+   <properties>
+    <property name="sprite" value="Misc/Cactus.png"/>
+   </properties>
+  </object>
+  <object name="tumbleweed" x="951.597" y="638.969" width="32" height="32">
+   <properties>
+    <property name="sprite" value="Misc/Tumbleweed.png"/>
+   </properties>
+  </object>
+  <object name="cactus" x="316.742" y="333.196" width="98.7248" height="95.9824">
+   <properties>
+    <property name="sprite" value="Misc/Cactus.png"/>
+   </properties>
+  </object>
+  <object name="cactus" x="601.947" y="427.807" width="68.5589" height="131.633">
+   <properties>
+    <property name="sprite" value="Misc/Cactus.png"/>
+   </properties>
+  </object>
+  <object name="cactus" x="813.108" y="374.332" width="56.2183" height="56.2183">
+   <properties>
+    <property name="sprite" value="Misc/Cactus.png"/>
+   </properties>
+  </object>
+  <object name="cactus" x="926.916" y="378.445" width="56.2183" height="56.2183">
+   <properties>
+    <property name="sprite" value="Misc/Cactus.png"/>
+   </properties>
+  </object>
+  <object name="cactus" x="811.737" y="54.8471" width="56.2183" height="56.2183">
+   <properties>
+    <property name="sprite" value="Misc/Cactus.png"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>
