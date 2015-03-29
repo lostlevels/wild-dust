@@ -10,6 +10,7 @@ struct ClientConnectionData {
 	Clock                mPingClock;
 	std::vector<float>   mPings;
 	float                mPing;
+	bool                 mPinged;
 
-	ClientConnectionData(std::string &name, ENetPeer *peer) : mName(name), mPeer(peer), mPing(0) {}
+	ClientConnectionData(std::string &name, ENetPeer *peer) : mName(name), mPeer(peer), mPing(0), mPinged(false) {}
 };

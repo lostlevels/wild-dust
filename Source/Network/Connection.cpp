@@ -158,7 +158,7 @@ void Connection::emitStream(const std::string &event, const BitStream &stream) {
 
 void Connection::updatePings() {
 	#define PING_INTERVAL .10f
-	if (mPingClock.getElapsedSeconds() > 5.0f + PING_INTERVAL * MIN_PACKETS_NEEDED_FOR_PING) {
+	if (mPingClock.getElapsedSeconds() > 7.5f + PING_INTERVAL * MIN_PACKETS_NEEDED_FOR_PING) {
 		mPingClock.reset();
 		// Clear all pings
 		for (auto &kv : mPeerToClients) {
@@ -193,10 +193,8 @@ void Connection::onClientData(const BitStream &stream, ENetPeer *peer) {
 		client->mPings.push_back(time);
 
 		if (client->mPings.size() >= MIN_PACKETS_NEEDED_FOR_PING) {
-			bool pingedBefore = client->mPing >= 1;
 			std::sort(client->mPings.begin(), client->mPings.end());
 			client->mPing = client->mPings[client->mPings.size() / 2];
-			// gLogger.info("Client ping median is %f\n", client->mPing);
 
 			BitStream latencyStream = getTempBistream();
 			writeStream<std::string, float, float>(latencyStream, "latency", mClock.getElapsedSeconds(), client->mPing);
@@ -204,8 +202,8 @@ void Connection::onClientData(const BitStream &stream, ENetPeer *peer) {
 			// Might have to be careful of reliable here in case it messes with time
 			send(latencyStream, true, client->mName);
 
-			if (!pingedBefore)
-				emit<const std::string&>("cliententeredandpinged", client->mName);
+			if (!client->mPinged) emit<const std::string&>("cliententeredandpinged", client->mName);
+			client->mPinged = true;
 		}
 	}
 }

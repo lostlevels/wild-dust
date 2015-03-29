@@ -55,6 +55,9 @@ void ServerWorld::handleSendGameStates(float dt) {
 	mGameStateSendTimer += dt;
 	if (mGameStateSendTimer > 1.0f) {
 		mGameStateSendTimer -= 1.0f;
+		for (auto &kv : mPlayerStates) {
+			kv.second.ping = mConn.getClientPing(kv.first);
+		}
 		sendGameState();
 	}
 }
