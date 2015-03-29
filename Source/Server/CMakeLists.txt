@@ -1,5 +1,6 @@
 file(GLOB SOURCES *.cpp)
 file(GLOB HEADERS *.h)
 add_pch(Precompiled.h Precompiled.cpp ${SOURCES})
+add_definitions(-DBUILDING_SERVER)
 add_library(Server SHARED ${SOURCES} ${HEADERS})
 target_link_libraries(Server Game Core Network Serialization)

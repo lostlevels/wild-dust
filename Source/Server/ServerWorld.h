@@ -6,7 +6,7 @@
 #include "Core/CommandSnapshot.h"
 #include "Network/Connection.h"
 
-class ServerWorld : public World {
+class SERVER_API ServerWorld : public World {
 public:
 	ServerWorld();
 	virtual ~ServerWorld();

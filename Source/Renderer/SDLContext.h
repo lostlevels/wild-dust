@@ -7,7 +7,7 @@ struct SDLEventHandler {
 	virtual bool handle(const SDL_Event &evt) = 0;
 };
 
-class SDLContext {
+class RENDERER_API SDLContext {
 public:
 	bool init(const Config &settings);
 	void tick();
