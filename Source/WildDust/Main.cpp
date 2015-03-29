@@ -2,6 +2,7 @@
 #include "Core/Core.h"
 #include "Core/Config.h"
 #include "Core/Entity.h"
+#include "Core/Logger.h"
 
 #include "Network/Precompiled.h"
 #include "Network/Connection.h"
@@ -93,7 +94,9 @@ int main(int argc, char *argv[])
 	}
 	else {
 		//clientWorld->connect("37.142.124.227", settings.getInt("PortNumber", 5000));
-		clientWorld->connect(settings.getString("ServerIP", "127.0.0.1"), settings.getInt("PortNumber", 5000));
+		std::string ip = settings.getString("ServerIP", "127.0.0.1");
+		gLogger.info("IP is %s\n", ip.c_str());
+		clientWorld->connect(ip, settings.getInt("PortNumber", 5000));
 	}
 
 	Clock clock;
