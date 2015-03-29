@@ -192,7 +192,7 @@ void ClientWorld::update(float gameTime, float dt) {
 		bool lerp = ent->getOwner() != myName && ent->isRemote() && ent->getSendMode() == SEND_ALWAYS;
 		if (lerp) {
 			float ping = getPing(ent->getOwner());
-			float viewDelay = std::max(.125f, ping/2 + myPing/2 + .05f*2 + .05f);
+			float viewDelay = std::max(.125f, ping*.60f + myPing*.60f + SEND_RATE * 2.1f);
 			ent->setViewDelay(viewDelay);
 		}
 	}
@@ -364,6 +364,7 @@ void ClientWorld::onAllPlayersUpdate(const BitStream &stream) {
 			// 	}
 			// }
 			ent->removeAllCommandSnapshots();
+			ent->removeOldSnapshots();
 		}
 	}
 	emptyEntity.removeAllSnapshots();
