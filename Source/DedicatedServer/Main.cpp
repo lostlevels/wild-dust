@@ -41,13 +41,13 @@ int main(int argc, char *argv[])
 	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
 #endif
 #endif
-	
+
 	gCore.init();
 	gLogger.useStdio();
 
 	Config cfg;
 	cfg.loadFromFile("Config/Dedicated.cfg");
-	
+
 	ServerWorld *serverWorld = new ServerWorld();
 	serverWorld->serve(cfg.getInt("PortNumber", 5000));
 	// TODO: the rest

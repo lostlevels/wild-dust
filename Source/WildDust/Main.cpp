@@ -85,13 +85,15 @@ int main(int argc, char *argv[])
 #else
 	if (ArgvContains(argv, argc, "-server")) {
 #endif
+		Config cfg;
+		cfg.loadFromFile("Config/Listen.cfg.cfg");
 		serverWorld = new ServerWorld();
-		serverWorld->serve(5000);
-		clientWorld->connect("127.0.0.1", 5000);
+		serverWorld->serve(cfg.getInt("PortNumber", 5000));
+		clientWorld->connect("127.0.0.1", cfg.getInt("PortNumber", 5000));
 	}
 	else {
-		//clientWorld->connect("37.142.124.227", 5000);
-		clientWorld->connect("127.0.0.1", 5000);
+		//clientWorld->connect("37.142.124.227", settings.getInt("PortNumber", 5000));
+		clientWorld->connect("127.0.0.1", settings.getInt("PortNumber", 5000));
 	}
 
 	Clock clock;
