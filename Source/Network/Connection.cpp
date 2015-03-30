@@ -7,7 +7,9 @@
 #define CHANNEL_RELIABLE 0
 #define CHANNEL_UNRELIABLE 1
 
-#define MIN_PACKETS_NEEDED_FOR_PING 10
+// Time between sending a ping packet
+#define PING_INTERVAL .30f
+#define MIN_PACKETS_NEEDED_FOR_PING 6
 
 static std::string generateUniqueClientName() {
 	static unsigned long long number = 0;
@@ -157,7 +159,6 @@ void Connection::emitStream(const std::string &event, const BitStream &stream) {
 }
 
 void Connection::updatePings() {
-	#define PING_INTERVAL .10f
 	if (mPingClock.getElapsedSeconds() > 7.5f + PING_INTERVAL * MIN_PACKETS_NEEDED_FOR_PING) {
 		mPingClock.reset();
 		// Clear all pings
@@ -165,7 +166,7 @@ void Connection::updatePings() {
 			auto client = kv.second;
 			client->mPings.clear();
 		}
-		gLogger.info("Repinging\n");
+		// gLogger.info("Repinging\n");
 	}
 
 	for (auto &kv : mPeerToClients) {
@@ -225,7 +226,8 @@ void Connection::onClientConnected(ENetPeer *peer) {
 	send(stream, true, name);
 	pingClient(name);
 
-	// gLogger.info("client connected %s\n", name.c_str());
+	auto host = peer->address.host;
+	gLogger.info("client connected from %d:%d:%d:%d\n", host & 255, (host >> 8) & 255, (host >> 16) & 255, host >> 24);
 }
 
 void Connection::onClientDisconnected(ENetPeer *peer) {

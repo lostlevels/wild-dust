@@ -210,7 +210,7 @@ void ServerWorld::onClientEntered(const std::string &playerName) {
 	// Add to list of players.
 	// Notify all (existing and new player) of new player.
 	// Send list of players with state to player.
-	gLogger.info("Player entered: %s\n", playerName.c_str());
+	gLogger.info("Player '%s' entered\n", playerName.c_str());
 
 	std::vector<std::string> types = {"cowboy", "bandit", "doc", "barista", "cop"};
 	auto find = std::find(types.begin(), types.end(), mLastCharacter);
