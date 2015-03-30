@@ -136,7 +136,7 @@ ClientWorld::~ClientWorld() {
 	mStream = nullptr;
 }
 
-void ClientWorld::fillGUIData(int screenWidth, int screenHeight, std::vector<GUIData> &data) {
+void ClientWorld::fillGUIData(int screenWidth, int screenHeight, std::vector<GUIData> &guiData) {
 	int startingY = 40;
 	int y = startingY;
 	int x = 20;
@@ -145,27 +145,36 @@ void ClientWorld::fillGUIData(int screenWidth, int screenHeight, std::vector<GUI
 
 	if (mInput && mInput->getButtons() & BTN_INFO) {
 		snprintf(buffer, sizeof(buffer) - 1, "%10s%10s%10s%10s", "Name", "Kills", "Deaths", "Ping");
-		data.push_back({x, y, buffer});
+		guiData.push_back({x, y, buffer});
 		y += verticalSpacing;
 
+		std::vector<PlayerState> sortedStates;
 		for (auto &kv : mPlayerStates) {
-			std::string name = kv.first;
-			if (name == mConn.getName()) name = "you";
-			auto &state = kv.second;
+			sortedStates.push_back(kv.second);
+		}
+
+		std::sort(sortedStates.begin(), sortedStates.end(),
+		    [](const PlayerState & a, const PlayerState & b) -> bool {
+		    return a.kills > b.kills;
+		});
+
+		for (auto &state : sortedStates) {
+			std::string name = state.name;
+			if (name == mConn.getName()) name = "**YOU**";
 			snprintf(buffer, sizeof(buffer) - 1, "%10s%10d%10d%10d", name.c_str(), state.kills, state.deaths, (int)(state.ping * 1000));
-			data.push_back({x, y, buffer});
+			guiData.push_back({x, y, buffer});
 			y += verticalSpacing;
 		}
 	}
 	else {
-		data.push_back({x, y, "Tab for stats"});
+		guiData.push_back({x, y, "Tab for stats"});
 		y += verticalSpacing;
 	}
 
 	y = startingY;
 	x = screenWidth - 350;
 	for (auto &message : mGameMessages) {
-		data.push_back({x, y, message});
+		guiData.push_back({x, y, message});
 		y += verticalSpacing;
 	}
 }
