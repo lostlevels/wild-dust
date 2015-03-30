@@ -271,6 +271,7 @@ void ClientWorld::handlePlayerInput(float dt) {
 }
 
 void ClientWorld::connect(const std::string &hostName, unsigned short port) {
+	addGameMessage("Connecting to %s", hostName.c_str());
 	mConn.connect(hostName, port);
 
 	mConn.onBitStream("you", [&](const BitStream &stream) {
@@ -279,6 +280,7 @@ void ClientWorld::connect(const std::string &hostName, unsigned short port) {
 		Entity *e = EntitySerializer::deserializeInitialEntity(this, stream);
 		scheduleAddEntity(e->getId(), e);
 		gLogger.info("Added you\n");
+		addGameMessage("Connected to server");
 	});
 
 	mConn.onBitStream("gamemessage", [&](const BitStream &stream) {
