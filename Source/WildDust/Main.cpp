@@ -58,10 +58,8 @@ static void initializeOSXPaths() {
 		newpath = newpath.substr(0, index) + "";
 	}
 	
-	// Instead of using resources folder use data folder in repo root
-	// strcat(path, "/../../../../");
 	if (chdir(newpath.c_str()) == -1) {
-		fprintf(stderr, "Failed to change path. Errno = %d\n", errno);
+		gLogger.error("Failed to change path. Errno = %d\n", errno);
 	}
 }
 #endif
