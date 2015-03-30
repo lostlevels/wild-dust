@@ -42,6 +42,7 @@ public:
 	// Fix for vs2013
 	unsigned int onBitStream(const std::string &event_id, std::function<void (const BitStream &)> cb);
 	unsigned int onString(const std::string &event_id, std::function<void (const std::string&)> cb);
+	unsigned int on(const std::string &event_id, std::function<void ()> cb);
 
 	// template <typename... Args>
 	// unsigned int on(const std::string &event_id, std::function<void (Args...)> cb);

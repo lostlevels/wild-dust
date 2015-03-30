@@ -22,6 +22,12 @@ static BitStream getTempBistream() {
 	return BitStream(scrachBuffer, sizeof(scrachBuffer));
 }
 
+static std::string getIpString(uint32_t ip) {
+	char buffer[128];
+	snprintf(buffer, sizeof(buffer) - 1, "%d:%d:%d:%d", ip & 255, (ip >> 8) & 255, (ip >> 16) & 255, ip >> 24);
+	return std::string(buffer);
+}
+
 #pragma mark -
 #pragma mark Note
 
@@ -227,7 +233,7 @@ void Connection::onClientConnected(ENetPeer *peer) {
 	pingClient(name);
 
 	auto host = peer->address.host;
-	gLogger.info("client connected from %d:%d:%d:%d\n", host & 255, (host >> 8) & 255, (host >> 16) & 255, host >> 24);
+	gLogger.info("client connected from %s\n", getIpString(host).c_str());
 }
 
 void Connection::onClientDisconnected(ENetPeer *peer) {
@@ -241,6 +247,9 @@ void Connection::onClientDisconnected(ENetPeer *peer) {
 
 		emit<const std::string&>("clientexit", name);
 	}
+
+	auto host = peer->address.host;
+	gLogger.info("client disconnected from %s\n", getIpString(host).c_str());
 }
 
 void Connection::connect(const std::string &hostName, unsigned short port) {

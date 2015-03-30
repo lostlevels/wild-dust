@@ -303,6 +303,11 @@ void ClientWorld::connect(const std::string &hostName, unsigned short port) {
 		addGameMessage(message);
 	});
 
+	mConn.on("serverdisconnect", [&]() {
+		gLogger.info("Server has shutdown!\n");
+		addGameMessage("Server has shutdown!\n");
+	});
+
 	mConn.onBitStream("death", [&](const BitStream &stream) {
 		stream.rewind();
 		stream.readString();
@@ -320,6 +325,8 @@ void ClientWorld::connect(const std::string &hostName, unsigned short port) {
 			}
 		}
 	});
+
+
 
 	mConn.onBitStream("gamestate", std::bind(&ClientWorld::onGameState, this, std::placeholders::_1));
 	mConn.onBitStream("playerexit", std::bind(&ClientWorld::onPlayerExit, this, std::placeholders::_1));
