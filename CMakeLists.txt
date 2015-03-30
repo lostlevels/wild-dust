@@ -10,7 +10,6 @@ macro (add_pch PCH_HEADER PCH_SRC SRCS)
 	endif()
 endmacro()
 
-
 if (WIN32)
 	set(WIN32_NOCONSOLE WIN32)
 else()
@@ -74,7 +73,9 @@ else()
 	set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
 	#set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++0x -stdlib=libc++")
 	set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++11 -stdlib=libc++")
-
+	set(MACOSX_BUNDLE_GUI_IDENTIFIER "com.mycompany.wd")
+	set(CONTENT_DATA_PATH ${CMAKE_SOURCE_DIR}/Content)
+	set(CONFIG_DATA_PATH ${CMAKE_SOURCE_DIR}/Binaries/Config)
 endif()
 
 set(OUTPUT_DIR ${CMAKE_SOURCE_DIR}/Binaries)

@@ -41,6 +41,31 @@ bool ArgvContains(char *argv[], int argc, const char *what) {
 }
 #endif
 
+#ifdef __APPLE__
+#import <CoreFoundation/CoreFoundation.h>
+#include <unistd.h>
+#include <dirent.h>
+
+static void initializeOSXPaths() {
+	char path[PATH_MAX];
+	CFURLRef res = CFBundleCopyExecutableURL(CFBundleGetMainBundle());
+	CFURLGetFileSystemRepresentation(res, TRUE, (UInt8 *)path, PATH_MAX);
+	CFRelease(res);
+	
+	std::string newpath = path;
+	if (newpath.rfind("/") != std::string::npos) {
+		int index = newpath.rfind("/");
+		newpath = newpath.substr(0, index) + "";
+	}
+	
+	// Instead of using resources folder use data folder in repo root
+	// strcat(path, "/../../../../");
+	if (chdir(newpath.c_str()) == -1) {
+		fprintf(stderr, "Failed to change path. Errno = %d\n", errno);
+	}
+}
+#endif
+
 #ifdef _WIN32
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 #else
@@ -52,6 +77,10 @@ int main(int argc, char *argv[])
 	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
 #endif
 	gCore.init();
+	
+#ifdef __APPLE__
+	initializeOSXPaths();
+#endif
 
 	Config settings;
 	settings.loadFromFile("Config/Game.cfg");
