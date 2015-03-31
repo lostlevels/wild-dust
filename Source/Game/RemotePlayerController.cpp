@@ -30,7 +30,7 @@ void RemotePlayerController::control(Entity *e, float gameTime, float dt) {
 		e->animate("walk", -1);
 	else if (!(buttons & (BTN_MOVE_RIGHT | BTN_MOVE_LEFT)) && e->isAnimating() && !shooting)
 		e->stopAnimating();
-	
+
 	if (buttons & BTN_ATTACK && !shooting) {
 		e->animate("shoot", 1);
 		if (mContext && mContext->getProjectileSpawner())

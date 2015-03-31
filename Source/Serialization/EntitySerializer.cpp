@@ -37,7 +37,7 @@ void EntitySerializer::serializeCommandSnapshot(const CommandSnapshot &snapshot,
 	stream.writeFloat(snapshot.position.x);
 	stream.writeFloat(snapshot.position.y);
 	stream.writeFloat(snapshot.position.z);
-	
+
 	stream.writeU32(snapshot.flags);
 }
 

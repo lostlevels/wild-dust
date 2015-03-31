@@ -172,7 +172,6 @@ void Connection::updatePings() {
 			auto client = kv.second;
 			client->mPings.clear();
 		}
-		// gLogger.info("Repinging\n");
 	}
 
 	for (auto &kv : mPeerToClients) {

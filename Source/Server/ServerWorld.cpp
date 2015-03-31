@@ -41,14 +41,14 @@ void ServerWorld::update(float gameTime, float dt) {
 
 	mSimulationAccumulator += dt;
 
-	float timestep = 1.0f / 60.0f;
+	const float timestep = 1.0f / 60.0f;
 
 	while (mSimulationAccumulator >= timestep) {
 		handleStateUpdates(timestep);
 		handleSendGameStates(timestep);
 
 		World::update(gameTime, timestep);
-
+		gameTime += timestep;
 		mSimulationAccumulator -= timestep;
 	}
 
@@ -108,9 +108,7 @@ void ServerWorld::serve(unsigned short port) {
 	mPort = port;
 	mConn.serve(port);
 
-	auto clientEntered = std::bind(&ServerWorld::onClientEntered, this, std::placeholders::_1);
-	// mConn.on("cliententered", clientEntered);
-	mConn.onString("cliententeredandpinged", clientEntered);
+	mConn.onString("cliententeredandpinged", std::bind(&ServerWorld::onClientEntered, this, std::placeholders::_1));
 
 	// Getting lazy so just put the handler as a lambda
 	mConn.onString("clientexit", [&](const std::string &playerName) {

@@ -203,13 +203,13 @@ void ClientWorld::update(float gameTime, float dt) {
 
 	mSimulationAccumulator += dt;
 
-	float timestep = 1.0f / 60.0f;
+	const float timestep = 1.0f / 60.0f;
 	while (mSimulationAccumulator >= timestep) {
 		handlePlayerInput(timestep);
 		sendQueuedPackets(timestep);
 
 		World::update(gameTime, timestep);
-
+		gameTime += timestep;
 		mSimulationAccumulator -= timestep;
 	}
 
